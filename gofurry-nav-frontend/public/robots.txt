@@ -1,0 +1,13 @@
+# Allow
+User-agent: *
+Allow: /
+
+# Disallow
+Disallow: /admin/
+Disallow: /api/
+
+# Host
+Host: https://go-furry.com
+
+# Sitemap
+Sitemap: https://go-furry.com/sitemap.xml

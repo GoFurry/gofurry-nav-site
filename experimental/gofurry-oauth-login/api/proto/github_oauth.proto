@@ -1,0 +1,33 @@
+syntax = "proto3";
+package githuboauth;
+option go_package = "./githuboauth;githuboauth";
+
+// 获取GitHub访问令牌的请求/响应
+message GetAccessTokenRequest {
+  string code = 1; // GitHub返回的授权码
+}
+message GetAccessTokenResponse {
+  string access_token = 1; // 生成的访问令牌
+  string error = 2;        // 错误信息
+}
+
+// 获取GitHub用户信息的请求/响应
+message GetUserInfoRequest {
+  string access_token = 1; // 访问令牌
+}
+message UserInfo {
+  string login = 1;       // GitHub用户名（唯一标识）
+  string avatar_url = 2;  // 头像URL
+  string email = 3;       // 邮箱
+  string name = 4;        // 姓名
+}
+message GetUserInfoResponse {
+  UserInfo user_info = 1; // 用户信息
+  string error = 2;       // 错误信息
+}
+
+// GitHub OAuth服务
+service GithubOAuthService {
+  rpc GetAccessToken(GetAccessTokenRequest) returns (GetAccessTokenResponse);
+  rpc GetUserInfo(GetUserInfoRequest) returns (GetUserInfoResponse);
+}

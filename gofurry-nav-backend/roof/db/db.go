@@ -1,0 +1,85 @@
+package db
+
+import (
+	"fmt"
+	"log/slog"
+	"os"
+	"sync"
+	"time"
+
+	"github.com/GoFurry/gofurry-nav-backend/roof/env"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
+)
+
+/*
+ * @Desc: 数据库
+ * @author: 福狼
+ * @version: v1.0.1
+ */
+
+var Orm = &orm{}
+var once sync.Once
+
+func initOrm() {
+	Orm.loadDBConfig()
+}
+
+type orm struct {
+	engine *gorm.DB
+}
+
+func (db *orm) loadDBConfig() {
+	if db.engine != nil {
+		return
+	}
+	var err error
+	var dsn string
+
+	pgsql := env.GetServerConfig().DataBase
+	dsn = fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", pgsql.DBHost, pgsql.DBPort, pgsql.DBUsername, pgsql.DBPassword, pgsql.DBName)
+	db.engine, err = gorm.Open(postgres.Open(dsn))
+	if err != nil {
+		slog.Error("open database error: " + err.Error())
+		os.Exit(1)
+	}
+
+	sqlDB, _ := db.engine.DB()
+	sqlDB.SetMaxIdleConns(100)                 // 设置空闲连接池中连接的最大数量
+	sqlDB.SetMaxOpenConns(1000)                // 设置打开数据库连接的最大数量
+	sqlDB.SetConnMaxLifetime(60 * time.Second) // 设置了可以重新使用连接的最大时间
+	sqlDB.SetConnMaxIdleTime(30 * time.Second) // 连接最大空闲时间
+
+	err = sqlDB.Ping()
+	if err != nil {
+		slog.Error(err.Error())
+		os.Exit(1)
+	}
+}
+
+func (db *orm) DB() *gorm.DB {
+	once.Do(initOrm)
+	return db.engine
+}
+
+// Close 关闭数据库连接池
+func (db *orm) Close() {
+
+	if db.engine == nil {
+		return
+	}
+
+	sqlDB, err := db.engine.DB()
+	if err != nil {
+		slog.Error("获取 SQL DB 实例失败: ", err)
+		return
+	}
+
+	if err = sqlDB.Close(); err != nil {
+		slog.Error("关闭数据库连接池失败: ", err)
+		return
+	}
+
+	db.engine = nil
+	slog.Info("数据库连接池已关闭")
+}
