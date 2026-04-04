@@ -61,6 +61,7 @@ const ICON_MAP: Record<string, string> = {
   xiaohongshu: 'xiaohongshu.ico',
   music163: 'music.163.com-favicon.ico',
   pixiv: 'pixiv.png',
+  xiaoheihe: 'xiaoheihe.png'
 }
 
 const BASE_URL = import.meta.env.VITE_GAME_SITE_LOGO_PREFIX_URL || ''

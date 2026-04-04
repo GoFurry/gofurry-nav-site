@@ -19,6 +19,7 @@
 
       <!-- 可展开的更多网站 -->
       <template #extra-sites>
+        <GameSiteItem href="https://www.xiaoheihe.cn/" :icon="icons.xiaoheihe" title="小黑盒" subtitle="xiaoheihe" />
         <GameSiteItem href="https://afdian.com/" :icon="icons.afdian" title="爱发电" subtitle="afdian" />
         <GameSiteItem href="https://www.patreon.com/" :icon="icons.patreon" title="Patreon" subtitle="patreon" />
         <GameSiteItem href="https://www.kickstarter.com/" :icon="icons.kickstarter" title="Kickstarter" subtitle="kickstarter" />
@@ -64,6 +65,7 @@ const icons = {
   gamalytic: `${LOGO_PREFIX}gamalytic.com-favicon.ico`,
   metacritic: `${LOGO_PREFIX}metacritic.com-favicon-32.png`,
   pcgamingwiki: `${LOGO_PREFIX}www.pcgamingwiki.com-favicon.ico`,
-  gamefaqs: `${LOGO_PREFIX}gamefaqs.gamespot.com-favicon.ico`
+  gamefaqs: `${LOGO_PREFIX}gamefaqs.gamespot.com-favicon.ico`,
+  xiaoheihe: `${LOGO_PREFIX}xiaoheihe.png`
 };
 </script>
