@@ -119,15 +119,15 @@ type CompressionConfig struct {
 }
 
 type LimiterConfig struct {
-	Enabled                bool   `mapstructure:"enabled" yaml:"enabled"`
-	MaxRequests            int    `mapstructure:"max_requests" yaml:"max_requests"`
-	Expiration             int    `mapstructure:"expiration" yaml:"expiration"`
-	Strategy               string `mapstructure:"strategy" yaml:"strategy"`
-	KeySource              string `mapstructure:"key_source" yaml:"key_source"`
-	KeyHeader              string `mapstructure:"key_header" yaml:"key_header"`
-	SkipFailedRequests     bool   `mapstructure:"skip_failed_requests" yaml:"skip_failed_requests"`
-	SkipSuccessfulRequests bool   `mapstructure:"skip_successful_requests" yaml:"skip_successful_requests"`
-	DisableHeaders         bool   `mapstructure:"disable_headers" yaml:"disable_headers"`
+	Enabled                bool     `mapstructure:"enabled" yaml:"enabled"`
+	MaxRequests            int      `mapstructure:"max_requests" yaml:"max_requests"`
+	Expiration             int      `mapstructure:"expiration" yaml:"expiration"`
+	Strategy               string   `mapstructure:"strategy" yaml:"strategy"`
+	KeySource              string   `mapstructure:"key_source" yaml:"key_source"`
+	KeyHeader              string   `mapstructure:"key_header" yaml:"key_header"`
+	SkipFailedRequests     bool     `mapstructure:"skip_failed_requests" yaml:"skip_failed_requests"`
+	SkipSuccessfulRequests bool     `mapstructure:"skip_successful_requests" yaml:"skip_successful_requests"`
+	DisableHeaders         bool     `mapstructure:"disable_headers" yaml:"disable_headers"`
 	ExcludePaths           []string `mapstructure:"exclude_paths" yaml:"exclude_paths"`
 }
 
