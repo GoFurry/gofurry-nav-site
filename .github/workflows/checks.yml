@@ -1,0 +1,263 @@
+name: checks
+
+on:
+  push:
+    paths:
+      - 'gofurry-admin/**'
+      - 'gofurry-game-backend/**'
+      - 'gofurry-game-collector/**'
+      - 'gofurry-nav-backend/**'
+      - 'gofurry-nav-collector/**'
+      - 'gofurry-nav-frontend/**'
+      - '.github/workflows/checks.yml'
+  pull_request:
+    paths:
+      - 'gofurry-admin/**'
+      - 'gofurry-game-backend/**'
+      - 'gofurry-game-collector/**'
+      - 'gofurry-nav-backend/**'
+      - 'gofurry-nav-collector/**'
+      - 'gofurry-nav-frontend/**'
+      - '.github/workflows/checks.yml'
+
+jobs:
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      gofurry_admin: ${{ steps.detect.outputs.gofurry_admin }}
+      gofurry_game_backend: ${{ steps.detect.outputs.gofurry_game_backend }}
+      gofurry_game_collector: ${{ steps.detect.outputs.gofurry_game_collector }}
+      gofurry_nav_backend: ${{ steps.detect.outputs.gofurry_nav_backend }}
+      gofurry_nav_collector: ${{ steps.detect.outputs.gofurry_nav_collector }}
+      gofurry_nav_frontend: ${{ steps.detect.outputs.gofurry_nav_frontend }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Detect changed services
+        id: detect
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            base_sha="${{ github.event.pull_request.base.sha }}"
+          else
+            base_sha="${{ github.event.before }}"
+          fi
+
+          if [[ -z "${base_sha}" || "${base_sha}" == "0000000000000000000000000000000000000000" ]]; then
+            changed_files="$(git ls-files)"
+          else
+            changed_files="$(git diff --name-only "${base_sha}" "${{ github.sha }}")"
+          fi
+
+          printf '%s\n' "${changed_files}"
+
+          set_output() {
+            local name="$1"
+            local pattern="$2"
+            if printf '%s\n' "${changed_files}" | grep -Eq "${pattern}"; then
+              echo "${name}=true" >> "${GITHUB_OUTPUT}"
+            else
+              echo "${name}=false" >> "${GITHUB_OUTPUT}"
+            fi
+          }
+
+          set_output "gofurry_admin" '^gofurry-admin/'
+          set_output "gofurry_game_backend" '^gofurry-game-backend/'
+          set_output "gofurry_game_collector" '^gofurry-game-collector/'
+          set_output "gofurry_nav_backend" '^gofurry-nav-backend/'
+          set_output "gofurry_nav_collector" '^gofurry-nav-collector/'
+          set_output "gofurry_nav_frontend" '^gofurry-nav-frontend/'
+
+  gofurry-admin:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.gofurry_admin == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Go
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: gofurry-admin/go.mod
+          cache-dependency-path: gofurry-admin/go.sum
+
+      - name: Check gofmt
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd gofurry-admin
+          files="$(gofmt -l .)"
+          if [[ -n "${files}" ]]; then
+            echo "${files}"
+            exit 1
+          fi
+
+      - name: Go vet
+        working-directory: gofurry-admin
+        run: go vet ./...
+
+      - name: Go test
+        working-directory: gofurry-admin
+        run: go test ./...
+
+      - name: Build admin web
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd gofurry-admin/web
+          npm ci
+          npm run build
+
+  gofurry-nav-backend:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.gofurry_nav_backend == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Go
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: gofurry-nav-backend/go.mod
+          cache-dependency-path: gofurry-nav-backend/go.sum
+
+      - name: Check gofmt
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd gofurry-nav-backend
+          files="$(gofmt -l .)"
+          if [[ -n "${files}" ]]; then
+            echo "${files}"
+            exit 1
+          fi
+
+      - name: Go vet
+        working-directory: gofurry-nav-backend
+        run: go vet ./...
+
+      - name: Go test
+        working-directory: gofurry-nav-backend
+        run: go test ./...
+
+  gofurry-nav-collector:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.gofurry_nav_collector == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Go
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: gofurry-nav-collector/go.mod
+          cache-dependency-path: gofurry-nav-collector/go.sum
+
+      - name: Check gofmt
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd gofurry-nav-collector
+          files="$(gofmt -l .)"
+          if [[ -n "${files}" ]]; then
+            echo "${files}"
+            exit 1
+          fi
+
+      - name: Go vet
+        working-directory: gofurry-nav-collector
+        run: go vet ./...
+
+      - name: Go test
+        working-directory: gofurry-nav-collector
+        run: go test ./...
+
+  gofurry-game-backend:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.gofurry_game_backend == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Go
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: gofurry-game-backend/go.mod
+          cache-dependency-path: gofurry-game-backend/go.sum
+
+      - name: Check gofmt
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd gofurry-game-backend
+          files="$(gofmt -l .)"
+          if [[ -n "${files}" ]]; then
+            echo "${files}"
+            exit 1
+          fi
+
+      - name: Go vet
+        working-directory: gofurry-game-backend
+        run: go vet ./...
+
+      - name: Go test
+        working-directory: gofurry-game-backend
+        run: go test ./...
+
+  gofurry-game-collector:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.gofurry_game_collector == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Go
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: gofurry-game-collector/go.mod
+          cache-dependency-path: gofurry-game-collector/go.sum
+
+      - name: Check gofmt
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd gofurry-game-collector
+          files="$(gofmt -l .)"
+          if [[ -n "${files}" ]]; then
+            echo "${files}"
+            exit 1
+          fi
+
+      - name: Go vet
+        working-directory: gofurry-game-collector
+        run: go vet ./...
+
+      - name: Go test
+        working-directory: gofurry-game-collector
+        run: go test ./...
+
+  gofurry-nav-frontend:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.gofurry_nav_frontend == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Build frontend
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd gofurry-nav-frontend
+          npm ci
+          npm run build
