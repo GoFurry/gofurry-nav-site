@@ -1,0 +1,57 @@
+# Build output
+/build/
+/bin/
+**/bin/
+**/build/
+**/dist/
+**/coverage/
+
+# Runtime files
+**/logs/
+*.log
+*.out
+*.err
+*.pid
+*.pid.lock
+*.seed
+
+# Frontend dependencies and caches
+**/node_modules/
+**/.vite/
+**/.cache/
+**/.turbo/
+
+# Editor and OS files
+.DS_Store
+Thumbs.db
+.idea/
+.vs/
+*.suo
+*.user
+*.userossc
+*.swp
+*.swo
+
+# Environment files
+**/.env
+**/.env.*
+!**/.env.example
+!**/.env.*.example
+
+# Service configs that may contain production secrets
+**/conf/server.yaml
+**/conf/server.build.yaml
+**/config/server.yaml
+**/config/server.local.yaml
+**/config/server.prod.yaml
+**/config/*.local.yaml
+**/config/*.prod.yaml
+**/config/*.secret.yaml
+
+# Certificates and private keys
+**/*.key
+**/*.pem
+**/*.csr
+**/*.crt
+**/*.p12
+**/*.pfx
