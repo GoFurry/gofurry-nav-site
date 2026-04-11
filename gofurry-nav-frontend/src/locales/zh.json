@@ -119,6 +119,7 @@
     "links": {
       "sitemapXml": "站点地图 XML",
       "api": "API",
+      "opsAdmin": "运维后台",
       "bilibili": "哔哩哔哩",
       "weibo": "微博",
       "github": "GitHub",

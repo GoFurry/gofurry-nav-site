@@ -35,6 +35,14 @@
             <RouterLink to="/panel" class="footer-link">
               {{ t('sidebar.panel') }}
             </RouterLink>
+            <a
+                href="https://op.go-furry.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="footer-link"
+            >
+              {{ t('footer.links.opsAdmin') }}
+            </a>
           </div>
         </section>
       </div>
