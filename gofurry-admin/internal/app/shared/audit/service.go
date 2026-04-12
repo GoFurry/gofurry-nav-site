@@ -46,16 +46,13 @@ func SystemMeta(source string) Meta {
 }
 
 func Log(meta Meta, action, resource string, targetID any, before, after any) common.Error {
-	engine := db.Databases.DB(db.Admin)
-	if engine == nil {
-		return common.NewDaoError("admin database is not initialized")
-	}
-	return LogTx(engine, meta, action, resource, targetID, before, after)
+	return LogTx(nil, meta, action, resource, targetID, before, after)
 }
 
 func LogTx(tx *gorm.DB, meta Meta, action, resource string, targetID any, before, after any) common.Error {
-	if tx == nil {
-		return common.NewDaoError("audit database transaction is not initialized")
+	engine := db.Databases.DB(db.Admin)
+	if engine == nil {
+		return common.NewDaoError("admin database is not initialized")
 	}
 
 	entry := AdminAuditLog{
@@ -81,7 +78,7 @@ func LogTx(tx *gorm.DB, meta Meta, action, resource string, targetID any, before
 		entry.Operator = "admin"
 	}
 
-	if err := tx.Create(&entry).Error; err != nil {
+	if err := engine.Create(&entry).Error; err != nil {
 		return common.NewDaoError(err.Error())
 	}
 	return nil

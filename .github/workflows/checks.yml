@@ -98,14 +98,6 @@ jobs:
             exit 1
           fi
 
-      - name: Go vet
-        working-directory: gofurry-admin
-        run: go vet ./...
-
-      - name: Go test
-        working-directory: gofurry-admin
-        run: go test ./...
-
       - name: Build admin web
         shell: bash
         run: |
@@ -113,6 +105,14 @@ jobs:
           cd gofurry-admin/web
           npm ci
           npm run build
+
+      - name: Go vet
+        working-directory: gofurry-admin
+        run: go vet ./...
+
+      - name: Go test
+        working-directory: gofurry-admin
+        run: go test ./...
 
   gofurry-nav-backend:
     needs: detect-changes

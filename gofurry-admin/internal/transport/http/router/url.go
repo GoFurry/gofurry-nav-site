@@ -71,10 +71,10 @@ func navRoutes(root fiber.Router) {
 
 	root.Get("/site-group-maps", navadmin.NavAPI.ListSiteGroupMaps)
 	root.Post("/site-group-maps", navadmin.NavAPI.CreateSiteGroupMap)
+	root.Put("/site-group-maps/bulk-replace", navadmin.NavAPI.BulkReplaceSiteGroupMaps)
 	root.Get("/site-group-maps/:id", navadmin.NavAPI.GetSiteGroupMap)
 	root.Put("/site-group-maps/:id", navadmin.NavAPI.UpdateSiteGroupMap)
 	root.Delete("/site-group-maps/:id", navadmin.NavAPI.DeleteSiteGroupMap)
-	root.Put("/site-group-maps/bulk-replace", navadmin.NavAPI.BulkReplaceSiteGroupMaps)
 }
 
 func gameRoutes(root fiber.Router) {
@@ -110,8 +110,8 @@ func gameRoutes(root fiber.Router) {
 
 	root.Get("/tag-maps", gameadmin.GameAPI.ListTagMaps)
 	root.Post("/tag-maps", gameadmin.GameAPI.CreateTagMap)
+	root.Put("/tag-maps/bulk-replace", gameadmin.GameAPI.BulkReplaceTagMaps)
 	root.Get("/tag-maps/:id", gameadmin.GameAPI.GetTagMap)
 	root.Put("/tag-maps/:id", gameadmin.GameAPI.UpdateTagMap)
 	root.Delete("/tag-maps/:id", gameadmin.GameAPI.DeleteTagMap)
-	root.Put("/tag-maps/bulk-replace", gameadmin.GameAPI.BulkReplaceTagMaps)
 }

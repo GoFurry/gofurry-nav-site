@@ -5,7 +5,7 @@ const bool01 = [
   { label: '否', value: '0' },
 ]
 
-const groupKeys = ['official', 'discord', 'twitter', 'youtube', 'telegram', 'bsky', 'afdian', 'qq', 'reddit', 'bilibili', 'weibo', 'tiktok', 'vk', 'facebook', 'twitch', 'instagram']
+const groupKeys = ['official', 'discord', 'twitter', 'youtube', 'telegram', 'bsky', 'afdian', 'qq', 'reddit', 'bilibili', 'weibo', 'tiktok', 'vk', 'facebook', 'twitch', 'instagram', 'xiaohongshu']
 const linkKeys = ['steamdb', 'steambase', 'gamalytic', 'vgi', 'playtracker', 'pcgamingwiki', 'metacritic']
 
 function kvDefaults(keys: string[]) {

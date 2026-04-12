@@ -2,6 +2,8 @@ package controller
 
 import (
 	"encoding/json"
+	"errors"
+	"fmt"
 	"strings"
 	"time"
 
@@ -49,6 +51,9 @@ func (api *gameAPI) CreateGame(c fiber.Ctx) error {
 	}
 	var created models.Game
 	err := gameDB().Transaction(func(tx *gorm.DB) error {
+		if dupErr := ensureUniqueGameAppID(tx, req.Appid, 0); dupErr != nil {
+			return dupErr
+		}
 		ids, allocErr := adminutil.AllocateSequentialIDs(tx, created.TableName(), 1)
 		if allocErr != nil {
 			return allocErr
@@ -111,6 +116,9 @@ func (api *gameAPI) UpdateGame(c fiber.Ctx) error {
 		return common.NewResponse(c).Error(err)
 	}
 	txErr := gameDB().Transaction(func(tx *gorm.DB) error {
+		if dupErr := ensureUniqueGameAppID(tx, req.Appid, id); dupErr != nil {
+			return dupErr
+		}
 		before, snapErr := audit.SnapshotByID(tx, (&models.Game{}).TableName(), id)
 		if snapErr != nil {
 			return snapErr
@@ -752,6 +760,27 @@ func validateGamePayload(req models.GamePayload) common.Error {
 		return common.NewValidationError("name and name_en are required")
 	}
 	return nil
+}
+
+func ensureUniqueGameAppID(tx *gorm.DB, appid, excludeID int64) common.Error {
+	if appid <= 0 {
+		return nil
+	}
+
+	var existing models.Game
+	query := tx.Select("id", "name", "appid").Where("appid = ?", appid)
+	if excludeID > 0 {
+		query = query.Where("id <> ?", excludeID)
+	}
+
+	if err := query.Take(&existing).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil
+		}
+		return common.NewDaoError(err.Error())
+	}
+
+	return common.NewValidationError(fmt.Sprintf("appid already exists (game id=%d, name=%s)", existing.ID, existing.Name))
 }
 
 func gameDTO(row models.Game) models.GameDTO {
