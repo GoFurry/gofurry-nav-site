@@ -24,3 +24,7 @@ NUXT_PUBLIC_NAV_API_BASE=/api
 NUXT_PUBLIC_GAME_API_BASE=/api
 NUXT_PUBLIC_SITE_URL=http://localhost:3000
 ```
+
+## Production
+
+See [DEPLOYMENT.md](./DEPLOYMENT.md) for the Docker-based production migration path and the nginx reverse-proxy snippet for `go-furry.com`.

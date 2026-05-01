@@ -1,0 +1,15 @@
+node_modules
+.nuxt
+.output
+.data
+.cache
+coverage
+dist
+*.log
+.git
+.idea
+127.0.0.1
+codex-nuxt-dev.err.log
+codex-nuxt-dev.out.log
+dev-server.err.log
+dev-server.out.log
