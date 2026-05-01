@@ -172,7 +172,6 @@
     "title": "常用网站",
     "description": "把你最常访问的网站固定在这里，刷新后也会保留。",
     "panelTitle": "Panel",
-    "recentTitle": "最近访问",
     "recentEmptyTitle": "还没有最近访问记录",
     "recentEmptyDescription": "从导航里点开几个网站后，这里就会自动出现。",
     "customPanelFrameTitle": "自定义第一分栏",

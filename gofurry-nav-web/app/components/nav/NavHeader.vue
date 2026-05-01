@@ -1,28 +1,21 @@
 <template>
   <header
-      class="relative flex flex-col h-90 w-full items-center justify-center overflow-hidden px-4 shadow-sm md:h-[100vh]"
+      class="relative flex flex-col h-90 w-full items-center justify-start overflow-hidden px-4 pt-6 shadow-sm md:h-[100vh] md:px-6 md:pt-0"
   >
     <div
         v-if="bgImage"
         class="absolute inset-0 bg-cover bg-center transition-all duration-700"
         :style="{ backgroundImage: `url(${bgImage})` }"
     ></div>
-    <div class="relative z-30 flex w-full justify-center">
+    <div class="relative z-30 flex w-full justify-center md:absolute md:left-1/2 md:top-[26vh] md:w-full md:max-w-[56rem] md:-translate-x-1/2">
       <SearchBox />
     </div>
 
     <div
         v-if="recentSites.length"
-        class="relative z-10 hidden w-full flex-col items-center gap-3 pt-10 md:flex"
+        class="relative z-10 hidden w-full justify-center md:absolute md:left-1/2 md:top-[46vh] md:flex md:w-full md:max-w-[56rem] md:-translate-x-1/2"
     >
-      <p class="text-xs font-medium uppercase tracking-[0.28em] text-white/70">
-        {{ t('customSites.recentTitle') }}
-      </p>
-      <SiteIconStrip
-          :sites="recentSites"
-          compact
-          :max-items="8"
-      />
+      <SiteIconStrip :sites="recentSites" compact :max-items="8" />
     </div>
 
     <div class="pointer-events-none absolute bottom-6 left-1/2 z-10 hidden -translate-x-1/2 items-center gap-2 text-white/85 md:flex md:flex-col">

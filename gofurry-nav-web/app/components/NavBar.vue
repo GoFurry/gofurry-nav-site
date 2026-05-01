@@ -1,6 +1,6 @@
 <template>
   <header
-      class="relative z-[70] w-full border-b border-white/10 bg-[rgba(18,24,37,0.92)] text-gray-100 shadow-lg backdrop-blur-xl transition-all duration-300"
+      class="relative z-[70] w-full border-b border-white/10 bg-[rgba(18,24,37,0.7)] text-gray-100 shadow-lg backdrop-blur-xl transition-all duration-300"
   >
     <div
         class="mx-auto flex w-full max-w-[1700px] items-center gap-3 px-4 py-2 transition-all duration-300 sm:px-6"

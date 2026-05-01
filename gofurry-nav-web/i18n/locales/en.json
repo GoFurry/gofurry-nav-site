@@ -172,7 +172,6 @@
     "title": "Custom Sites",
     "description": "Keep your most visited websites here and preserve them after refresh.",
     "panelTitle": "Panel",
-    "recentTitle": "Recent Visits",
     "recentEmptyTitle": "No recent visits yet",
     "recentEmptyDescription": "Open a few sites from navigation and they will appear here automatically.",
     "customPanelFrameTitle": "Custom first panel",

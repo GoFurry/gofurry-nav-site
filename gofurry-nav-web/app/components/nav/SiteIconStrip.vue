@@ -6,7 +6,7 @@
         :href="toExternalUrl(item.url)"
         target="_blank"
         rel="noopener noreferrer"
-        class="group flex h-8 w-8 shrink-0 items-center justify-center rounded-md transition hover:bg-white/10"
+        class="group flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/15 bg-black/20 shadow-[0_10px_24px_rgba(15,23,42,0.18)] backdrop-blur-sm transition hover:-translate-y-0.5 hover:bg-white/15"
         :title="item.name"
         @click="handleVisit(item)"
     >
@@ -14,13 +14,13 @@
           v-if="!failedIcons[item.id]"
           :src='`https://favicon.im/${toExternalUrl(item.url)}?larger=true`'
           :alt="item.name"
-          class="h-6 w-6 rounded-sm object-cover"
+          class="h-6 w-6 rounded-md object-cover"
           @error="markIconFailed(item.id)"
           loading="lazy"
       />
       <div
           v-else
-          class="flex h-6 w-6 items-center justify-center rounded-sm bg-slate-900 text-xs font-semibold text-white"
+          class="flex h-6 w-6 items-center justify-center rounded-md bg-slate-900/85 text-xs font-semibold text-white"
       >
         {{ item.name.slice(0, 1).toUpperCase() }}
       </div>
