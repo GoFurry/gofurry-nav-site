@@ -15,7 +15,7 @@
         v-if="recentSites.length"
         class="relative z-10 hidden w-full justify-center md:absolute md:left-1/2 md:top-[32vh] md:flex md:w-full md:max-w-[56rem] md:-translate-x-1/2"
     >
-      <SiteIconStrip :sites="recentSites" compact :max-items="8" />
+      <SiteIconStrip :sites="recentSites" />
     </div>
 
     <div class="pointer-events-none absolute bottom-6 left-1/2 z-10 hidden -translate-x-1/2 items-center gap-2 text-white/85 md:flex md:flex-col">
