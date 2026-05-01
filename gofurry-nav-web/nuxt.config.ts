@@ -1,5 +1,7 @@
 import tailwindcss from '@tailwindcss/vite'
 
+const siteUrl = process.env.NUXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+
 export default defineNuxtConfig({
   compatibilityDate: '2026-05-01',
   modules: ['@pinia/nuxt', '@nuxtjs/i18n'],
@@ -19,17 +21,34 @@ export default defineNuxtConfig({
   },
   app: {
     head: {
+      charset: 'utf-8',
+      viewport: 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no',
       htmlAttrs: {
         lang: 'zh-CN'
       },
-      title: 'GoFurry',
+      title: 'GoFurry 兽人控导航站',
       meta: [
-        { name: 'description', content: 'GoFurry navigation and game discovery site.' },
-        { property: 'og:site_name', content: 'GoFurry' },
-        { name: 'theme-color', content: '#f97316' }
+        { name: 'description', content: 'GoFurry 兽人控导航站是一个专注于兽人文化整合的导航站点，为兽人爱好者提供便捷的资源发现与社区入口。' },
+        { name: 'keywords', content: 'furry, 兽人, 兽人控, 兽人导航, 兽人文化, 兽人社区, GoFurry, 兽人资源, fur, furries, game, anthro, scalies, kemono' },
+        { name: 'robots', content: 'index, follow' },
+        { name: 'googlebot', content: 'index, follow' },
+        { property: 'og:site_name', content: 'GoFurry 兽人控导航站' },
+        { property: 'og:title', content: 'GoFurry 兽人控导航站' },
+        { property: 'og:description', content: 'GoFurry 兽人控导航站是一个专注于兽人文化整合的导航站点，为兽人爱好者提供便捷的资源发现与社区入口。' },
+        { property: 'og:type', content: 'website' },
+        { property: 'og:url', content: siteUrl },
+        { property: 'og:image', content: `${siteUrl.replace(/\/$/, '')}/og-image.jpg` },
+        { name: 'theme-color', content: '#f97316' },
+        { name: 'format-detection', content: 'telephone=no' },
+        { name: 'mobile-web-app-capable', content: 'yes' },
+        { name: 'apple-mobile-web-app-capable', content: 'yes' },
+        { name: 'apple-mobile-web-app-title', content: 'GoFurry 兽人控导航站' }
       ],
       link: [
-        { rel: 'icon', href: '/favicon.ico' }
+        { rel: 'icon', type: 'image/png', href: '/logo-mini.png' },
+        { rel: 'icon', type: 'image/svg+xml', href: '/logo-mini.svg' },
+        { rel: 'apple-touch-icon', sizes: '180x180', href: '/logo-mini.png' },
+        { rel: 'shortcut icon', href: '/logo-mini.png' }
       ]
     }
   },
