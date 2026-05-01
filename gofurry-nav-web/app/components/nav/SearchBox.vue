@@ -1,7 +1,7 @@
 <template>
   <div
       ref="searchBoxRef"
-      class="relative z-30 mt-4 flex w-full flex-col items-center"
+      class="relative z-30 mt-2 flex w-full flex-col items-center md:mt-0"
   >
     <!-- 搜索类别 -->
     <div class="mb-3 w-full max-w-[620px] rounded-2xl px-3 py-2.5">
@@ -45,8 +45,7 @@
       <ul
           ref="dropdownRef"
           v-if="(keyword.trim() && dropdownVisible) || isLoading"
-          :style="{ width: inputWidth + 'px', left: inputLeft + 'px', top: inputTop + 'px' }"
-          class="fixed z-[999] max-h-60 overflow-y-auto overscroll-contain rounded-2xl border border-white/12 bg-slate-950/72
+          class="absolute left-0 top-[calc(100%+0.5rem)] z-[999] w-full max-h-60 overflow-y-auto overscroll-contain rounded-2xl border border-white/12 bg-slate-950/72
             backdrop-blur-2xl shadow-2xl shadow-slate-950/35 ring-1 ring-white/8 transition-all duration-200 origin-top-left
             animate-fadeIn"
           @wheel.stop
@@ -200,22 +199,8 @@ const debounce = (fn: Function, delay = 300) => (...args: any[]) => {
 const inputRef = ref<HTMLInputElement | null>(null)
 const searchBoxRef = ref<HTMLElement | null>(null)
 const dropdownRef = ref<HTMLElement | null>(null)
-const inputWidth = ref(0)
-const inputLeft = ref(0)
-const inputTop = ref(0)
 const dropdownVisible = ref(false)
 const isInputFocused = ref(false)
-
-const updateInputPosition = () => {
-  nextTick(() => {
-    if (inputRef.value) {
-      const rect = inputRef.value.getBoundingClientRect()
-      inputWidth.value = rect.width
-      inputLeft.value = rect.left
-      inputTop.value = rect.bottom + 8
-    }
-  })
-}
 
 const highlightKeyword = (item: string) => {
   if (!keyword.value.trim()) return item
@@ -235,7 +220,6 @@ const fetchSuggestions = async () => {
     return
   }
 
-  updateInputPosition()
   dropdownVisible.value = true
   isLoading.value = true
 
@@ -369,17 +353,12 @@ watch(
 )
 
 onMounted(() => {
-  window.addEventListener('resize', updateInputPosition)
-  window.addEventListener('scroll', updateInputPosition, true)
   document.addEventListener('click', handleClickOutside)
-  updateInputPosition()
   resetSelection() // 🟧 初始化默认选中项
 })
 
 onBeforeUnmount(() => {
   if (timer) clearTimeout(timer)
-  window.removeEventListener('resize', updateInputPosition)
-  window.removeEventListener('scroll', updateInputPosition, true)
   document.removeEventListener('click', handleClickOutside)
   setNavPageRevealLock('search-box', false)
 })
