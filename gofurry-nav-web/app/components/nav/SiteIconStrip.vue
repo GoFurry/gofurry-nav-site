@@ -5,7 +5,7 @@
           :href="toExternalUrl(item.url)"
           target="_blank"
           rel="noopener noreferrer"
-          class="group flex h-10 w-10 items-center justify-center rounded-xl bg-black/20 shadow-[0_10px_24px_rgba(15,23,42,0.18)] duration-500"
+          class="group flex h-10 w-10 items-center justify-center rounded-xl bg-black/20 duration-500 backdrop-blur-sm hover:bg-slate-100/30"
           :title="item.name"
           @click="handleVisit(item)"
       >
@@ -13,7 +13,7 @@
             v-if="!failedIcons[item.id]"
             :src="`https://favicon.im/${toExternalUrl(item.url)}?larger=true`"
             :alt="item.name"
-            class="h-6 w-6 rounded-md object-cover backdrop-blur-sm hover:bg-white/15"
+            class="h-6 w-6 rounded-md object-cover "
             loading="lazy"
             @error="markIconFailed(item.id)"
         />

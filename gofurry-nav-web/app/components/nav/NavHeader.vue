@@ -13,7 +13,7 @@
 
     <div
         v-if="recentSites.length"
-        class="relative z-10 hidden w-full justify-center md:absolute md:left-1/2 md:top-[32vh] md:flex md:w-full md:max-w-[56rem] md:-translate-x-1/2"
+        class="relative z-10 hidden w-full justify-center md:absolute md:left-1/2 md:top-[28vh] md:flex md:w-full md:max-w-[56rem] md:-translate-x-1/2"
     >
       <SiteIconStrip :sites="recentSites" />
     </div>

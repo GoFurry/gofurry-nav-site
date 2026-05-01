@@ -7,7 +7,7 @@
     >
       <NuxtLink
           to="/nav"
-          class="flex shrink-0 items-center gap-2 rounded-lg px-2 py-1 transition hover:bg-white/10"
+          class="flex shrink-0 items-center gap-2 px-2 py-1"
           @click.stop="closeMenus"
       >
         <img :src="logo" alt="GoFurry logo" class="h-10 w-10" />

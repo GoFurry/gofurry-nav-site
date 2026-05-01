@@ -131,9 +131,9 @@ watch(
 const categories = computed(() => [
   t('searchBox.platformCate.search'),
   t('searchBox.platformCate.furry'),
+  t('searchBox.platformCate.games'),
   t('searchBox.platformCate.art'),
   t('searchBox.platformCate.novel'),
-  t('searchBox.platformCate.games'),
 ])
 
 const selectedCategory = ref('')

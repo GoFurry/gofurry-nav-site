@@ -26,12 +26,15 @@ export default defineNuxtConfig({
       htmlAttrs: {
         lang: 'zh-CN'
       },
-      title: 'GoFurry 兽人控导航站',
+      title: 'GoFurry 兽人控导航站 - 发现兽人文化相关资源与社区',
       meta: [
+        // SEO
         { name: 'description', content: 'GoFurry 兽人控导航站是一个专注于兽人文化整合的导航站点，为兽人爱好者提供便捷的资源发现与社区入口。' },
         { name: 'keywords', content: 'furry, 兽人, 兽人控, 兽人导航, 兽人文化, 兽人社区, GoFurry, 兽人资源, fur, furries, game, anthro, scalies, kemono' },
+        // 搜索引擎 爬虫
         { name: 'robots', content: 'index, follow' },
         { name: 'googlebot', content: 'index, follow' },
+        // 社交平台
         { property: 'og:site_name', content: 'GoFurry 兽人控导航站' },
         { property: 'og:title', content: 'GoFurry 兽人控导航站' },
         { property: 'og:description', content: 'GoFurry 兽人控导航站是一个专注于兽人文化整合的导航站点，为兽人爱好者提供便捷的资源发现与社区入口。' },
@@ -39,6 +42,7 @@ export default defineNuxtConfig({
         { property: 'og:url', content: siteUrl },
         { property: 'og:image', content: `${siteUrl.replace(/\/$/, '')}/og-image.jpg` },
         { name: 'theme-color', content: '#f97316' },
+        // 移动端
         { name: 'format-detection', content: 'telephone=no' },
         { name: 'mobile-web-app-capable', content: 'yes' },
         { name: 'apple-mobile-web-app-capable', content: 'yes' },
@@ -46,7 +50,6 @@ export default defineNuxtConfig({
       ],
       link: [
         { rel: 'icon', type: 'image/png', href: '/logo-mini.png' },
-        { rel: 'icon', type: 'image/svg+xml', href: '/logo-mini.svg' },
         { rel: 'apple-touch-icon', sizes: '180x180', href: '/logo-mini.png' },
         { rel: 'shortcut icon', href: '/logo-mini.png' }
       ]
