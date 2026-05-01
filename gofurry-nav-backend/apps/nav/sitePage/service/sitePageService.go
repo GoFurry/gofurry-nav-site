@@ -93,7 +93,6 @@ func (svc *sitePageService) GetSitePingRecordService(domain string) (siteDelayVo
 	if err != nil {
 		return
 	}
-	delayList = delayList
 	idx := 0
 	var temp models.SiteDelay
 	loss20, delay20, loss60, delay60, loss100, delay100 := 0, 0, 0, 0, 0, 0

@@ -65,7 +65,7 @@ WantedBy=multi-user.target`,
 		case "install":
 			err = s.Install()
 			if err != nil {
-				slog.Error("服务安装失败: ", err)
+				slog.Error("service install failed", "error", err)
 			} else {
 				slog.Info(`┏┓  ┏┓
 ┃┓┏┓┣ ┓┏┏┓┏┓┓┏
@@ -78,7 +78,7 @@ WantedBy=multi-user.target`,
 		case "uninstall":
 			err = s.Uninstall()
 			if err != nil {
-				slog.Error("服务卸载失败: ", err)
+				slog.Error("service uninstall failed", "error", err)
 			} else {
 				slog.Info(`┏┓  ┏┓
 ┃┓┏┓┣ ┓┏┏┓┏┓┓┏
@@ -175,7 +175,7 @@ func (gf *goFurry) Start(s service.Service) error {
 
 func (gf *goFurry) run() {
 	go func() {
-		c := make(chan os.Signal)
+		c := make(chan os.Signal, 1)
 		signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
 		errChan <- fmt.Errorf("%s", <-c)
 	}()

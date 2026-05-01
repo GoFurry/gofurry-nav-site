@@ -71,12 +71,12 @@ func (db *orm) Close() {
 
 	sqlDB, err := db.engine.DB()
 	if err != nil {
-		slog.Error("获取 SQL DB 实例失败: ", err)
+		slog.Error("failed to get SQL DB instance", "error", err)
 		return
 	}
 
 	if err = sqlDB.Close(); err != nil {
-		slog.Error("关闭数据库连接池失败: ", err)
+		slog.Error("failed to close database connection pool", "error", err)
 		return
 	}
 
