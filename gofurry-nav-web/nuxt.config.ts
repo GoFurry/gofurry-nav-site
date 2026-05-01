@@ -4,6 +4,9 @@ const siteUrl = process.env.NUXT_PUBLIC_SITE_URL || 'http://localhost:3000'
 
 export default defineNuxtConfig({
   compatibilityDate: '2026-05-01',
+  experimental: {
+    appManifest: false
+  },
   modules: ['@pinia/nuxt', '@nuxtjs/i18n'],
   css: ['~/assets/css/main.css'],
   vite: {
