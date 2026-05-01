@@ -130,6 +130,9 @@ watch(
 // 搜索类别
 const categories = computed(() => [
   t('searchBox.platformCate.search'),
+  t('searchBox.platformCate.furry'),
+  t('searchBox.platformCate.art'),
+  t('searchBox.platformCate.novel'),
   t('searchBox.platformCate.games'),
 ])
 
@@ -167,6 +170,22 @@ const platforms = computed<Record<string, Platform[]>>(() => ({
     { name: t('searchBox.platformName.zhihu'), type: 'site', url: 'https://www.zhihu.com/search?type=content&q={kw}' },
     { name: t('searchBox.platformName.weibo'), type: 'site', url: 'https://s.weibo.com/weibo?q={kw}' },
     { name: t('searchBox.platformName.twitter'), type: 'site', url: 'https://x.com/search?q={kw}&src=typed_query' },
+  ],
+  [t('searchBox.platformCate.furry')]: [
+    { name: t('searchBox.platformName.furaffinity'), type: 'site', url: 'https://www.furaffinity.net/search/?q={kw}' },
+    { name: t('searchBox.platformName.e621'), type: 'site', url: 'https://e621.net/posts?tags={kw}' },
+    { name: t('searchBox.platformName.wilddream'), type: 'site', url: 'https://www.wilddream.net/Art/index/index?keyword={kw}' },
+  ],
+  [t('searchBox.platformCate.art')]: [
+    { name: t('searchBox.platformName.pixiv'), type: 'site', url: 'https://www.pixiv.net/tags/{kw}' },
+    { name: t('searchBox.platformName.deviantart'), type: 'site', url: 'https://www.deviantart.com/search?q={kw}' },
+    { name: t('searchBox.platformName.artstation'), type: 'site', url: 'https://www.artstation.com/search?query={kw}' },
+    { name: t('searchBox.platformName.pinterest'), type: 'site', url: 'https://www.pinterest.com/search/pins/?q={kw}' },
+    { name: t('searchBox.platformName.zcool'), type: 'site', url: 'https://www.zcool.com.cn/search/content?word={kw}' },
+  ],
+  [t('searchBox.platformCate.novel')]: [
+    { name: t('searchBox.platformName.furrynovel'), type: 'site', url: 'https://furrynovel.com/zh/search?keyword={kw}' },
+    { name: t('searchBox.platformName.linpx'), type: 'site', url: 'https://furrynovel.ink/search?word={kw}' },
   ],
   [t('searchBox.platformCate.games')]: [
     { name: t('searchBox.platformName.itchIo'), type: 'site', url: 'https://itch.io/search?q={kw}' },
@@ -254,6 +273,12 @@ const doSearch = () => {
 
   const searchLabel = t('searchBox.platformCate.search')
   const gameLabel = t('searchBox.platformCate.games')
+  const siteLabels = new Set([
+    t('searchBox.platformCate.furry'),
+    t('searchBox.platformCate.art'),
+    t('searchBox.platformCate.novel'),
+    gameLabel,
+  ])
 
   if (selectedCategory.value === searchLabel) {
     switch (selectedPlatform.value.type) {
@@ -264,7 +289,7 @@ const doSearch = () => {
         if (mapping[selectedPlatform.value.name])
           window.open(mapping[selectedPlatform.value.name], '_blank')
     }
-  } else if (selectedCategory.value === gameLabel) {
+  } else if (siteLabels.has(selectedCategory.value)) {
     if (mapping[selectedPlatform.value.name])
       window.open(mapping[selectedPlatform.value.name], '_blank')
   }
