@@ -1,20 +1,59 @@
 <template>
-  <div class="page-shell bg-orange-50">
-    <section class="mx-auto w-full max-w-3xl px-4 py-16 text-center sm:px-6">
-      <h1 class="text-4xl font-semibold text-slate-950">{{ isZh ? '抽奖确认' : 'Prize Activation' }}</h1>
-      <p class="mt-4 text-sm leading-7 text-slate-600">
-        {{ isZh ? '该页面保留为客户端交互入口，后续会继续兼容现有抽奖确认接口。' : 'This client-only page remains as the entry point for the existing prize activation flow.' }}
+  <div class="flex min-h-[60vh] items-center justify-center bg-orange-50">
+    <div class="bg-orange-100 rounded-lg py-20 w-[80%] text-center space-y-4">
+
+      <div v-if="status === 'success'" class="text-green-600 font-bold text-xl">
+        馃惒 {{ t('game.lottery.activation.success') }}
+      </div>
+
+      <div v-else class="text-red-600 font-bold text-xl">
+        馃惀 {{ t('game.lottery.activation.fail') }}
+      </div>
+
+      <p class="text-sm text-gray-600">
+        {{ message }}
       </p>
-    </section>
+
+      <p class="text-xs text-gray-500 mt-2">
+        {{ countdown }} {{ t('game.lottery.activation.autoReturnIn') }}
+      </p>
+
+      <router-link to="/games/prize">
+        <div class="inline-block mt-4 px-4 py-2 bg-orange-300
+             text-orange-800 rounded-lg hover:bg-orange-400">
+          {{ t('game.lottery.activation.returnNow') }}
+        </div>
+      </router-link>
+
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-const { locale } = useI18n()
-const isZh = computed(() => locale.value === 'zh-CN')
+import { ref, onMounted, onUnmounted } from 'vue'
+import { i18n } from '@/main'
 
-useSeoMeta({
-  title: () => isZh.value ? 'GoFurry 抽奖确认' : 'GoFurry Prize Activation',
-  description: () => isZh.value ? 'GoFurry 抽奖确认入口。' : 'GoFurry prize activation entry.'
+const { t } = i18n.global
+
+const route = useRoute()
+const router = useRouter()
+
+const status = route.query.status as string
+const message = (route.query.msg as string) || ''
+
+const countdown = ref(15)
+let timer: number | null = null
+
+onMounted(() => {
+  timer = window.setInterval(() => {
+    countdown.value -= 1
+    if (countdown.value <= 0) {
+      router.push('/games/prize')
+    }
+  }, 1000)
+})
+
+onUnmounted(() => {
+  if (timer) clearInterval(timer)
 })
 </script>

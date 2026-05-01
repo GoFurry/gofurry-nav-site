@@ -1,40 +1,87 @@
 <template>
-  <div class="page-shell content-grid">
-    <section class="mx-auto w-full max-w-5xl px-4 py-10 sm:px-6">
-      <p class="text-sm font-semibold uppercase tracking-[0.24em] text-orange-700">Game News</p>
-      <h1 class="mt-3 text-4xl font-semibold text-slate-950">{{ isZh ? '更多游戏更新' : 'More Game News' }}</h1>
+  <div
+      class="flex flex-col w-full min-h-full bg-[#f2e3d0]"
+      :style="{
+        backgroundImage: `url(${bgGrid})`,
+        backgroundRepeat: 'repeat'
+      }"
+  >
+    <div class="p-6 space-y-6">
+      <MoreLatestNewsList
+          :list="pageList"
+      />
 
-      <ErrorState v-if="error" class="mt-8" :title="isZh ? '加载新闻失败' : 'Failed to load news'" :description="String(error.message || error)" />
-      <LoadingState v-else-if="pending" :label="isZh ? '正在加载新闻...' : 'Loading news...'" />
-      <div v-else class="mt-8 space-y-4">
-        <a v-for="news in list" :key="news.id" :href="news.url" target="_blank" rel="noopener noreferrer" class="block rounded-lg border border-orange-200 bg-white/90 p-5 transition hover:border-orange-400">
-          <h2 class="text-xl font-semibold text-slate-950">{{ news.headline }}</h2>
-          <p class="mt-2 text-sm text-slate-500">{{ news.name }} · {{ news.author }} · {{ displayDate(news.post_time) }}</p>
-          <p class="mt-3 line-clamp-3 text-sm leading-7 text-slate-700">{{ stripHtml(news.content) }}</p>
-        </a>
-        <EmptyState v-if="list.length === 0" :title="isZh ? '暂无新闻' : 'No news yet'" />
-      </div>
-    </section>
+      <FixedPagination
+          :current-page="currentPage"
+          :total="total"
+          @page-change="onPageChange"
+      />
+
+      <NewsSearchBall
+          :news-list="list"
+          @select="goNewsDetail"
+      />
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { getMoreLatestGameNews } from '~/services/game'
-import { displayDate, stripHtml } from '~/utils/format'
+import { ref, computed, watch, onMounted } from 'vue'
+import { useLangStore } from '@/store/langStore'
+import { getMoreLatestGameNews } from '@/utils/api/game'
+import type { NewsBaseModel } from '@/types/game'
 
-const { locale } = useI18n()
-const isZh = computed(() => locale.value === 'zh-CN')
-const lang = computed(() => locale.value === 'zh-CN' ? 'zh' : 'en')
+import MoreLatestNewsList from '@/components/game/news/MoreLatestNewsList.vue'
+import FixedPagination from '@/components/game/news/FixedPagination.vue'
+import bgGrid from '@/assets/pngs/bg-grid.png'
+import NewsSearchBall from "@/components/game/news/NewsSearchBall.vue";
 
-useSeoMeta({
-  title: () => isZh.value ? 'GoFurry 更多游戏更新' : 'GoFurry More Game News',
-  description: () => isZh.value ? '浏览更多 GoFurry 游戏更新与新闻。' : 'Browse more GoFurry game updates and news.'
+const langStore = useLangStore()
+
+const lang = ref(langStore.lang)
+const list = ref<NewsBaseModel[]>([])
+
+const pageSize = 20
+const totalPages = 5
+const currentPage = ref(1)
+
+const total = computed(() => list.value.length)
+
+const pageList = computed(() => {
+  const start = (currentPage.value - 1) * pageSize
+  return list.value.slice(start, start + pageSize)
 })
 
-const { data, pending, error } = await useAsyncData(
-  () => `more-game-news-${lang.value}`,
-  () => getMoreLatestGameNews(lang.value),
-  { watch: [lang] }
+const goNewsDetail = (news :NewsBaseModel) => {
+  window.open(news.url, '_blank', 'noopener')
+}
+
+const fetchData = async () => {
+  const res = await getMoreLatestGameNews(lang.value)
+
+  list.value = (res ?? [])
+      .slice(0, 100)
+      .sort((a, b) => {
+        return new Date(b.post_time).getTime()
+            - new Date(a.post_time).getTime()
+      })
+
+  currentPage.value = 1
+}
+
+const onPageChange = (page: number) => {
+  if (page >= 1 && page <= totalPages) {
+    currentPage.value = page
+  }
+}
+
+watch(
+    () => langStore.lang,
+    async (v) => {
+      lang.value = v
+      await fetchData()
+    }
 )
-const list = computed(() => data.value || [])
+
+onMounted(fetchData)
 </script>
