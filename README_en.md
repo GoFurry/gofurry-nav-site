@@ -3,10 +3,25 @@
 [中文说明](./README.md)
 
 ![License](https://img.shields.io/github/license/GoFurry/gofurry-nav-site)
+![Weekend Project](https://img.shields.io/badge/weekend-project-8B5CF6?style=flat)
+![Made with Love](https://img.shields.io/badge/made%20with-%E2%9D%A4-E11D48?style=flat&color=orange)
 
 GoFurry is an open-source multi-service repository for a furry culture discovery website. It contains the public web frontend, navigation and game APIs, data collectors, and the operations backend.
 
 The production public site has now moved to a Nuxt 4 frontend to improve SEO and first-page rendering. The older Vue frontend is kept in the repository as an archived migration reference rather than the active production entrypoint.
+
+
+
+  ░██████             ░██████████                                        
+ ░██   ░██            ░██                                                
+░██         ░███████  ░██        ░██    ░██ ░██░████ ░██░████ ░██    ░██ 
+░██  █████ ░██    ░██ ░█████████ ░██    ░██ ░███     ░███     ░██    ░██ 
+░██     ██ ░██    ░██ ░██        ░██    ░██ ░██      ░██      ░██    ░██ 
+ ░██  ░███ ░██    ░██ ░██        ░██   ░███ ░██      ░██      ░██   ░███ 
+  ░█████░█  ░███████  ░██         ░█████░██ ░██      ░██       ░█████░██ 
+                                                                     ░██ 
+                                                               ░███████
+
 
 ## Project Scope
 
