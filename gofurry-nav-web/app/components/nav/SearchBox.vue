@@ -4,7 +4,7 @@
       class="relative z-30 mt-4 flex w-full flex-col items-center"
   >
     <!-- 搜索类别 -->
-    <div class="mb-3 w-full max-w-[620px] rounded-2xl border border-white/20 bg-white/12 px-3 py-3 shadow-[0_18px_40px_rgba(15,23,42,0.12)] backdrop-blur-xl">
+    <div class="mb-3 w-full max-w-[620px] rounded-2xl border border-white/15 bg-white/5 px-3 py-2.5 backdrop-blur-lg">
       <div class="flex flex-wrap justify-center gap-2 sm:gap-3">
         <div
             v-for="item in categories"
@@ -87,7 +87,7 @@
     </div>
 
     <!-- 搜索平台 -->
-    <div class="mt-1 w-full max-w-[620px] rounded-2xl border border-white/20 bg-white/12 px-3 py-3 shadow-[0_18px_40px_rgba(15,23,42,0.12)] backdrop-blur-xl">
+    <div class="mt-1 w-full max-w-[620px] rounded-2xl border border-white/15 bg-white/5 px-3 py-2.5 backdrop-blur-lg">
       <div class="grid grid-cols-2 justify-center gap-2 md:flex md:flex-wrap md:gap-2">
         <div
             v-for="platform in platforms[selectedCategory]"
@@ -161,9 +161,9 @@ interface Platform {
 // 平台数据
 const platforms = computed<Record<string, Platform[]>>(() => ({
   [t('searchBox.platformCate.search')]: [
-    { name: t('searchBox.platformName.baidu'), type: 'baidu' },
     { name: t('searchBox.platformName.bing'), type: 'bing' },
     { name: t('searchBox.platformName.google'), type: 'google' },
+    { name: t('searchBox.platformName.baidu'), type: 'baidu' },
     { name: t('searchBox.platformName.bilibili'), type: 'bilibili', url: 'https://search.bilibili.com/all?keyword={kw}' },
     { name: t('searchBox.platformName.xiaohongshu'), type: 'site', url: 'https://www.xiaohongshu.com/search_result?keyword={kw}' },
     { name: t('searchBox.platformName.zhihu'), type: 'site', url: 'https://www.zhihu.com/search?type=content&q={kw}' },
