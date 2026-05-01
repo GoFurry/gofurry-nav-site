@@ -1,5 +1,33 @@
 <template>
-  <div class="flex h-full flex-col">
+  <div v-if="compact" class="flex items-center gap-2 overflow-hidden">
+    <a
+        v-for="item in compactSites"
+        :key="item.id"
+        :href="toExternalUrl(item.url)"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="group flex h-8 w-8 shrink-0 items-center justify-center rounded-md transition hover:bg-white/10"
+        :title="item.name"
+        @click="handleVisit(item)"
+    >
+      <img
+          v-if="!failedIcons[item.id]"
+          :src='`https://favicon.im/${toExternalUrl(item.url)}?larger=true`'
+          :alt="item.name"
+          class="h-6 w-6 rounded-sm object-cover"
+          @error="markIconFailed(item.id)"
+          loading="lazy"
+      />
+      <div
+          v-else
+          class="flex h-6 w-6 items-center justify-center rounded-sm bg-slate-900 text-xs font-semibold text-white"
+      >
+        {{ item.name.slice(0, 1).toUpperCase() }}
+      </div>
+    </a>
+  </div>
+
+  <div v-else class="flex h-full flex-col">
     <div
         v-if="displayItems.length > itemsPerPage"
         class="mb-4 flex items-center justify-center gap-2 rounded-lg bg-slate-900/70 px-2 py-1"
@@ -141,17 +169,21 @@ type DisplayItem =
 
 const props = withDefaults(defineProps<{
   sites: SiteStripItem[]
-  emptyTitle: string
-  emptyDescription: string
+  emptyTitle?: string
+  emptyDescription?: string
   editable?: boolean
   reorderable?: boolean
   showAddTile?: boolean
   addTitle?: string
+  compact?: boolean
+  maxItems?: number
 }>(), {
   editable: false,
   reorderable: false,
   showAddTile: false,
   addTitle: '',
+  compact: false,
+  maxItems: 8,
 })
 
 const emit = defineEmits<{
@@ -181,6 +213,8 @@ const displayItems = computed<DisplayItem[]>(() => {
   }
   return items
 })
+
+const compactSites = computed(() => props.sites.slice(0, props.maxItems))
 
 const totalPages = computed(() =>
     Math.max(1, Math.ceil(displayItems.value.length / itemsPerPage.value))

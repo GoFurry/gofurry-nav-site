@@ -1,12 +1,12 @@
 <template>
   <header
-      class="sticky top-0 z-[70] w-full border-b border-white/10 bg-[rgba(18,24,37,0.92)] text-gray-100 shadow-lg backdrop-blur-xl transition-all duration-300"
+      class="relative z-[70] w-full border-b border-white/10 bg-[rgba(18,24,37,0.92)] text-gray-100 shadow-lg backdrop-blur-xl transition-all duration-300"
       :class="isNavCollapsed ? 'cursor-pointer shadow-md' : 'shadow-lg'"
       @click="handleHeaderClick"
   >
     <div
         class="mx-auto flex w-full max-w-[1700px] items-center gap-3 px-4 transition-all duration-300 sm:px-6"
-        :class="isNavCollapsed ? 'min-h-14 py-1' : 'min-h-16 py-2'"
+        :class="isNavCollapsed ? 'min-h-10 py-1' : 'min-h-14 py-2'"
     >
       <NuxtLink
           to="/nav"
@@ -81,12 +81,12 @@
       <button
           v-if="isNavCollapsed"
           type="button"
-          class="ml-auto inline-flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/8 text-white transition hover:bg-white/14"
+          class="ml-auto inline-flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/8 text-white transition hover:bg-white/14"
           :title="t('navbar.expandNav')"
           :aria-label="t('navbar.expandNav')"
           @click.stop="expandNav"
       >
-        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
         </svg>
       </button>

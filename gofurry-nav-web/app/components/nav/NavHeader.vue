@@ -11,8 +11,18 @@
       <SearchBox />
     </div>
 
-    <div class="relative z-10 w-full h-150 pt-10 hidden md:block">
-      <CustomSitesPanel />
+    <div
+        v-if="recentSites.length"
+        class="relative z-10 hidden w-full flex-col items-center gap-3 pt-10 md:flex"
+    >
+      <p class="text-xs font-medium uppercase tracking-[0.28em] text-white/70">
+        {{ t('customSites.recentTitle') }}
+      </p>
+      <SiteIconStrip
+          :sites="recentSites"
+          compact
+          :max-items="8"
+      />
     </div>
 
     <div class="pointer-events-none absolute bottom-6 left-1/2 z-10 hidden -translate-x-1/2 items-center gap-2 text-white/85 md:flex md:flex-col">
@@ -30,8 +40,9 @@
 import { onMounted, onUnmounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import SearchBox from './SearchBox.vue'
-import CustomSitesPanel from './CustomSitesPanel.vue'
+import SiteIconStrip from './SiteIconStrip.vue'
 import { getImageUrl } from '@/utils/api/nav'
+import { loadRecentSites, RECENT_SITES_EVENT, type RecentSiteItem } from '@/utils/recentSites'
 import {
   CUSTOM_NAV_HEADER_BG_EVENT,
   loadRandomCustomNavHeaderBackground,
@@ -39,6 +50,7 @@ import {
 
 const { t } = useI18n()
 const bgImage = ref<string | null>(null)
+const recentSites = ref<RecentSiteItem[]>([])
 
 let fallbackBackgroundUpdater: (() => void) | null = null
 let customBgObjectUrl: string | null = null
@@ -79,6 +91,18 @@ function handleResize() {
   fallbackBackgroundUpdater?.()
 }
 
+function syncRecentSites() {
+  if (!import.meta.client) {
+    return
+  }
+
+  recentSites.value = loadRecentSites().slice(0, 8)
+}
+
+function handleRecentSitesChange() {
+  syncRecentSites()
+}
+
 onMounted(async () => {
   try {
     const [resizedUrl, normalUrl] = await Promise.all([
@@ -91,8 +115,11 @@ onMounted(async () => {
     }
 
     await applyBackground()
+    syncRecentSites()
     window.addEventListener('resize', handleResize)
     window.addEventListener(CUSTOM_NAV_HEADER_BG_EVENT, handleCustomBackgroundChange)
+    window.addEventListener(RECENT_SITES_EVENT, handleRecentSitesChange)
+    window.addEventListener('storage', handleRecentSitesChange)
   } catch (err) {
     console.error('Get background image URL err:', err)
   }
@@ -101,6 +128,8 @@ onMounted(async () => {
 onUnmounted(() => {
   window.removeEventListener('resize', handleResize)
   window.removeEventListener(CUSTOM_NAV_HEADER_BG_EVENT, handleCustomBackgroundChange)
+  window.removeEventListener(RECENT_SITES_EVENT, handleRecentSitesChange)
+  window.removeEventListener('storage', handleRecentSitesChange)
   revokeCustomBackgroundUrl()
 })
 </script>

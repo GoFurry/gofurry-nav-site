@@ -37,18 +37,6 @@
             />
           </label>
 
-          <label for="show-custom-sites" class="flex cursor-pointer items-center justify-between gap-3 rounded-lg border border-white/10 bg-white/5 px-4 py-3 transition hover:bg-white/10">
-            <span class="text-sm text-gray-200">
-              {{ t("navbar.showCustomSites") }}
-            </span>
-            <input
-                id="show-custom-sites"
-                v-model="showCustomSitesLocal"
-                type="checkbox"
-                class="h-4 w-4 rounded border-white/20 bg-white/10 text-orange-300"
-            />
-          </label>
-
           <div class="rounded-lg border border-white/10 bg-white/5 px-4 py-4">
             <div class="space-y-2">
               <div class="flex items-start justify-between gap-3">
@@ -96,36 +84,6 @@
             </div>
           </div>
 
-          <div class="space-y-2">
-            <label for="custom-panel-height" class="block text-sm text-gray-200">
-              {{ t("navbar.customPanelHeight") }}
-            </label>
-            <input
-                id="custom-panel-height"
-                v-model="customPanelHeightLocal"
-                class="w-full rounded-lg border border-white/10 bg-white/8 px-4 py-3 text-sm text-gray-100 placeholder:text-gray-400 focus:outline-none"
-                :placeholder="t('navbar.customPanelHeightPlaceholder')"
-            />
-            <p class="text-xs leading-5 text-gray-400">
-              {{ t("navbar.customPanelHeightDesc") }}
-            </p>
-          </div>
-
-          <div class="space-y-2">
-            <label for="custom-panel-code" class="block text-sm text-gray-200">
-              {{ t("navbar.customPanelCode") }}
-            </label>
-            <textarea
-                id="custom-panel-code"
-                v-model="customPanelCodeLocal"
-                rows="3"
-                class="w-full rounded-lg border border-white/10 bg-white/8 px-4 py-3 text-sm text-gray-100 placeholder:text-gray-400 focus:outline-none"
-                :placeholder="t('navbar.customPanelCodePlaceholder')"
-            ></textarea>
-            <p class="text-xs leading-5 text-gray-400">
-              {{ t("navbar.customPanelCodeDesc") }}
-            </p>
-          </div>
         </div>
 
         <div class="mt-5 flex shrink-0 justify-end gap-3 border-t border-white/10 pt-4">
@@ -151,12 +109,6 @@
 import { onMounted, ref, watch } from 'vue'
 import { i18n } from '@/main'
 import {
-  loadCustomPanelCode,
-  loadCustomPanelHeight,
-  saveCustomPanelCode,
-  saveCustomPanelHeight,
-} from '@/utils/customPanel'
-import {
   clearCustomNavHeaderBackgroundDirectory,
   type CustomNavHeaderBackgroundSelection,
   loadCustomNavHeaderBackgroundMeta,
@@ -179,9 +131,6 @@ const emit = defineEmits<{
 
 const localMode = ref('')
 const showBubbleLocal = ref(true)
-const showCustomSitesLocal = ref(true)
-const customPanelCodeLocal = ref('')
-const customPanelHeightLocal = ref('320')
 const supportsCustomBgPicker = supportsCustomNavHeaderBackground()
 const customBgFolderNameLocal = ref('')
 
@@ -207,8 +156,6 @@ watch(
     () => props.show,
     visible => {
       if (visible) {
-        customPanelCodeLocal.value = loadCustomPanelCode()
-        customPanelHeightLocal.value = String(loadCustomPanelHeight())
         syncCustomBgState()
       }
     }
@@ -216,11 +163,7 @@ watch(
 
 onMounted(() => {
   const savedBubble = localStorage.getItem('showBubble')
-  const savedCustomSites = localStorage.getItem('showCustomSites')
   showBubbleLocal.value = savedBubble !== 'false'
-  showCustomSitesLocal.value = savedCustomSites !== 'false'
-  customPanelCodeLocal.value = loadCustomPanelCode()
-  customPanelHeightLocal.value = String(loadCustomPanelHeight())
   syncCustomBgState()
 })
 
@@ -249,21 +192,16 @@ const save = async () => {
   localMode.value = localMode.value.trim().slice(0, 32)
   emit('save', localMode.value)
   localStorage.setItem('showBubble', showBubbleLocal.value ? 'true' : 'false')
-  localStorage.setItem('showCustomSites', showCustomSitesLocal.value ? 'true' : 'false')
   window.dispatchEvent(
     new CustomEvent('show-bubble-change', {
       detail: { visible: showBubbleLocal.value },
     })
   )
-  saveCustomPanelCode(customPanelCodeLocal.value)
-  saveCustomPanelHeight(customPanelHeightLocal.value)
 
   if (shouldClearCustomBg) {
     await clearCustomNavHeaderBackgroundDirectory()
   } else if (pendingCustomBgSelection) {
     await saveCustomNavHeaderBackgroundDirectory(pendingCustomBgSelection)
   }
-
-  window.dispatchEvent(new Event('custom-sites-visibility-change'))
 }
 </script>
