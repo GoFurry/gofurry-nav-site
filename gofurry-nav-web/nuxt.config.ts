@@ -24,8 +24,8 @@ export default defineNuxtConfig({
     }
   },
   runtimeConfig: {
-    navApiInternalBase: process.env.NAV_API_INTERNAL_BASE || process.env.NUXT_NAV_API_INTERNAL_BASE || 'http://127.0.0.1:9999/api',
-    gameApiInternalBase: process.env.GAME_API_INTERNAL_BASE || process.env.NUXT_GAME_API_INTERNAL_BASE || 'http://127.0.0.1:9998/api',
+    navApiInternalBase: process.env.NAV_API_INTERNAL_BASE || process.env.NUXT_NAV_API_INTERNAL_BASE || 'http://192.168.153.1:9999/api',
+    gameApiInternalBase: process.env.GAME_API_INTERNAL_BASE || process.env.NUXT_GAME_API_INTERNAL_BASE || 'http://192.168.153.1:9998/api',
     public: {
       siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'http://localhost:3000',
       navApiBase: process.env.NUXT_PUBLIC_NAV_API_BASE || '/api',
