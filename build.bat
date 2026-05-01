@@ -16,7 +16,7 @@ if not exist "%BUILD_ROOT%" mkdir "%BUILD_ROOT%"
 if /I "%TARGET%"=="all" (
     call :build_go_service "gofurry-nav-backend" || exit /b 1
     call :build_go_service "gofurry-nav-collector" || exit /b 1
-    call :build_frontend_only "gofurry-nav-frontend" "dist" || exit /b 1
+    call :build_frontend_only "gofurry-nav-web" ".output" || exit /b 1
     call :build_go_service "gofurry-game-backend" || exit /b 1
     call :build_go_service "gofurry-game-collector" || exit /b 1
     call :build_admin || exit /b 1
@@ -26,7 +26,9 @@ if /I "%TARGET%"=="all" (
 
 if /I "%TARGET%"=="gofurry-nav-backend" goto target_gofurry_nav_backend
 if /I "%TARGET%"=="gofurry-nav-collector" goto target_gofurry_nav_collector
-if /I "%TARGET%"=="gofurry-nav-frontend" goto target_gofurry_nav_frontend
+if /I "%TARGET%"=="gofurry-nav-web" goto target_gofurry_nav_web
+if /I "%TARGET%"=="gofurry-nav-frontend" goto target_gofurry_nav_web
+if /I "%TARGET%"=="gofurry-nav-frontend-legacy" goto target_gofurry_nav_frontend_legacy
 if /I "%TARGET%"=="gofurry-game-backend" goto target_gofurry_game_backend
 if /I "%TARGET%"=="gofurry-game-collector" goto target_gofurry_game_collector
 if /I "%TARGET%"=="gofurry-admin" goto target_gofurry_admin
@@ -36,7 +38,8 @@ echo Supported targets:
 echo   all
 echo   gofurry-nav-backend
 echo   gofurry-nav-collector
-echo   gofurry-nav-frontend
+echo   gofurry-nav-web
+echo   gofurry-nav-frontend-legacy
 echo   gofurry-game-backend
 echo   gofurry-game-collector
 echo   gofurry-admin
@@ -50,8 +53,12 @@ exit /b 0
 call :build_go_service "gofurry-nav-collector" || exit /b 1
 exit /b 0
 
-:target_gofurry_nav_frontend
-call :build_frontend_only "gofurry-nav-frontend" "dist" || exit /b 1
+:target_gofurry_nav_web
+call :build_frontend_only "gofurry-nav-web" ".output" || exit /b 1
+exit /b 0
+
+:target_gofurry_nav_frontend_legacy
+call :build_frontend_only "gofurry-nav-frontend-legacy" "dist" || exit /b 1
 exit /b 0
 
 :target_gofurry_game_backend
