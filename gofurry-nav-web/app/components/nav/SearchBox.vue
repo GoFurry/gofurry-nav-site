@@ -4,16 +4,18 @@
       class="relative z-30 mt-4 flex w-full flex-col items-center"
   >
     <!-- 搜索类别 -->
-    <div class="flex sm:gap-6 gap-4 mb-2">
-      <div
-          v-for="item in categories"
-          :key="item"
-          @click="selectedCategory = item"
-          :class="['cursor-pointer px-3 py-1 rounded text-sm transition-all duration-200', selectedCategory === item
-            ? 'bg-orange-400 text-white shadow-orange-400/30'
-            : 'bg-gray-200/60 text-gray-700 hover:bg-gray-200 hover:shadow-md']"
-      >
-        {{ item }}
+    <div class="mb-3 w-full max-w-[620px] rounded-2xl border border-white/20 bg-white/12 px-3 py-3 shadow-[0_18px_40px_rgba(15,23,42,0.12)] backdrop-blur-xl">
+      <div class="flex flex-wrap justify-center gap-2 sm:gap-3">
+        <div
+            v-for="item in categories"
+            :key="item"
+            @click="selectedCategory = item"
+            :class="['cursor-pointer rounded-xl border px-3 py-1.5 text-sm transition-all duration-200', selectedCategory === item
+              ? 'border-orange-300/60 bg-orange-400 text-white shadow-[0_10px_24px_rgba(251,146,60,0.28)]'
+              : 'border-white/15 bg-white/10 text-gray-100 hover:border-white/25 hover:bg-white/16']"
+        >
+          {{ item }}
+        </div>
       </div>
     </div>
 
@@ -85,21 +87,21 @@
     </div>
 
     <!-- 搜索平台 -->
-    <div
-        class="mt-2 w-full max-w-[400px] md:max-w-[600px] grid grid-cols-2 md:flex flex-wrap gap-2 justify-center"
-    >
-      <div
-          v-for="platform in platforms[selectedCategory]"
-          :key="platform.name"
-          @click="selectedPlatform = platform"
-          :class="[
-      'cursor-pointer px-2 py-1 rounded text-center text-xs whitespace-nowrap transition-all duration-200',
-      selectedPlatform.name === platform.name
-        ? 'bg-orange-400 text-white shadow-sm shadow-orange-400/30'
-        : 'bg-gray-200/60 text-gray-700 hover:bg-gray-200 hover:shadow-sm'
-    ]"
-      >
-        {{ platform.name }}
+    <div class="mt-1 w-full max-w-[620px] rounded-2xl border border-white/20 bg-white/12 px-3 py-3 shadow-[0_18px_40px_rgba(15,23,42,0.12)] backdrop-blur-xl">
+      <div class="grid grid-cols-2 justify-center gap-2 md:flex md:flex-wrap md:gap-2">
+        <div
+            v-for="platform in platforms[selectedCategory]"
+            :key="platform.name"
+            @click="selectedPlatform = platform"
+            :class="[
+        'cursor-pointer rounded-xl border px-2.5 py-1.5 text-center text-xs whitespace-nowrap transition-all duration-200',
+        selectedPlatform.name === platform.name
+          ? 'border-orange-300/60 bg-orange-400 text-white shadow-[0_10px_24px_rgba(251,146,60,0.28)]'
+          : 'border-white/15 bg-white/10 text-gray-100 hover:border-white/25 hover:bg-white/16'
+      ]"
+        >
+          {{ platform.name }}
+        </div>
       </div>
     </div>
   </div>
