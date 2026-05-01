@@ -4,15 +4,15 @@
       class="relative z-30 mt-4 flex w-full flex-col items-center"
   >
     <!-- 搜索类别 -->
-    <div class="mb-3 w-full max-w-[620px] rounded-2xl border border-white/15 bg-white/5 px-3 py-2.5 backdrop-blur-lg">
+    <div class="mb-3 w-full max-w-[620px] rounded-2xl px-3 py-2.5">
       <div class="flex flex-wrap justify-center gap-2 sm:gap-3">
         <div
             v-for="item in categories"
             :key="item"
             @click="selectedCategory = item"
-            :class="['cursor-pointer rounded-xl border px-3 py-1.5 text-sm transition-all duration-200', selectedCategory === item
-              ? 'border-orange-300/60 bg-orange-400 text-white shadow-[0_10px_24px_rgba(251,146,60,0.28)]'
-              : 'border-white/15 bg-white/10 text-gray-100 hover:border-white/25 hover:bg-white/16']"
+            :class="['cursor-pointer rounded-lg px-3 py-1.5 text-sm transition-all duration-500 backdrop-blur-lg border-2 border-slate-400/30', selectedCategory === item
+              ? 'bg-slate-900/80 text-gray-100 border-white/40'
+              : 'bg-slate-900/60 text-gray-100 hover:bg-slate-900/80']"
         >
           {{ item }}
         </div>
@@ -32,7 +32,7 @@
           @focus="handleInputFocus"
           @blur="handleInputBlur"
           placeholder="搜索站点或内容..."
-          class="w-full h-12 px-4 pr-10 rounded-lg ring-2 ring-black/60 bg-gray-300/60 focus:outline-none focus:ring-3 focus:ring-black/75 duration-300"
+          class="w-full h-12 px-4 pr-10 rounded-lg bg-slate-50/30 ring-2 ring-slate-900/60 backdrop-blur-sm focus:outline-none focus:ring-3 focus:ring-slate-900/80 duration-500"
       />
       <img src="@/assets/svgs/search.svg"
            alt="search"
@@ -46,21 +46,21 @@
           ref="dropdownRef"
           v-if="(keyword.trim() && dropdownVisible) || isLoading"
           :style="{ width: inputWidth + 'px', left: inputLeft + 'px', top: inputTop + 'px' }"
-          class="fixed z-[999] max-h-60 overflow-y-auto overscroll-contain rounded-xl border border-gray-100 bg-white
-            shadow-xl shadow-gray-100/80 transition-all duration-200 origin-top-left
+          class="fixed z-[999] max-h-60 overflow-y-auto overscroll-contain rounded-2xl border border-white/12 bg-slate-950/72
+            backdrop-blur-2xl shadow-2xl shadow-slate-950/35 ring-1 ring-white/8 transition-all duration-200 origin-top-left
             animate-fadeIn"
           @wheel.stop
           @touchmove.stop
       >
         <!-- 标题 -->
-        <li class="px-4 py-2 text-xs text-gray-500 bg-gray-50 border-b border-gray-100">
+        <li class="border-b border-white/10 bg-white/5 px-4 py-2 text-xs text-slate-300/90">
           <template v-if="isLoading">{{ t('common.loading') }}</template>
           <template v-else>{{ t('searchBox.searchSuggest') }} ({{ suggestions.length }})</template>
         </li>
 
         <!-- 加载状态 -->
-        <li v-if="isLoading" class="px-4 py-6 text-center text-gray-500">
-          <div class="inline-block w-5 h-5 border-2 border-orange-400 border-t-transparent rounded-full animate-spin"></div>
+        <li v-if="isLoading" class="px-4 py-6 text-center text-slate-300/80">
+          <div class="inline-block h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-cyan-300"></div>
         </li>
 
         <!-- 建议项 -->
@@ -71,33 +71,32 @@
               @click="selectSuggestion(index)"
               @mouseenter="hoveredIndex = index"
               @mouseleave="hoveredIndex = -1"
-              class="px-4 py-3 hover:bg-orange-50 cursor-pointer transition-colors duration-150
-                text-gray-800 hover:text-orange-500 font-medium"
-              :class="hoveredIndex === index ? 'bg-orange-50 text-orange-500' : ''"
+              class="cursor-pointer px-4 py-3 text-sm font-medium text-slate-100/90 transition-colors duration-150 hover:bg-white/8 hover:text-white"
+              :class="hoveredIndex === index ? 'bg-white/10 text-white' : ''"
           >
             <!-- 关键词高亮 -->
             <span v-html="highlightKeyword(item)"></span>
           </li>
         </template>
 
-        <li v-else-if="keyword.trim()" class="px-4 py-3 text-gray-500 text-center">
+        <li v-else-if="keyword.trim()" class="px-4 py-3 text-center text-slate-300/75">
           {{ t('searchBox.noSuggest') }}
         </li>
       </ul>
     </div>
 
     <!-- 搜索平台 -->
-    <div class="mt-1 w-full max-w-[620px] rounded-2xl border border-white/15 bg-white/5 px-3 py-2.5 backdrop-blur-lg">
+    <div class="mt-1 w-full max-w-[620px] px-3 py-2.5">
       <div class="grid grid-cols-2 justify-center gap-2 md:flex md:flex-wrap md:gap-2">
         <div
             v-for="platform in platforms[selectedCategory]"
             :key="platform.name"
             @click="selectedPlatform = platform"
             :class="[
-        'cursor-pointer rounded-xl border px-2.5 py-1.5 text-center text-xs whitespace-nowrap transition-all duration-200',
+        'cursor-pointer rounded-lg px-2.5 py-1.5 text-center text-xs whitespace-nowrap transition-all duration-500 backdrop-blur-lg border-1 border-slate-400/30',
         selectedPlatform.name === platform.name
-          ? 'border-orange-300/60 bg-orange-400 text-white shadow-[0_10px_24px_rgba(251,146,60,0.28)]'
-          : 'border-white/15 bg-white/10 text-gray-100 hover:border-white/25 hover:bg-white/16'
+          ? 'bg-slate-900/80 text-gray-100 border-white/40'
+          : 'bg-slate-900/60 text-gray-100 hover:bg-slate-900/80'
       ]"
         >
           {{ platform.name }}
@@ -213,7 +212,7 @@ const updateInputPosition = () => {
       const rect = inputRef.value.getBoundingClientRect()
       inputWidth.value = rect.width
       inputLeft.value = rect.left
-      inputTop.value = rect.bottom + 4
+      inputTop.value = rect.bottom + 8
     }
   })
 }

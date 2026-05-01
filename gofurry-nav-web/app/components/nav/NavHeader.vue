@@ -7,13 +7,13 @@
         class="absolute inset-0 bg-cover bg-center transition-all duration-700"
         :style="{ backgroundImage: `url(${bgImage})` }"
     ></div>
-    <div class="relative z-30 flex w-full justify-center md:absolute md:left-1/2 md:top-[18vh] md:w-full md:max-w-[56rem] md:-translate-x-1/2">
+    <div class="relative z-30 flex w-full justify-center md:absolute md:left-1/2 md:top-[12vh] md:w-full md:max-w-[56rem] md:-translate-x-1/2">
       <SearchBox />
     </div>
 
     <div
         v-if="recentSites.length"
-        class="relative z-10 hidden w-full justify-center md:absolute md:left-1/2 md:top-[34vh] md:flex md:w-full md:max-w-[56rem] md:-translate-x-1/2"
+        class="relative z-10 hidden w-full justify-center md:absolute md:left-1/2 md:top-[30vh] md:flex md:w-full md:max-w-[56rem] md:-translate-x-1/2"
     >
       <SiteIconStrip :sites="recentSites" compact :max-items="8" />
     </div>
