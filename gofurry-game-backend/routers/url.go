@@ -6,7 +6,7 @@ import (
 	recommend "github.com/GoFurry/gofurry-game-backend/apps/recommend/controller"
 	review "github.com/GoFurry/gofurry-game-backend/apps/review/controller"
 	search "github.com/GoFurry/gofurry-game-backend/apps/search/controller"
-	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v3"
 )
 
 /*

@@ -28,7 +28,7 @@ import (
 	cm "github.com/GoFurry/gofurry-game-backend/common/models"
 	"github.com/GoFurry/gofurry-game-backend/roof/env"
 	"github.com/bwmarrin/snowflake"
-	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v3"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/pkg/errors"
 )
@@ -362,7 +362,7 @@ func DesensitizeIP(ip string) string {
 }
 
 // 获取客户端真实 IP
-func GetClientIP(c *fiber.Ctx) string {
+func GetClientIP(c fiber.Ctx) string {
 	// 先尝试 X-Forwarded-For
 	xff := c.Get("X-Forwarded-For")
 	if xff != "" {

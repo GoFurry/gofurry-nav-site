@@ -12,7 +12,7 @@ import (
 	cs "github.com/GoFurry/gofurry-nav-backend/common/service"
 	"github.com/GoFurry/gofurry-nav-backend/roof/env"
 	"github.com/bytedance/sonic"
-	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v3"
 	"github.com/oschwald/geoip2-golang"
 )
 
@@ -132,7 +132,7 @@ func queryBaiduIP(ip string) (country, province, city, isp string) {
 }
 
 // 获取客户端真实 IP
-func getClientIP(c *fiber.Ctx) string {
+func getClientIP(c fiber.Ctx) string {
 	// 先尝试 X-Forwarded-For
 	xff := c.Get("X-Forwarded-For")
 	if xff != "" {
@@ -158,7 +158,7 @@ func getClientIP(c *fiber.Ctx) string {
 }
 
 // 中间件入口
-func GeoIPStat(c *fiber.Ctx) error {
+func GeoIPStat(c fiber.Ctx) error {
 	ip := getClientIP(c)
 	if ip == "" {
 		// 无法获取公网 IP 不计数

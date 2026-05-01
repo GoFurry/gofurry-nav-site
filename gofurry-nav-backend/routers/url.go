@@ -5,7 +5,7 @@ import (
 	site "github.com/GoFurry/gofurry-nav-backend/apps/nav/sitePage/controller"
 	siteCommon "github.com/GoFurry/gofurry-nav-backend/apps/system/site/controller"
 	stat "github.com/GoFurry/gofurry-nav-backend/apps/system/stat/controller"
-	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v3"
 )
 
 /*

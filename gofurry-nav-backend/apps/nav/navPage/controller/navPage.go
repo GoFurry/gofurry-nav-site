@@ -3,7 +3,7 @@ package controller
 import (
 	"github.com/GoFurry/gofurry-nav-backend/apps/nav/navPage/service"
 	"github.com/GoFurry/gofurry-nav-backend/common"
-	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v3"
 )
 
 type navPageApi struct{}
@@ -23,7 +23,7 @@ func init() {
 // @Param lang query string true "语言"
 // @Success 200 {object} []models.SiteVo
 // @Router /api/nav/page/site/list [Get]
-func (api *navPageApi) GetSiteList(c *fiber.Ctx) error {
+func (api *navPageApi) GetSiteList(c fiber.Ctx) error {
 	lang := c.Query("lang", "zh")
 	data, err := service.GetNavPageService().GetSiteList(lang)
 	if err != nil {
@@ -42,7 +42,7 @@ func (api *navPageApi) GetSiteList(c *fiber.Ctx) error {
 // @Param lang query string true "语言"
 // @Success 200 {object} []models.GroupVo
 // @Router /api/nav/page/group/list [Get]
-func (api *navPageApi) GetGroupList(c *fiber.Ctx) error {
+func (api *navPageApi) GetGroupList(c fiber.Ctx) error {
 	lang := c.Query("lang", "zh")
 	data, err := service.GetNavPageService().GetGroupList(lang)
 	if err != nil {
@@ -60,7 +60,7 @@ func (api *navPageApi) GetGroupList(c *fiber.Ctx) error {
 // @Produce json
 // @Success 200 {object} map[string]string
 // @Router /api/nav/page/ping/list [Get]
-func (api *navPageApi) GetPingList(c *fiber.Ctx) error {
+func (api *navPageApi) GetPingList(c fiber.Ctx) error {
 	data, err := service.GetNavPageService().GetPingList()
 	if err != nil {
 		return common.NewResponse(c).Error(err.GetMsg())
@@ -78,7 +78,7 @@ func (api *navPageApi) GetPingList(c *fiber.Ctx) error {
 // @Param q query string true "查询"
 // @Success 200 {object} []string
 // @Router /api/nav/page/search/baidu [Get]
-func (api *navPageApi) GetBaiduSearchSuggestion(c *fiber.Ctx) error {
+func (api *navPageApi) GetBaiduSearchSuggestion(c fiber.Ctx) error {
 	q := c.Query("q")
 	data, err := service.GetNavPageService().GetBaiduSuggestion(q)
 	if err != nil {
@@ -97,7 +97,7 @@ func (api *navPageApi) GetBaiduSearchSuggestion(c *fiber.Ctx) error {
 // @Param q query string true "查询"
 // @Success 200 {object} []string
 // @Router /api/nav/page/search/bing [Get]
-func (api *navPageApi) GetBingSearchSuggestion(c *fiber.Ctx) error {
+func (api *navPageApi) GetBingSearchSuggestion(c fiber.Ctx) error {
 	q := c.Query("q")
 	data, err := service.GetNavPageService().GetBingSuggestion(q)
 	if err != nil {
@@ -116,7 +116,7 @@ func (api *navPageApi) GetBingSearchSuggestion(c *fiber.Ctx) error {
 // @Param q query string true "查询"
 // @Success 200 {object} []string
 // @Router /api/nav/page/search/google [Get]
-func (api *navPageApi) GetGoogleSearchSuggestion(c *fiber.Ctx) error {
+func (api *navPageApi) GetGoogleSearchSuggestion(c fiber.Ctx) error {
 	q := c.Query("q")
 	data, err := service.GetNavPageService().GetGoogleSuggestion(q)
 	if err != nil {
@@ -135,7 +135,7 @@ func (api *navPageApi) GetGoogleSearchSuggestion(c *fiber.Ctx) error {
 // @Param q query string true "查询"
 // @Success 200 {object} []string
 // @Router /api/nav/page/search/bilibili [Get]
-func (api *navPageApi) GetBiliBiliSearchSuggestion(c *fiber.Ctx) error {
+func (api *navPageApi) GetBiliBiliSearchSuggestion(c fiber.Ctx) error {
 	q := c.Query("q")
 	data, err := service.GetNavPageService().GetBiliBiliSuggestion(q)
 	if err != nil {
@@ -153,7 +153,7 @@ func (api *navPageApi) GetBiliBiliSearchSuggestion(c *fiber.Ctx) error {
 // @Produce json
 // @Success 200 {object} string
 // @Router /api/nav/page/header/getSaying [Get]
-func (api *navPageApi) GetSaying(c *fiber.Ctx) error {
+func (api *navPageApi) GetSaying(c fiber.Ctx) error {
 	saying, err := service.GetNavPageService().GetSayingService()
 	if err != nil {
 		return common.NewResponse(c).Error(err)
@@ -170,6 +170,6 @@ func (api *navPageApi) GetSaying(c *fiber.Ctx) error {
 // @Param type query string true "图片类型"
 // @Success 200 {object} string
 // @Router /api/nav/page/header/image/url [Get]
-func (api *navPageApi) GetImageUrl(c *fiber.Ctx) error {
+func (api *navPageApi) GetImageUrl(c fiber.Ctx) error {
 	return common.NewResponse(c).SuccessWithData(service.GetNavPageService().GetImageUrl(c.Query("type", "normal")))
 }

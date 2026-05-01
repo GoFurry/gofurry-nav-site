@@ -3,7 +3,7 @@ package controller
 import (
 	"github.com/GoFurry/gofurry-game-backend/apps/game/service"
 	"github.com/GoFurry/gofurry-game-backend/common"
-	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v3"
 )
 
 type gameApi struct{}
@@ -24,7 +24,7 @@ func init() {
 // @Param lang query string true "语言"
 // @Success 200 {object} []models.GameRespVo
 // @Router /api/game/info/list [Get]
-func (api *gameApi) GetGameList(c *fiber.Ctx) error {
+func (api *gameApi) GetGameList(c fiber.Ctx) error {
 	num := c.Query("num", "100")
 	lang := c.Query("lang", "zh")
 	data, err := service.GetGameService().GetGameList(num, lang)
@@ -43,7 +43,7 @@ func (api *gameApi) GetGameList(c *fiber.Ctx) error {
 // @Produce json
 // @Success 200 {object} models.GameMainInfoVo
 // @Router /api/game/info/main [Get]
-func (api *gameApi) GetGameMainList(c *fiber.Ctx) error {
+func (api *gameApi) GetGameMainList(c fiber.Ctx) error {
 	data, err := service.GetGameService().GetGameMainList()
 	if err != nil {
 		return common.NewResponse(c).Error(err.GetMsg())
@@ -60,7 +60,7 @@ func (api *gameApi) GetGameMainList(c *fiber.Ctx) error {
 // @Produce json
 // @Success 200 {object} models.GameMainPanelVo
 // @Router /api/game/panel/main [Get]
-func (api *gameApi) GetPanelMainList(c *fiber.Ctx) error {
+func (api *gameApi) GetPanelMainList(c fiber.Ctx) error {
 	data, err := service.GetGameService().GetPanelMainList()
 	if err != nil {
 		return common.NewResponse(c).Error(err.GetMsg())
@@ -77,7 +77,7 @@ func (api *gameApi) GetPanelMainList(c *fiber.Ctx) error {
 // @Produce json
 // @Success 200 {object} models.UpdateNewsVo
 // @Router /api/game/update/latest [Get]
-func (api *gameApi) GetUpdateNews(c *fiber.Ctx) error {
+func (api *gameApi) GetUpdateNews(c fiber.Ctx) error {
 	data, err := service.GetGameService().GetUpdateNews()
 	if err != nil {
 		return common.NewResponse(c).Error(err.GetMsg())
@@ -95,7 +95,7 @@ func (api *gameApi) GetUpdateNews(c *fiber.Ctx) error {
 // @Param lang query string true "语言"
 // @Success 200 {object} []models.TagModelVo
 // @Router /api/game/tag/list [Get]
-func (api *gameApi) GetTagList(c *fiber.Ctx) error {
+func (api *gameApi) GetTagList(c fiber.Ctx) error {
 	lang := c.Query("lang", "zh")
 	data, err := service.GetGameService().GetTagList(lang)
 	if err != nil {
@@ -115,7 +115,7 @@ func (api *gameApi) GetTagList(c *fiber.Ctx) error {
 // @Param lang query string true "语言"
 // @Success 200 {object} []models.GameBaseInfoVo
 // @Router /api/game/info [Get]
-func (api *gameApi) GetGameInfo(c *fiber.Ctx) error {
+func (api *gameApi) GetGameInfo(c fiber.Ctx) error {
 	num := c.Query("id", "0")
 	lang := c.Query("lang", "zh")
 	data, err := service.GetGameService().GetGameInfo(num, lang)
@@ -135,7 +135,7 @@ func (api *gameApi) GetGameInfo(c *fiber.Ctx) error {
 // @Param id query string true "游戏id"
 // @Success 200 {object} []models.GameRemarkVo
 // @Router /api/game/remark [Get]
-func (api *gameApi) GetGameRemark(c *fiber.Ctx) error {
+func (api *gameApi) GetGameRemark(c fiber.Ctx) error {
 	num := c.Query("id", "0")
 	data, err := service.GetGameService().GetGameRemark(num)
 	if err != nil {
@@ -154,7 +154,7 @@ func (api *gameApi) GetGameRemark(c *fiber.Ctx) error {
 // @Param lang query string true "语言"
 // @Success 200 {object} []models.CreatorVo
 // @Router /api/game/creator [Get]
-func (api *gameApi) GetGameCreator(c *fiber.Ctx) error {
+func (api *gameApi) GetGameCreator(c fiber.Ctx) error {
 	lang := c.Query("lang", "zh")
 	data, err := service.GetGameService().GetGameCreator(lang)
 	if err != nil {
@@ -173,7 +173,7 @@ func (api *gameApi) GetGameCreator(c *fiber.Ctx) error {
 // @Param lang query string true "语言"
 // @Success 200 {object} []models.UpdateNewsModels
 // @Router /api/game/update/latest/more [Get]
-func (api *gameApi) GetUpdateNewsMore(c *fiber.Ctx) error {
+func (api *gameApi) GetUpdateNewsMore(c fiber.Ctx) error {
 	lang := c.Query("lang", "zh")
 	data, err := service.GetGameService().GetMoreUpdateNews(lang)
 	if err != nil {

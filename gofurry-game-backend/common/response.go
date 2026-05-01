@@ -1,7 +1,7 @@
 package common
 
 import (
-	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v3"
 	"net/http"
 	"reflect"
 )
@@ -14,7 +14,7 @@ import (
 
 // FiberResponse 响应结构体
 type response struct {
-	context *fiber.Ctx
+	context fiber.Ctx
 }
 
 type ResultData struct {
@@ -23,7 +23,7 @@ type ResultData struct {
 }
 
 // NewFiberResponse 创建响应实例
-func NewResponse(ctx *fiber.Ctx) *response {
+func NewResponse(ctx fiber.Ctx) *response {
 	return &response{
 		context: ctx,
 	}

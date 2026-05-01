@@ -3,7 +3,7 @@ package controller
 import (
 	"github.com/GoFurry/gofurry-nav-backend/apps/system/site/service"
 	"github.com/GoFurry/gofurry-nav-backend/common"
-	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v3"
 )
 
 type siteApi struct{}
@@ -22,7 +22,7 @@ func init() {
 // @Produce json
 // @Success 200 {object} []models.ChangeLogVo
 // @Router /api/site/changelog [Get]
-func (api *siteApi) GetSiteChangeLog(c *fiber.Ctx) error {
+func (api *siteApi) GetSiteChangeLog(c fiber.Ctx) error {
 	data, err := service.GetSiteService().GetChangeLog()
 	if err != nil {
 		return common.NewResponse(c).Error(err.GetMsg())

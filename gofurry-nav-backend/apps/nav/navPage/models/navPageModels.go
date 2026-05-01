@@ -38,6 +38,6 @@ type GroupVo struct {
 }
 
 type SayingModel struct {
-	Author    *string `json:"author"`
-	Content   string `json:"content"`
+	Author  *string `json:"author"`
+	Content string  `json:"content"`
 }

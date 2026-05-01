@@ -3,7 +3,7 @@ package controller
 import (
 	"github.com/GoFurry/gofurry-game-backend/apps/recommend/service"
 	"github.com/GoFurry/gofurry-game-backend/common"
-	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v3"
 )
 
 type recommendApi struct{}
@@ -22,7 +22,7 @@ func init() {
 // @Produce json
 // @Success 200 {object} string
 // @Router /api/recommend/game/random [Get]
-func (api *recommendApi) GetRandomGameID(c *fiber.Ctx) error {
+func (api *recommendApi) GetRandomGameID(c fiber.Ctx) error {
 	data, err := service.GetRecommendService().GetRandomGameID()
 	if err != nil {
 		return common.NewResponse(c).Error(err.GetMsg())
@@ -41,7 +41,7 @@ func (api *recommendApi) GetRandomGameID(c *fiber.Ctx) error {
 // @Param lang query string true "语言"
 // @Success 200 {object} []models.GameRecommendVo
 // @Router /api/recommend/game/CBF [Get]
-func (api *recommendApi) RecommendByCBF(c *fiber.Ctx) error {
+func (api *recommendApi) RecommendByCBF(c fiber.Ctx) error {
 	id := c.Query("id", "-1")
 	lang := c.Query("lang", "zh")
 	data, err := service.GetRecommendService().RecommendByCBF(id, lang)

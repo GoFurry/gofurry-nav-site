@@ -15,6 +15,7 @@ import (
 	"github.com/GoFurry/gofurry-game-backend/middleware"
 	"github.com/GoFurry/gofurry-game-backend/roof/env"
 	"github.com/GoFurry/gofurry-game-backend/routers"
+	"github.com/gofiber/fiber/v3"
 	"github.com/kardianos/service"
 )
 
@@ -175,7 +176,11 @@ func (gf *goFurry) run() {
 		//	fmt.Println(err)
 		//	errChan <- err
 		//}
-		if err := app.Listen(addr); err != nil {
+		if err := app.Listen(addr, fiber.ListenConfig{
+			ListenerNetwork:   env.GetServerConfig().Server.Network,
+			EnablePrefork:     env.GetServerConfig().Server.EnablePrefork,
+			EnablePrintRoutes: env.GetServerConfig().Server.Mode == "debug",
+		}); err != nil {
 			fmt.Println(err)
 			errChan <- err
 		}

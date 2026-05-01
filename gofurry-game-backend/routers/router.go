@@ -8,18 +8,19 @@ package routers
 
 import (
 	"os"
+	"strings"
 	"sync"
 	"time"
 
 	"github.com/GoFurry/gofurry-game-backend/common"
 	"github.com/GoFurry/gofurry-game-backend/middleware"
 	"github.com/GoFurry/gofurry-game-backend/roof/env"
-	"github.com/gofiber/contrib/swagger"
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/cors"
-	"github.com/gofiber/fiber/v2/middleware/limiter"
-	"github.com/gofiber/fiber/v2/middleware/pprof"
-	"github.com/gofiber/fiber/v2/middleware/recover"
+	"github.com/gofiber/contrib/v3/swagger"
+	"github.com/gofiber/fiber/v3"
+	"github.com/gofiber/fiber/v3/middleware/cors"
+	"github.com/gofiber/fiber/v3/middleware/limiter"
+	"github.com/gofiber/fiber/v3/middleware/pprof"
+	"github.com/gofiber/fiber/v3/middleware/recover"
 )
 
 var Router *router
@@ -40,18 +41,13 @@ func (router *router) Init() *fiber.App {
 	once.Do(func() {
 	})
 
-	cfg := env.GetServerConfig()
-
 	app := fiber.New(fiber.Config{
-		Network:                 cfg.Server.Network, // tcp tcp4 tcp6 三种模式
-		AppName:                 common.COMMON_PROJECT_NAME,
-		ServerHeader:            "GoFurry-Nav",
-		Prefork:                 cfg.Server.EnablePrefork,   // 多核cpu处理计算密集型任务 业务量小、IO密集型需关闭
-		EnablePrintRoutes:       cfg.Server.Mode == "debug", // 在生产环境禁用错误堆栈跟踪
-		ErrorHandler:            customErrorHandler,         // 统一错误处理
-		EnableTrustedProxyCheck: true,                       // 信任 Nginx 反向代理
-		ReadTimeout:             5 * time.Second,
-		WriteTimeout:            10 * time.Second,
+		AppName:      common.COMMON_PROJECT_NAME,
+		ServerHeader: "GoFurry-Game",
+		ErrorHandler: customErrorHandler,
+		TrustProxy:   true,
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 10 * time.Second,
 	})
 
 	// 注册全局中间件
@@ -64,7 +60,7 @@ func (router *router) Init() *fiber.App {
 	reviewApi(app.Group("/api/review"))
 	prizeApi(app.Group("/api/prize"))
 
-	app.Get("/api/swagger/doc.json", func(c *fiber.Ctx) error {
+	app.Get("/api/swagger/doc.json", func(c fiber.Ctx) error {
 		return c.SendFile("./docs/swagger.json")
 	})
 
@@ -81,11 +77,11 @@ func registerMiddlewares(app *fiber.App) {
 
 	// 跨域中间件
 	app.Use(cors.New(cors.Config{
-		AllowOrigins:     cfg.Middleware.Cors.AllowOrigins,
-		AllowMethods:     "GET,POST,PUT,DELETE,PATCH,OPTIONS",
-		AllowHeaders:     "Origin, Content-Type, Accept, Authorization, X-Requested-With",
+		AllowOrigins:     splitAndTrimCSV(cfg.Middleware.Cors.AllowOrigins),
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization", "X-Requested-With"},
 		AllowCredentials: true,
-		ExposeHeaders:    "Content-Length",
+		ExposeHeaders:    []string{"Content-Length"},
 		MaxAge:           86400, // 预检请求缓存 24 小时
 	}))
 
@@ -94,10 +90,10 @@ func registerMiddlewares(app *fiber.App) {
 		app.Use(limiter.New(limiter.Config{
 			Max:        cfg.Middleware.Limiter.MaxRequests,              // 单位时间最大请求数
 			Expiration: cfg.Middleware.Limiter.Expiration * time.Second, // 时间窗口
-			KeyGenerator: func(c *fiber.Ctx) string {
+			KeyGenerator: func(c fiber.Ctx) string {
 				return c.IP() // 按 IP 限流
 			},
-			LimitReached: func(c *fiber.Ctx) error {
+			LimitReached: func(c fiber.Ctx) error {
 				return common.NewResponse(c).ErrorWithCode("请求过于频繁, 请稍后再试", fiber.StatusTooManyRequests)
 			},
 		}))
@@ -134,7 +130,7 @@ func registerMiddlewares(app *fiber.App) {
 	app.Get("/metrics", middleware.MetricsHandler)
 
 	// IP地理位置统计 本地GeoIP + API接入 跳过/metrics
-	app.Use(func(c *fiber.Ctx) error {
+	app.Use(func(c fiber.Ctx) error {
 		if c.Path() == "/metrics" {
 			return c.Next()
 		}
@@ -143,7 +139,7 @@ func registerMiddlewares(app *fiber.App) {
 }
 
 // customErrorHandler 自定义错误处理
-func customErrorHandler(c *fiber.Ctx, err error) error {
+func customErrorHandler(c fiber.Ctx, err error) error {
 	// 获取错误状态码
 	code := fiber.StatusInternalServerError
 	if e, ok := err.(*fiber.Error); ok {
@@ -166,4 +162,20 @@ func customErrorHandler(c *fiber.Ctx, err error) error {
 		}
 		return response.ErrorWithCode(err.Error(), code)
 	}
+}
+
+func splitAndTrimCSV(value string) []string {
+	if value == "" {
+		return nil
+	}
+
+	parts := strings.Split(value, ",")
+	result := make([]string, 0, len(parts))
+	for _, part := range parts {
+		trimmed := strings.TrimSpace(part)
+		if trimmed != "" {
+			result = append(result, trimmed)
+		}
+	}
+	return result
 }

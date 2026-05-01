@@ -4,7 +4,7 @@ import (
 	"github.com/GoFurry/gofurry-game-backend/apps/search/models"
 	"github.com/GoFurry/gofurry-game-backend/apps/search/service"
 	"github.com/GoFurry/gofurry-game-backend/common"
-	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v3"
 )
 
 type searchApi struct{}
@@ -24,9 +24,9 @@ func init() {
 // @Param body body models.SearchRequest true "请求body"
 // @Success 200 {object} models.SearchGameVo
 // @Router /api/search/game/simple [POST]
-func (api *searchApi) SimpleSearch(c *fiber.Ctx) error {
+func (api *searchApi) SimpleSearch(c fiber.Ctx) error {
 	req := models.SearchRequest{}
-	if err := c.BodyParser(&req); err != nil {
+	if err := c.Bind().Body(&req); err != nil {
 		return common.NewResponse(c).Error("解析请求体失败")
 	}
 	data, err := service.GetSearchService().SimpleSearchQuery(req)
@@ -46,9 +46,9 @@ func (api *searchApi) SimpleSearch(c *fiber.Ctx) error {
 // @Param body body models.SearchPageQueryRequest true "请求body"
 // @Success 200 {object} models.PageResponse
 // @Router /api/search/game/page [POST]
-func (api *searchApi) PageSearch(c *fiber.Ctx) error {
+func (api *searchApi) PageSearch(c fiber.Ctx) error {
 	req := models.SearchPageQueryRequest{}
-	if err := c.BodyParser(&req); err != nil {
+	if err := c.Bind().Body(&req); err != nil {
 		return common.NewResponse(c).Error("解析请求体失败")
 	}
 

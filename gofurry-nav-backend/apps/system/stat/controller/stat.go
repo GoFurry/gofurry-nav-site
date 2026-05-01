@@ -3,7 +3,7 @@ package controller
 import (
 	"github.com/GoFurry/gofurry-nav-backend/apps/system/stat/service"
 	"github.com/GoFurry/gofurry-nav-backend/common"
-	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v3"
 )
 
 type statApi struct{}
@@ -22,7 +22,7 @@ func init() {
 // @Produce json
 // @Success 200 {object} models.ViewsCountVo
 // @Router /api/stat/chart/views/count [Get]
-func (api *statApi) GetViewsCount(c *fiber.Ctx) error {
+func (api *statApi) GetViewsCount(c fiber.Ctx) error {
 	data, err := service.GetStatService().ViewsCount()
 	if err != nil {
 		return common.NewResponse(c).Error(err.GetMsg())
@@ -40,7 +40,7 @@ func (api *statApi) GetViewsCount(c *fiber.Ctx) error {
 // @Param lang query string true "语言"
 // @Success 200 {object} []models.GroupCountVo
 // @Router /api/stat/chart/group/count [Get]
-func (api *statApi) GetGroupCount(c *fiber.Ctx) error {
+func (api *statApi) GetGroupCount(c fiber.Ctx) error {
 	lang := c.Query("lang", "zh")
 	data, err := service.GetStatService().GroupCount(lang)
 	if err != nil {
@@ -58,7 +58,7 @@ func (api *statApi) GetGroupCount(c *fiber.Ctx) error {
 // @Produce json
 // @Success 200 {object} models.RegionCountVo
 // @Router /api/stat/chart/views/region/country [Get]
-func (api *statApi) GetCountryCount(c *fiber.Ctx) error {
+func (api *statApi) GetCountryCount(c fiber.Ctx) error {
 	data, err := service.GetStatService().CountryCount()
 	if err != nil {
 		return common.NewResponse(c).Error(err.GetMsg())
@@ -75,7 +75,7 @@ func (api *statApi) GetCountryCount(c *fiber.Ctx) error {
 // @Produce json
 // @Success 200 {object} models.RegionCountVo
 // @Router /api/stat/chart/views/region/province [Get]
-func (api *statApi) GetProvinceCount(c *fiber.Ctx) error {
+func (api *statApi) GetProvinceCount(c fiber.Ctx) error {
 	data, err := service.GetStatService().ProvinceCount()
 	if err != nil {
 		return common.NewResponse(c).Error(err.GetMsg())
@@ -92,7 +92,7 @@ func (api *statApi) GetProvinceCount(c *fiber.Ctx) error {
 // @Produce json
 // @Success 200 {object} models.RegionCountVo
 // @Router /api/stat/chart/views/region/city [Get]
-func (api *statApi) GetCityCount(c *fiber.Ctx) error {
+func (api *statApi) GetCityCount(c fiber.Ctx) error {
 	data, err := service.GetStatService().CityCount()
 	if err != nil {
 		return common.NewResponse(c).Error(err.GetMsg())
@@ -110,7 +110,7 @@ func (api *statApi) GetCityCount(c *fiber.Ctx) error {
 // @Param lang query string true "语言"
 // @Success 200 {object} []models.SiteListVo
 // @Router /api/stat/nav/site/list [Get]
-func (api *statApi) GetSiteList(c *fiber.Ctx) error {
+func (api *statApi) GetSiteList(c fiber.Ctx) error {
 	lang := c.Query("lang", "zh")
 	data, err := service.GetStatService().SiteList(lang)
 	if err != nil {
@@ -128,7 +128,7 @@ func (api *statApi) GetSiteList(c *fiber.Ctx) error {
 // @Produce json
 // @Success 200 {object} models.SiteCommonInfoVo
 // @Router /api/stat/nav/site/common [Get]
-func (api *statApi) GetSiteCommonInfo(c *fiber.Ctx) error {
+func (api *statApi) GetSiteCommonInfo(c fiber.Ctx) error {
 	data, err := service.GetStatService().SiteCommonInfo()
 	if err != nil {
 		return common.NewResponse(c).Error(err.GetMsg())
@@ -145,7 +145,7 @@ func (api *statApi) GetSiteCommonInfo(c *fiber.Ctx) error {
 // @Produce json
 // @Success 200 {object} models.SiteCommonInfoVo
 // @Router /api/stat/nav/site/ping/list [Get]
-func (api *statApi) GetSitePingList(c *fiber.Ctx) error {
+func (api *statApi) GetSitePingList(c fiber.Ctx) error {
 	data, err := service.GetStatService().SitePingList()
 	if err != nil {
 		return common.NewResponse(c).Error(err.GetMsg())
@@ -162,7 +162,7 @@ func (api *statApi) GetSitePingList(c *fiber.Ctx) error {
 // @Produce json
 // @Success 200 {object} models.PromMetricsVo
 // @Router /api/stat/prom/metrics [Get]
-func (api *statApi) GetPromMetrics(c *fiber.Ctx) error {
+func (api *statApi) GetPromMetrics(c fiber.Ctx) error {
 	data, err := service.GetMetricsService().GetPromMetrics()
 	if err != nil {
 		return common.NewResponse(c).Error(err.GetMsg())
@@ -179,7 +179,7 @@ func (api *statApi) GetPromMetrics(c *fiber.Ctx) error {
 // @Produce json
 // @Success 200 {object} models.PromMetricsVo
 // @Router /api/stat/prom/metrics/history [Get]
-func (api *statApi) GetPromMetricsHistory(c *fiber.Ctx) error {
+func (api *statApi) GetPromMetricsHistory(c fiber.Ctx) error {
 	data, err := service.GetMetricsService().GetPromMetricsHistory()
 	if err != nil {
 		return common.NewResponse(c).Error(err.GetMsg())
@@ -196,6 +196,6 @@ func (api *statApi) GetPromMetricsHistory(c *fiber.Ctx) error {
 // @Produce json
 // @Success 200 {object} string
 // @Router /api/nav/page/header/image/url [Get]
-func (api *statApi) GetImageUrl(c *fiber.Ctx) error {
+func (api *statApi) GetImageUrl(c fiber.Ctx) error {
 	return common.NewResponse(c).SuccessWithData(service.GetMetricsService().GetImageUrl())
 }

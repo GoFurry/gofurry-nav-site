@@ -5,7 +5,7 @@ import (
 	"github.com/GoFurry/gofurry-game-backend/apps/prize/service"
 	"github.com/GoFurry/gofurry-game-backend/common"
 	"github.com/GoFurry/gofurry-game-backend/common/util"
-	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v3"
 )
 
 type prizeApi struct{}
@@ -25,9 +25,9 @@ func init() {
 // @Param body body models.PrizeParticipationRequest true "请求body"
 // @Success 200 {object} common.ResultData
 // @Router /api/prize/participation [Post]
-func (api *prizeApi) PrizeParticipation(c *fiber.Ctx) error {
+func (api *prizeApi) PrizeParticipation(c fiber.Ctx) error {
 	req := models.PrizeParticipationRequest{}
-	if err := c.BodyParser(&req); err != nil {
+	if err := c.Bind().Body(&req); err != nil {
 		return common.NewResponse(c).Error("解析请求体失败")
 	}
 	err := service.GetPrizeService().PrizeParticipation(req, c)
@@ -48,7 +48,7 @@ func (api *prizeApi) PrizeParticipation(c *fiber.Ctx) error {
 // @Param key query string true "激活令牌"
 // @Success 200 {object} common.ResultData
 // @Router /api/prize/participation/activation [Get]
-func (api *prizeApi) ActiveParticipation(c *fiber.Ctx) error {
+func (api *prizeApi) ActiveParticipation(c fiber.Ctx) error {
 	id := c.Query("id")
 	key := c.Query("key")
 	p, m, err := service.GetPrizeService().ActiveParticipation(id, key)
@@ -56,9 +56,9 @@ func (api *prizeApi) ActiveParticipation(c *fiber.Ctx) error {
 	baseURL := "https://go-furry.com/games/prize/activation"
 	msg := "尊敬的 [" + m.Name + "-" + util.MaskEmail(m.Email) + "], 您参加的 [" + p.Title + "] 抽奖活动报名"
 	if err != nil {
-		return c.Redirect(baseURL+"?status=fail&msg="+msg+"失败: "+err.GetMsg(), fiber.StatusFound)
+		return c.Redirect().Status(fiber.StatusFound).To(baseURL + "?status=fail&msg=" + msg + "失败: " + err.GetMsg())
 	}
-	return c.Redirect(baseURL+"?status=success&msg="+msg+"成功", fiber.StatusFound)
+	return c.Redirect().Status(fiber.StatusFound).To(baseURL + "?status=success&msg=" + msg + "成功")
 }
 
 // @Summary 抽奖详情
@@ -69,7 +69,7 @@ func (api *prizeApi) ActiveParticipation(c *fiber.Ctx) error {
 // @Produce json
 // @Success 200 {object} models.LotteryResp
 // @Router /api/prize/info [Get]
-func (api *prizeApi) LotteryInfo(c *fiber.Ctx) error {
+func (api *prizeApi) LotteryInfo(c fiber.Ctx) error {
 	data, err := service.GetPrizeService().LotteryInfo()
 	if err != nil {
 		return common.NewResponse(c).Error(err.GetMsg())

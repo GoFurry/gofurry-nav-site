@@ -17,8 +17,8 @@ import (
 	"github.com/corazawaf/coraza/v3/debuglog"
 	"github.com/corazawaf/coraza/v3/experimental"
 	"github.com/corazawaf/coraza/v3/types"
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/adaptor"
+	"github.com/gofiber/fiber/v3"
+	"github.com/gofiber/fiber/v3/middleware/adaptor"
 )
 
 /*
@@ -102,7 +102,7 @@ func InitGlobalWAF(path ...string) {
 
 // CorazaMiddleware 中间件
 func CorazaMiddleware() fiber.Handler {
-	return func(c *fiber.Ctx) (err error) {
+	return func(c fiber.Ctx) (err error) {
 		// 直接使用全局 WAF 实例
 		if wafInitErr != nil {
 			slog.Error("WAF全局实例初始化失败: ", wafInitErr)
@@ -265,7 +265,7 @@ func obtainStatusCodeFromInterruptionOrDefault(it *types.Interruption, defaultSt
 }
 
 // convertFasthttpToStdRequest 转换请求类型
-func convertFasthttpToStdRequest(c *fiber.Ctx) (*http.Request, error) {
+func convertFasthttpToStdRequest(c fiber.Ctx) (*http.Request, error) {
 	stdReq, err := adaptor.ConvertRequest(c, false) // false 表示不自动关闭请求体, 后续需由 WAF 处理
 	if err != nil {
 		return nil, err

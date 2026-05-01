@@ -7,9 +7,8 @@ import (
 	"time"
 
 	"github.com/GoFurry/gofurry-nav-backend/common/log"
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/adaptor"
-	"github.com/gofiber/fiber/v2/utils"
+	"github.com/gofiber/fiber/v3"
+	"github.com/gofiber/fiber/v3/middleware/adaptor"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
@@ -73,9 +72,9 @@ func InitPrometheus(cfg ...FiberPromConf) {
 }
 
 // PrometheusMiddleware Prometheus 全局中间件
-func PrometheusMiddleware(c *fiber.Ctx) error {
+func PrometheusMiddleware(c fiber.Ctx) error {
 	// method
-	method := utils.CopyString(c.Method())
+	method := c.Method()
 
 	// QPS
 	metrics.HttpActiveRequests.Inc()
@@ -99,9 +98,9 @@ func PrometheusMiddleware(c *fiber.Ctx) error {
 		}
 	})
 	// 获取路由
-	routePath := utils.CopyString(c.Route().Path)
+	routePath := c.Route().Path
 	if routePath == "/" {
-		routePath = utils.CopyString(c.Path())
+		routePath = c.Path()
 	}
 	if routePath != "" && routePath != "/" {
 		routePath = normalizePath(routePath)

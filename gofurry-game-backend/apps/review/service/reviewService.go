@@ -15,7 +15,7 @@ import (
 	"github.com/GoFurry/gofurry-game-backend/common/log"
 	cm "github.com/GoFurry/gofurry-game-backend/common/models"
 	"github.com/GoFurry/gofurry-game-backend/common/util"
-	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v3"
 )
 
 type reviewService struct{}
@@ -38,7 +38,7 @@ func (s reviewService) GetLatestReviewList(lang string) (res []models.AnonymousR
 	return
 }
 
-func (s reviewService) AddAnonymousReview(req models.AnonymousReviewRequest, c *fiber.Ctx) common.GFError {
+func (s reviewService) AddAnonymousReview(req models.AnonymousReviewRequest, c fiber.Ctx) common.GFError {
 	if req.ID == "" || req.Content == "" || strings.TrimSpace(req.Name) == "" {
 		return common.NewServiceError("入参不能为空")
 	}

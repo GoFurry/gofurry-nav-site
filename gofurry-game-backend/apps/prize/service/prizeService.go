@@ -14,7 +14,7 @@ import (
 	cs "github.com/GoFurry/gofurry-game-backend/common/service"
 	"github.com/GoFurry/gofurry-game-backend/common/util"
 	"github.com/bytedance/sonic"
-	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v3"
 	"github.com/google/uuid"
 )
 
@@ -24,7 +24,7 @@ var prizeSingleton = new(prizeService)
 
 func GetPrizeService() *prizeService { return prizeSingleton }
 
-func (s prizeService) PrizeParticipation(req models.PrizeParticipationRequest, c *fiber.Ctx) common.GFError {
+func (s prizeService) PrizeParticipation(req models.PrizeParticipationRequest, c fiber.Ctx) common.GFError {
 	// 入参校验
 	reqErr := ca.ValidateServiceApi.Validate(req)
 	if reqErr != nil {

@@ -3,7 +3,7 @@ package controller
 import (
 	"github.com/GoFurry/gofurry-nav-backend/apps/nav/sitePage/service"
 	"github.com/GoFurry/gofurry-nav-backend/common"
-	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v3"
 )
 
 type sitePageApi struct{}
@@ -24,7 +24,7 @@ func init() {
 // @Param lang query string true "语言"
 // @Success 200 {object} models.SiteInfoVo
 // @Router /api/nav/site/getSiteDetail [Get]
-func (api sitePageApi) GetSiteDetail(c *fiber.Ctx) error {
+func (api sitePageApi) GetSiteDetail(c fiber.Ctx) error {
 	id, lang := c.Query("id"), c.Query("lang")
 	data, err := service.GetSitePageService().GetSiteDetailService(id, lang)
 	if err != nil {
@@ -43,7 +43,7 @@ func (api sitePageApi) GetSiteDetail(c *fiber.Ctx) error {
 // @Param domain query string true "域名"
 // @Success 200 {object} common.ResultData
 // @Router /api/nav/site/getSiteHttpRecord [Get]
-func (api sitePageApi) GetSiteHttpRecord(c *fiber.Ctx) error {
+func (api sitePageApi) GetSiteHttpRecord(c fiber.Ctx) error {
 	domain := c.Query("domain")
 	data, err := service.GetSitePageService().GetSiteHttpRecordService(domain)
 	if err != nil {
@@ -62,7 +62,7 @@ func (api sitePageApi) GetSiteHttpRecord(c *fiber.Ctx) error {
 // @Param domain query string true "域名"
 // @Success 200 {object} common.ResultData
 // @Router /api/nav/site/getSiteDnsRecord [Get]
-func (api sitePageApi) GetSiteDnsRecord(c *fiber.Ctx) error {
+func (api sitePageApi) GetSiteDnsRecord(c fiber.Ctx) error {
 	domain := c.Query("domain")
 	data, err := service.GetSitePageService().GetSiteDnsRecordService(domain)
 	if err != nil {
@@ -81,7 +81,7 @@ func (api sitePageApi) GetSiteDnsRecord(c *fiber.Ctx) error {
 // @Param domain query string true "域名"
 // @Success 200 {object} models.SiteDelayVo
 // @Router /api/nav/site/getSitePingRecord [Get]
-func (api sitePageApi) GetSitePingRecord(c *fiber.Ctx) error {
+func (api sitePageApi) GetSitePingRecord(c fiber.Ctx) error {
 	domain := c.Query("domain")
 	data, err := service.GetSitePageService().GetSitePingRecordService(domain)
 	if err != nil {
