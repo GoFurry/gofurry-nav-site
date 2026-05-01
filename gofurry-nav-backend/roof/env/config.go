@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/GoFurry/gofurry-nav-backend/common"
@@ -49,8 +50,31 @@ type ProxyConfig struct {
 }
 
 type WafConfig struct {
-	ConfPath  string `yaml:"conf_path"`
-	WafSwitch bool   `yaml:"waf_switch"`
+	ConfPath        string   `yaml:"conf_path"`
+	CRSRoot         string   `yaml:"crs_root"`
+	DirectivesFiles []string `yaml:"directives_files"`
+	WafSwitch       bool     `yaml:"waf_switch"`
+}
+
+func (cfg WafConfig) ResolveDirectivesFiles() []string {
+	if len(cfg.DirectivesFiles) > 0 {
+		return append([]string(nil), cfg.DirectivesFiles...)
+	}
+
+	baseFile := cfg.ConfPath
+	if baseFile == "" {
+		baseFile = "./conf/coraza.conf"
+	}
+
+	files := []string{baseFile}
+	if cfg.CRSRoot != "" {
+		files = append(files,
+			filepath.Join(cfg.CRSRoot, "crs-setup.conf.example"),
+			filepath.Join(cfg.CRSRoot, "rules", "*.conf"),
+		)
+	}
+
+	return files
 }
 
 type MiddlewareConfig struct {

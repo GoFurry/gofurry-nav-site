@@ -143,7 +143,7 @@ func InitOnStart() {
 	middleware.InitGeoIP()
 	// 初始化 Coraza 中间件
 	if cfg.Waf.WafSwitch {
-		middleware.InitGlobalWAF(cfg.Waf.ConfPath)
+		middleware.InitGlobalWAF(cfg.Waf)
 	}
 	// 初始化 redis
 	cs.InitRedisOnStart()
