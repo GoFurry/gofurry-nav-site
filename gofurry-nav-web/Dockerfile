@@ -38,7 +38,7 @@ ENV GAME_API_INTERNAL_BASE=${GAME_API_INTERNAL_BASE}
 COPY . .
 RUN npm run build
 
-FROM node:22-bookworm-slim AS runner
+FROM deps AS runner
 
 WORKDIR /app
 ARG NUXT_PUBLIC_SITE_URL=https://go-furry.com
