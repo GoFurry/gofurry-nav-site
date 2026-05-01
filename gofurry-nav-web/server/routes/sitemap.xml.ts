@@ -50,8 +50,9 @@ export default defineEventHandler(async (event) => {
       baseURL: config.navApiInternalBase,
       query: { lang: 'zh' }
     }).then((res) => res.code === 1 ? res.data : []).catch(() => []),
-    $fetch<ApiResult<GameListPayload>>('/game/list', {
-      baseURL: config.gameApiInternalBase
+    $fetch<ApiResult<GameListPayload>>('/game/info/list', {
+      baseURL: config.gameApiInternalBase,
+      query: { num: '9999', lang: 'zh' }
     }).then((res) => res.code === 1 ? res.data : []).catch(() => [])
   ])
 
