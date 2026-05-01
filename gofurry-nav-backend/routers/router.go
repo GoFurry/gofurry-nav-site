@@ -15,6 +15,7 @@ import (
 	"github.com/GoFurry/gofurry-nav-backend/common"
 	"github.com/GoFurry/gofurry-nav-backend/middleware"
 	"github.com/GoFurry/gofurry-nav-backend/roof/env"
+	"github.com/bytedance/sonic"
 	"github.com/gofiber/contrib/v3/swagger"
 	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/fiber/v3/middleware/cors"
@@ -48,6 +49,8 @@ func (router *router) Init() *fiber.App {
 		TrustProxy:   true,
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,
+		JSONEncoder:  sonic.Marshal,
+		JSONDecoder:  sonic.Unmarshal,
 	})
 
 	// 注册全局中间件
