@@ -1,12 +1,9 @@
 <template>
   <header
       class="relative z-[70] w-full border-b border-white/10 bg-[rgba(18,24,37,0.92)] text-gray-100 shadow-lg backdrop-blur-xl transition-all duration-300"
-      :class="isNavCollapsed ? 'cursor-pointer shadow-md' : 'shadow-lg'"
-      @click="handleHeaderClick"
   >
     <div
-        class="mx-auto flex w-full max-w-[1700px] items-center gap-3 px-4 transition-all duration-300 sm:px-6"
-        :class="isNavCollapsed ? 'min-h-10 py-1' : 'min-h-14 py-2'"
+        class="mx-auto flex w-full max-w-[1700px] items-center gap-3 px-4 py-2 transition-all duration-300 sm:px-6"
     >
       <NuxtLink
           to="/nav"
@@ -18,11 +15,7 @@
       </NuxtLink>
 
       <div class="hidden min-w-0 flex-1 items-center justify-center overflow-hidden transition-all duration-300 sm:flex">
-        <nav
-            class="flex min-w-max items-center justify-center gap-1 transition-all duration-200"
-            :class="isNavCollapsed ? 'pointer-events-none max-w-0 opacity-0' : 'max-w-[760px] opacity-100'"
-            :aria-hidden="isNavCollapsed"
-        >
+        <nav class="flex min-w-max max-w-[760px] items-center justify-center gap-1 transition-all duration-200 opacity-100">
           <template v-for="link in navLinks" :key="link.label">
             <a
                 v-if="link.external"
@@ -49,10 +42,7 @@
         </nav>
       </div>
 
-      <div
-          class="ml-auto hidden items-center gap-2 overflow-hidden transition-all duration-300 xl:flex"
-          :class="isNavCollapsed ? 'pointer-events-none max-w-0 opacity-0' : 'max-w-[220px] opacity-100'"
-      >
+      <div class="ml-auto hidden items-center gap-2 overflow-hidden transition-all duration-300 xl:flex">
         <div class="flex items-center gap-1">
           <button
               v-for="option in languageOptions"
@@ -79,20 +69,6 @@
       </div>
 
       <button
-          v-if="isNavCollapsed"
-          type="button"
-          class="ml-auto inline-flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/8 text-white transition hover:bg-white/14"
-          :title="t('navbar.expandNav')"
-          :aria-label="t('navbar.expandNav')"
-          @click.stop="expandNav"
-      >
-        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-        </svg>
-      </button>
-
-      <button
-          v-else
           type="button"
           class="ml-auto inline-flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/8 text-white transition hover:bg-white/14 xl:hidden"
           :aria-expanded="mobileMenuOpen"
@@ -110,7 +86,7 @@
 
     <transition name="mobile-menu">
       <div
-          v-if="mobileMenuOpen && !isNavCollapsed"
+          v-if="mobileMenuOpen"
           class="border-t border-white/10 bg-[rgba(18,24,37,0.96)] px-4 pb-4 pt-3 text-gray-100 shadow-lg xl:hidden"
           @click.stop
       >
@@ -190,7 +166,6 @@ import usFlag from '@/assets/flags/us.svg'
 import logo from '@/assets/svgs/logo-mini.svg'
 import gear from '@/assets/svgs/gear.svg'
 import ModeSettingModal from '@/components/common/ModeSettingModal.vue'
-import { debounce, throttle } from '@/utils/util'
 import { readMode, subscribeModeChange, writeMode } from '@/utils/modeStorage'
 
 const { t } = useI18n()
@@ -200,8 +175,6 @@ const langStore = useLangStore()
 const showModeModal = ref(false)
 const mobileMenuOpen = ref(false)
 const mode = ref('')
-const isNavCollapsed = ref(false)
-const lastScrollY = ref(0)
 let stopModeSubscription: (() => void) | null = null
 
 type NavLink = {
@@ -235,15 +208,12 @@ const isActive = (link: NavLink) =>
 onMounted(() => {
   mode.value = readMode()
 
-  lastScrollY.value = window.scrollY
-  window.addEventListener('scroll', handleScroll, { passive: true })
   stopModeSubscription = subscribeModeChange(({ mode: nextMode }) => {
     mode.value = nextMode
   })
 })
 
 onUnmounted(() => {
-  window.removeEventListener('scroll', handleScroll)
   stopModeSubscription?.()
 })
 
@@ -251,44 +221,8 @@ watch(
     () => route.fullPath,
     () => {
       mobileMenuOpen.value = false
-      isNavCollapsed.value = false
     }
 )
-
-const handleScrollDirection = throttle(() => {
-  const currentScrollY = window.scrollY
-  const delta = currentScrollY - lastScrollY.value
-
-  if (Math.abs(delta) < 12) {
-    return
-  }
-
-  if (currentScrollY <= 40) {
-    isNavCollapsed.value = false
-    lastScrollY.value = currentScrollY
-    return
-  }
-
-  if (delta > 0 && currentScrollY > 120) {
-    isNavCollapsed.value = true
-    mobileMenuOpen.value = false
-  } else if (delta < 0) {
-    isNavCollapsed.value = false
-  }
-
-  lastScrollY.value = currentScrollY
-}, 120)
-
-const handleScrollEnd = debounce(() => {
-  if (window.scrollY <= 40) {
-    isNavCollapsed.value = false
-  }
-}, 180)
-
-function handleScroll() {
-  handleScrollDirection()
-  handleScrollEnd()
-}
 
 function saveMode(value: string) {
   showModeModal.value = false
@@ -306,19 +240,8 @@ function openModeModalFromMobile() {
   showModeModal.value = true
 }
 
-function expandNav() {
-  isNavCollapsed.value = false
-}
-
 function closeMenus() {
   mobileMenuOpen.value = false
-  isNavCollapsed.value = false
-}
-
-function handleHeaderClick() {
-  if (isNavCollapsed.value) {
-    expandNav()
-  }
 }
 </script>
 
