@@ -1,133 +1,148 @@
 <template>
-  <div class="pointer-events-none fixed inset-x-0 top-10 z-[70] flex justify-center px-3 md:top-2 sm:px-6">
+  <header
+      class="sticky top-0 z-[70] w-full border-b border-white/10 bg-[rgba(18,24,37,0.92)] text-gray-100 shadow-lg backdrop-blur-xl transition-all duration-300"
+      :class="isNavCollapsed ? 'cursor-pointer shadow-md' : 'shadow-lg'"
+      @click="handleHeaderClick"
+  >
     <div
-        class="pointer-events-auto relative w-full transition-all duration-1000"
-        :class="isNavCollapsed ? 'max-w-[132px]' : 'max-w-[400px] sm:max-w-[540px] xl:max-w-[920px]'"
+        class="mx-auto flex w-full max-w-[1700px] items-center gap-3 px-4 transition-all duration-300 sm:px-6"
+        :class="isNavCollapsed ? 'min-h-14 py-1' : 'min-h-16 py-2'"
     >
-      <nav
-          class="mx-auto flex items-center gap-3 border border-white/20 bg-[rgba(18,24,37,0.55)] text-gray-100 shadow-lg ring-1 ring-white/10 backdrop-blur-xl transition-all duration-300"
-          :class="isNavCollapsed
-            ? 'justify-between rounded-lg px-1 py-1'
-            : 'rounded-lg px-1 py-1 md:px-3 md:py-2 sm:px-5'"
+      <NuxtLink
+          to="/nav"
+          class="flex shrink-0 items-center gap-2 rounded-lg px-2 py-1 transition hover:bg-white/10"
+          @click.stop="closeMenus"
       >
-        <div class="flex shrink-0 items-center justify-center">
-          <img :src="logo" alt="GoFurry logo" class="w-10 h-10" />
-        </div>
+        <img :src="logo" alt="GoFurry logo" class="h-10 w-10" />
+        <span class="hidden text-sm font-semibold tracking-wide text-white sm:inline">GoFurry</span>
+      </NuxtLink>
 
-        <div
-            class="hidden min-w-0 flex-1 items-center justify-center overflow-hidden transition-[max-width] duration-300 sm:flex"
-            :class="isNavCollapsed ? 'max-w-0' : 'max-w-[640px]'"
+      <div class="hidden min-w-0 flex-1 items-center justify-center overflow-hidden transition-all duration-300 sm:flex">
+        <nav
+            class="flex min-w-max items-center justify-center gap-1 transition-all duration-200"
+            :class="isNavCollapsed ? 'pointer-events-none max-w-0 opacity-0' : 'max-w-[760px] opacity-100'"
+            :aria-hidden="isNavCollapsed"
         >
-          <div
-              class="flex min-w-max items-center justify-center gap-1 transition-opacity duration-200"
-              :class="isNavCollapsed ? 'pointer-events-none opacity-0' : 'opacity-100'"
-              :style="{ transitionDelay: isNavCollapsed ? '0ms' : '180ms' }"
-          >
-            <component
-                :is="link.external ? 'a' : 'NuxtLink'"
-                v-for="link in navLinks"
-                :key="link.label"
-                v-bind="link.external
-                  ? { href: link.href, target: '_blank', rel: 'noopener noreferrer' }
-                  : { to: link.to }"
-                class="rounded-lg px-4 py-2 text-sm font-medium whitespace-nowrap transition-all duration-200"
-                :class="isActive(link)
-                  ? 'bg-white/10 text-slate-900'
-                  : 'text-gray-100 hover:bg-white/10 hover:text-white'"
+          <template v-for="link in navLinks" :key="link.label">
+            <a
+                v-if="link.external"
+                :href="link.href"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="rounded-lg px-4 py-2 text-sm font-medium whitespace-nowrap text-gray-100 transition-all duration-200 hover:bg-white/10 hover:text-white"
+                @click.stop
             >
               {{ link.label }}
-            </component>
-          </div>
-        </div>
-
-        <div
-            class="ml-auto hidden items-center overflow-hidden transition-[max-width] duration-300 xl:flex"
-            :class="isNavCollapsed ? 'max-w-0' : 'max-w-[180px]'"
-        >
-          <div
-              class="flex min-w-max items-center gap-2 transition-opacity duration-200"
-              :class="isNavCollapsed ? 'pointer-events-none opacity-0' : 'opacity-100'"
-              :style="{ transitionDelay: isNavCollapsed ? '0ms' : '180ms' }"
-          >
-            <div class="flex items-center gap-1">
-              <div
-                  v-for="option in languageOptions"
-                  :key="option.value"
-                  class="flex h-6 w-6 items-center justify-center rounded-lg transition cursor-pointer"
-                  :class="langStore.lang === option.value
-                    ? 'bg-white/30 text-slate-900'
-                    : 'text-gray-200 hover:bg-white/10'"
-                  @click="switchLang(option.value)"
-              >
-                <img :src="option.flag" class="h-4 w-4" alt="language" />
-              </div>
-            </div>
-
-            <div
-                class="cursor-pointer flex h-6 w-6 items-center justify-center rounded-lg bg-white/8 text-sm ring-1 ring-white/10 transition hover:bg-white/30"
-                @click="showModeModal = true"
+            </a>
+            <NuxtLink
+                v-else
+                :to="link.to"
+                class="rounded-lg px-4 py-2 text-sm font-medium whitespace-nowrap transition-all duration-200"
+                :class="isActive(link)
+                  ? 'bg-white/20 text-white'
+                  : 'text-gray-100 hover:bg-white/10 hover:text-white'"
+                @click.stop="closeMenus"
             >
-              <img :src="gear" class="h-4 w-4" alt="mode" />
-            </div>
-          </div>
+              {{ link.label }}
+            </NuxtLink>
+          </template>
+        </nav>
+      </div>
+
+      <div
+          class="ml-auto hidden items-center gap-2 overflow-hidden transition-all duration-300 xl:flex"
+          :class="isNavCollapsed ? 'pointer-events-none max-w-0 opacity-0' : 'max-w-[220px] opacity-100'"
+      >
+        <div class="flex items-center gap-1">
+          <button
+              v-for="option in languageOptions"
+              :key="option.value"
+              type="button"
+              class="flex h-8 w-8 items-center justify-center rounded-lg transition"
+              :class="langStore.lang === option.value
+                ? 'bg-white/25 text-white'
+                : 'text-gray-200 hover:bg-white/10'"
+              @click.stop="switchLang(option.value)"
+          >
+            <img :src="option.flag" class="h-4 w-4" alt="language" />
+          </button>
         </div>
 
         <button
-            v-if="isNavCollapsed"
-            class="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/8 text-white transition hover:bg-white/14"
-            :title="t('navbar.expandNav')"
-            :aria-label="t('navbar.expandNav')"
-            @click="expandNav"
+            type="button"
+            class="flex h-8 w-8 items-center justify-center rounded-lg bg-white/8 text-sm ring-1 ring-white/10 transition hover:bg-white/20"
+            :aria-label="t('navbar.mode')"
+            @click.stop="showModeModal = true"
         >
-          <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
+          <img :src="gear" class="h-4 w-4" alt="mode" />
         </button>
+      </div>
 
-        <div
-            v-else
-            class="cursor-pointer ml-auto inline-flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/8 text-white transition hover:bg-white/14 xl:hidden"
-            :aria-expanded="mobileMenuOpen"
-            :aria-label="t('navbar.expandNav')"
-            @click="mobileMenuOpen = !mobileMenuOpen"
-        >
-          <svg v-if="!mobileMenuOpen" class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
-          <svg v-else class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 6l12 12M6 18L18 6" />
-          </svg>
-        </div>
-      </nav>
+      <button
+          v-if="isNavCollapsed"
+          type="button"
+          class="ml-auto inline-flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/8 text-white transition hover:bg-white/14"
+          :title="t('navbar.expandNav')"
+          :aria-label="t('navbar.expandNav')"
+          @click.stop="expandNav"
+      >
+        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
 
-      <transition name="mobile-menu">
-        <div
-            v-if="mobileMenuOpen && !isNavCollapsed"
-            class="mt-3 overflow-hidden rounded-lg border border-white/15 bg-[rgba(18,24,37,0.75)] p-3 text-gray-100 shadow-[0_24px_60px_rgba(15,23,42,0.34)] ring-1 ring-white/10 backdrop-blur-xl xl:hidden"
-        >
-          <div class="flex flex-col gap-2">
-            <component
-                :is="link.external ? 'a' : 'NuxtLink'"
-                v-for="link in navLinks"
-                :key="link.label"
-                v-bind="link.external
-                  ? { href: link.href, target: '_blank', rel: 'noopener noreferrer' }
-                  : { to: link.to }"
-                class="rounded-lg px-4 py-3 text-sm font-medium transition-colors"
-                :class="isActive(link)
-                  ? 'bg-white/50'
-                  : 'bg-white/5 hover:bg-white/10'"
+      <button
+          v-else
+          type="button"
+          class="ml-auto inline-flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/8 text-white transition hover:bg-white/14 xl:hidden"
+          :aria-expanded="mobileMenuOpen"
+          :aria-label="t('navbar.expandNav')"
+          @click.stop="mobileMenuOpen = !mobileMenuOpen"
+      >
+        <svg v-if="!mobileMenuOpen" class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+        <svg v-else class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 6l12 12M6 18L18 6" />
+        </svg>
+      </button>
+    </div>
+
+    <transition name="mobile-menu">
+      <div
+          v-if="mobileMenuOpen && !isNavCollapsed"
+          class="border-t border-white/10 bg-[rgba(18,24,37,0.96)] px-4 pb-4 pt-3 text-gray-100 shadow-lg xl:hidden"
+          @click.stop
+      >
+        <div class="mx-auto flex w-full max-w-[1700px] flex-col gap-2">
+          <template v-for="link in navLinks" :key="link.label">
+            <a
+                v-if="link.external"
+                :href="link.href"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="rounded-lg bg-white/5 px-4 py-3 text-sm font-medium text-gray-300 transition-colors hover:bg-white/10"
                 @click="mobileMenuOpen = false"
             >
-              <div :class="isActive(link)
-                  ? 'text-slate-900'
-                  : 'text-gray-300'">{{ link.label }}</div>
-            </component>
-          </div>
+              {{ link.label }}
+            </a>
+            <NuxtLink
+                v-else
+                :to="link.to"
+                class="rounded-lg px-4 py-3 text-sm font-medium transition-colors"
+                :class="isActive(link)
+                  ? 'bg-white/20 text-white'
+                  : 'bg-white/5 text-gray-300 hover:bg-white/10'"
+                @click="closeMenus"
+            >
+              {{ link.label }}
+            </NuxtLink>
+          </template>
 
-          <div class="mt-4 flex flex-col gap-3 border-t border-white/10 pt-4">
-            <div
-                class="flex items-center justify-between rounded-lg bg-white/5 px-4 py-3 text-sm text-gray-100 transition hover:bg-white/10 cursor-pointer"
+          <div class="mt-2 flex flex-col gap-3 border-t border-white/10 pt-4">
+            <button
+                type="button"
+                class="flex items-center justify-between rounded-lg bg-white/5 px-4 py-3 text-sm text-gray-100 transition hover:bg-white/10"
                 @click="openModeModalFromMobile"
             >
               <span class="flex items-center gap-2">
@@ -135,37 +150,35 @@
                 {{ t('navbar.mode') }}
               </span>
               <span class="text-orange-300">{{ mode || '--' }}</span>
-            </div>
+            </button>
 
             <div class="grid grid-cols-2 gap-2">
-              <div
+              <button
                   v-for="option in languageOptions"
                   :key="option.value"
-                  class="flex items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm transition cursor-pointer"
+                  type="button"
+                  class="flex items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm transition"
                   :class="langStore.lang === option.value
-                    ? 'bg-white/50'
-                    : 'bg-white/5 hover:bg-white/10'"
+                    ? 'bg-white/20 text-white'
+                    : 'bg-white/5 text-gray-300 hover:bg-white/10'"
                   @click="switchLang(option.value)"
               >
                 <img :src="option.flag" class="h-4 w-4" alt="language" />
-                <span :class="langStore.lang === option.value
-                    ? 'text-slate-900'
-                    : 'text-gray-300'">{{ option.label }}
-                </span>
-              </div>
+                <span>{{ option.label }}</span>
+              </button>
             </div>
           </div>
         </div>
-      </transition>
+      </div>
+    </transition>
 
-      <ModeSettingModal
-          :show="showModeModal"
-          :mode="mode"
-          @cancel="showModeModal = false"
-          @save="saveMode"
-      />
-    </div>
-  </div>
+    <ModeSettingModal
+        :show="showModeModal"
+        :mode="mode"
+        @cancel="showModeModal = false"
+        @save="saveMode"
+    />
+  </header>
 </template>
 
 <script setup lang="ts">
@@ -295,6 +308,17 @@ function openModeModalFromMobile() {
 
 function expandNav() {
   isNavCollapsed.value = false
+}
+
+function closeMenus() {
+  mobileMenuOpen.value = false
+  isNavCollapsed.value = false
+}
+
+function handleHeaderClick() {
+  if (isNavCollapsed.value) {
+    expandNav()
+  }
 }
 </script>
 
