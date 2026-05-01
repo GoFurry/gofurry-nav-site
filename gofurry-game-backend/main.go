@@ -67,7 +67,12 @@ WantedBy=multi-user.target`,
 			if err != nil {
 				slog.Error("服务安装失败: ", err)
 			} else {
-				slog.Info("服务安装成功.")
+				slog.Info(`┏┓  ┏┓
+┃┓┏┓┣ ┓┏┏┓┏┓┓┏
+┗┛┗┛┻ ┗┻┛ ┛ ┗┫
+             ┛
+服务安装成功.
+				`)
 			}
 			return
 		case "uninstall":
@@ -75,11 +80,21 @@ WantedBy=multi-user.target`,
 			if err != nil {
 				slog.Error("服务卸载失败: ", err)
 			} else {
-				slog.Info("服务卸载成功.")
+				slog.Info(`┏┓  ┏┓
+┃┓┏┓┣ ┓┏┏┓┏┓┓┏
+┗┛┗┛┻ ┗┻┛ ┛ ┗┫
+             ┛
+服务卸载成功.
+				`)
 			}
 			return
 		case "version":
-			slog.Info("gf-game V1.0.0")
+			slog.Info(`┏┓  ┏┓
+┃┓┏┓┣ ┓┏┏┓┏┓┓┏
+┗┛┗┛┻ ┗┻┛ ┛ ┗┫
+             ┛
+gf-game V1.0.0
+				`)
 			return
 		case "help":
 			slog.Info(common.COMMON_PROJECT_HELP)
