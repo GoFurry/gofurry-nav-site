@@ -41,8 +41,8 @@ exit /b 0
 
 :build_nav_backend
 echo [BUILD] gofurry-nav-backend
-set "OUTPUT_DIR=%BUILD_ROOT%\gofurry-nav-backend"
-set "OUTPUT_BIN=%OUTPUT_DIR%\gofurry-nav-backend"
+set "OUTPUT_DIR=%BUILD_ROOT%\gf-nav"
+set "OUTPUT_BIN=%OUTPUT_DIR%\gf-nav"
 if exist "%OUTPUT_DIR%" rmdir /s /q "%OUTPUT_DIR%"
 mkdir "%OUTPUT_DIR%" || exit /b 1
 pushd "%ROOT%\gofurry-nav-backend" || exit /b 1
@@ -56,8 +56,8 @@ exit /b 0
 
 :build_nav_collector
 echo [BUILD] gofurry-nav-collector
-set "OUTPUT_DIR=%BUILD_ROOT%\gofurry-nav-collector"
-set "OUTPUT_BIN=%OUTPUT_DIR%\gofurry-nav-collector"
+set "OUTPUT_DIR=%BUILD_ROOT%\gf-nav-collector"
+set "OUTPUT_BIN=%OUTPUT_DIR%\gf-nav-collector"
 if exist "%OUTPUT_DIR%" rmdir /s /q "%OUTPUT_DIR%"
 mkdir "%OUTPUT_DIR%" || exit /b 1
 pushd "%ROOT%\gofurry-nav-collector" || exit /b 1
@@ -71,8 +71,8 @@ exit /b 0
 
 :build_game_backend
 echo [BUILD] gofurry-game-backend
-set "OUTPUT_DIR=%BUILD_ROOT%\gofurry-game-backend"
-set "OUTPUT_BIN=%OUTPUT_DIR%\gofurry-game-backend"
+set "OUTPUT_DIR=%BUILD_ROOT%\gf-game"
+set "OUTPUT_BIN=%OUTPUT_DIR%\gf-game"
 if exist "%OUTPUT_DIR%" rmdir /s /q "%OUTPUT_DIR%"
 mkdir "%OUTPUT_DIR%" || exit /b 1
 pushd "%ROOT%\gofurry-game-backend" || exit /b 1
@@ -86,8 +86,8 @@ exit /b 0
 
 :build_game_collector
 echo [BUILD] gofurry-game-collector
-set "OUTPUT_DIR=%BUILD_ROOT%\gofurry-game-collector"
-set "OUTPUT_BIN=%OUTPUT_DIR%\gofurry-game-collector"
+set "OUTPUT_DIR=%BUILD_ROOT%\gf-game-collector"
+set "OUTPUT_BIN=%OUTPUT_DIR%\gf-game-collector"
 if exist "%OUTPUT_DIR%" rmdir /s /q "%OUTPUT_DIR%"
 mkdir "%OUTPUT_DIR%" || exit /b 1
 pushd "%ROOT%\gofurry-game-collector" || exit /b 1
