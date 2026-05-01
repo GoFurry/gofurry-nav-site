@@ -1,23 +1,23 @@
 # GoFurry
 
-[中文说明](./README_zh.md)
+[English](./README.md)
 
-GoFurry is a public-interest furry website and an open-source monorepo that contains the source code for its public site, data services, collectors, and operations backend.
+GoFurry 是一个公益性质的兽圈网站，同时也是一个开源仓库。本仓库收录了站点前台、数据接口、采集服务和运维后台等多个服务的源码。
 
-This repository is organized by service. Each service can be developed and deployed independently, while sharing the same overall data model and infrastructure style.
+整个仓库按服务拆分组织。各服务可以独立开发、独立部署，同时共享同一套整体的数据结构设计和基础设施风格。
 
-## What This Repository Contains
+## 仓库内容
 
-- `gofurry-nav-frontend`: Vue frontend for the public navigation site
-- `gofurry-nav-backend`: Go backend for navigation data APIs
-- `gofurry-nav-collector`: Go collector for navigation-related data
-- `gofurry-game-backend`: Go backend for game-related APIs
-- `gofurry-game-collector`: Go collector for game-related data
-- `gofurry-admin`: Operations backend with embedded Vue UI for daily maintenance
-- `experimental`: experimental code, not part of production packaging
-- `tools`: helper scripts and local tools, not part of production packaging
+- `gofurry-nav-frontend`：导航站前端，基于 Vue
+- `gofurry-nav-backend`：导航站后端接口，基于 Go
+- `gofurry-nav-collector`：导航相关数据采集服务
+- `gofurry-game-backend`：游戏相关后端接口
+- `gofurry-game-collector`：游戏相关数据采集服务
+- `gofurry-admin`：日常运维后台，前端嵌入二进制，便于部署
+- `experimental`：实验性代码，不参与生产打包
+- `tools`：辅助脚本和本地工具，不参与生产打包
 
-## Stack
+## 技术栈
 
 - Go
 - Fiber
@@ -26,17 +26,17 @@ This repository is organized by service. Each service can be developed and deplo
 - Vue
 - Tailwind CSS
 
-## Build
+## 打包方式
 
-The root `build.bat` builds Linux `amd64` production artifacts into the root `build/` directory.
+根目录提供了 `build.bat`，用于打包 Linux `amd64` 生产环境产物，输出到根目录的 `build/`。
 
-Build everything:
+打包全部服务：
 
 ```bat
 build.bat all
 ```
 
-Build a single service:
+单独打包某个服务：
 
 ```bat
 build.bat gofurry-nav-backend
@@ -47,62 +47,62 @@ build.bat gofurry-game-collector
 build.bat gofurry-admin
 ```
 
-Notes:
+说明：
 
-- Go binaries are built with production-oriented size reduction flags.
-- `gofurry-admin` embeds its Vue frontend into the final binary.
-- `experimental` and `tools` are intentionally excluded from packaging.
+- Go 二进制会使用面向生产环境的体积压缩参数进行构建
+- `gofurry-admin` 会先构建前端，再把前端资源嵌入最终二进制
+- `experimental` 和 `tools` 默认不参与打包
 
-## Development
+## 本地开发
 
-Each service is self-contained and should be started from its own directory.
+各服务应在各自目录内独立开发和启动。
 
-Typical local workflow:
+通常流程如下：
 
-1. Enter the target service directory.
-2. Install dependencies for that service.
-3. Prepare your local configuration and database/Redis settings.
-4. Run the service locally.
+1. 进入目标服务目录
+2. 安装该服务所需依赖
+3. 准备本地配置以及 PostgreSQL / Redis 连接
+4. 使用该服务自己的启动方式运行
 
-For frontend services:
+前端服务通常使用：
 
-- install dependencies with `npm`
-- run the dev server from the frontend project directory
+- `npm install` 或 `npm ci`
+- `npm run dev`
 
-For Go services:
+Go 服务通常使用：
 
-- use `go run . serve` or the service-specific startup command
+- `go run . serve`
 
-## Deployment
+## 部署说明
 
-Production deployment is expected to use private configuration files prepared by the deployer.
+生产环境应使用部署者自行准备的私有配置文件。
 
-This repository does not ship production secrets. Do not commit:
+本仓库不会附带生产环境敏感信息，不应提交以下内容：
 
-- production database addresses
-- Redis passwords
-- JWT secrets
-- TLS private keys
-- production `server.yaml` or equivalent private config files
+- 生产环境 PostgreSQL 地址和账号密码
+- Redis 密码
+- JWT 密钥
+- TLS 私钥和证书私有文件
+- 生产环境 `server.yaml` 或其他私有配置文件
 
-The repository `.gitignore` is configured to avoid committing common sensitive files, but it cannot erase anything already pushed in history. If a secret was ever committed, rotate it.
+根目录的 `.gitignore` 已经尽量覆盖常见敏感文件，但 `.gitignore` 只能防止后续继续提交，不能清除已经进入 Git 历史的内容。如果密钥曾经上传过，应该立即轮换。
 
-## Project Position
+## 项目说明
 
-GoFurry is maintained as a public-interest project. This repository is opened so the site can be studied, improved, and extended more transparently.
+GoFurry 以公益项目的方式持续维护。本仓库开源的目的，是让站点的实现方式更透明，也方便后续维护、协作和扩展。
 
-The codebase is service-oriented instead of forcing everything into one runtime. That keeps deployment practical and allows different parts of the site to evolve at different speeds.
+整个代码库采用多服务结构，而不是把所有能力强行堆进一个运行时。这样做更利于部署，也更适合不同模块按各自节奏演进。
 
-## Contributing
+## 参与贡献
 
-Issues and pull requests are welcome.
+欢迎提交 Issue 和 Pull Request。
 
-When contributing:
+提交代码时建议：
 
-- keep changes scoped to the relevant service
-- avoid committing local or production secrets
-- preserve existing service boundaries unless there is a strong reason to change them
+- 尽量把改动限制在对应服务内
+- 不要提交本地或生产环境敏感配置
+- 除非有明确必要，否则不要随意打破现有的服务边界
 
 ## License
 
-See [LICENSE](./LICENSE).
+见 [LICENSE](./LICENSE)。
