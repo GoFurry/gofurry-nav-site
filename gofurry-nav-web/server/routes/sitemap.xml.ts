@@ -9,7 +9,14 @@ type SiteRecord = {
 }
 
 type GameRecord = {
-  game_id: string
+  id?: string
+  game_id?: string
+}
+
+type GameListPayload = GameRecord[] | {
+  list?: GameRecord[]
+  data?: GameRecord[]
+  rows?: GameRecord[]
 }
 
 function escapeXml(value: string) {
@@ -43,7 +50,7 @@ export default defineEventHandler(async (event) => {
       baseURL: config.navApiInternalBase,
       query: { lang: 'zh' }
     }).then((res) => res.code === 1 ? res.data : []).catch(() => []),
-    $fetch<ApiResult<GameRecord[]>>('/game/info/list', {
+    $fetch<ApiResult<GameListPayload>>('/game/list', {
       baseURL: config.gameApiInternalBase
     }).then((res) => res.code === 1 ? res.data : []).catch(() => [])
   ])
@@ -52,8 +59,15 @@ export default defineEventHandler(async (event) => {
     urls.add(`/sites/${site.id}`)
   }
 
-  for (const game of games) {
-    urls.add(`/games/${game.game_id}`)
+  const gameList = Array.isArray(games)
+    ? games
+    : games.list ?? games.data ?? games.rows ?? []
+
+  for (const game of gameList) {
+    const gameId = game.id ?? game.game_id
+    if (gameId) {
+      urls.add(`/games/${gameId}`)
+    }
   }
 
   setHeader(event, 'content-type', 'application/xml; charset=utf-8')
