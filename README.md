@@ -1,21 +1,30 @@
 # GoFurry
 
-[English](./README.md)
+[English](./README_en.md)
 
-GoFurry 是一个公益性质的兽圈网站，同时也是一个开源仓库。本仓库收录了站点前台、数据接口、采集服务和运维后台等多个服务的源码。
+![License](https://img.shields.io/github/license/GoFurry/gofurry-nav-site)
 
-整个仓库按服务拆分组织。各服务可以独立开发、独立部署，同时共享同一套整体的数据结构设计和基础设施风格。
+GoFurry 是一个面向兽圈文化内容发现与整理的开源多服务仓库，包含公开站点前台、导航与游戏数据接口、采集服务，以及运营后台。
 
-## 仓库内容
+线上主站当前已迁移到 Nuxt 4 前台，重点提升公开页面的 SEO 与首屏可见性；原 Vue 前台保留为迁移参考，不再作为新的生产前台入口。
 
-- `gofurry-nav-frontend`：导航站前端，基于 Vue
-- `gofurry-nav-backend`：导航站后端接口，基于 Go
-- `gofurry-nav-collector`：导航相关数据采集服务
-- `gofurry-game-backend`：游戏相关后端接口
-- `gofurry-game-collector`：游戏相关数据采集服务
-- `gofurry-admin`：日常运维后台，前端嵌入二进制，便于部署
-- `experimental`：实验性代码，不参与生产打包
-- `tools`：辅助脚本和本地工具，不参与生产打包
+## 项目定位
+
+- 公开网站：`https://go-furry.com`
+- 面向对象：希望了解、部署、维护或参与 GoFurry 的开发者与维护者
+- 仓库形态：按服务拆分的 monorepo，而不是单一可执行项目
+
+## 仓库结构
+
+- `gofurry-nav-web`：Nuxt 4 前台，当前生产环境公开站点入口
+- `gofurry-nav-frontend-legacy`：旧版 Vue 前台归档代码，仅保留作迁移对照
+- `gofurry-nav-backend`：导航站后端 API
+- `gofurry-nav-collector`：导航数据采集服务
+- `gofurry-game-backend`：兽游相关后端 API
+- `gofurry-game-collector`：兽游数据采集服务
+- `gofurry-admin`：运营后台，包含嵌入式前端
+- `experimental`：实验性代码，不参与正式发布
+- `tools`：辅助脚本与本地工具
 
 ## 技术栈
 
@@ -23,86 +32,68 @@ GoFurry 是一个公益性质的兽圈网站，同时也是一个开源仓库。
 - Fiber
 - PostgreSQL
 - Redis
-- Vue
+- Nuxt 4 / Vue 3
 - Tailwind CSS
 
-## 打包方式
+## 快速开始
 
-根目录提供了 `build.bat`，用于打包 Linux `amd64` 生产环境产物，输出到根目录的 `build/`。
+仓库内各服务独立开发、独立运行。最常见的两类入口如下。
 
-打包全部服务：
+前台开发：
+
+```bash
+cd gofurry-nav-web
+npm install
+npm run dev
+```
+
+Go 服务开发：
+
+```bash
+cd gofurry-nav-backend
+go run .
+```
+
+如果你要构建旧的根级打包产物，可使用：
 
 ```bat
 build.bat all
 ```
 
-单独打包某个服务：
+这个脚本主要用于当前仓库里的传统构建产物输出到 `build/` 目录。Nuxt 前台的生产部署则使用 `gofurry-nav-web` 目录内的 Docker 化流程。
 
-```bat
-build.bat gofurry-nav-backend
-build.bat gofurry-nav-collector
-build.bat gofurry-nav-frontend
-build.bat gofurry-game-backend
-build.bat gofurry-game-collector
-build.bat gofurry-admin
+## 生产部署
+
+Nuxt 前台使用独立 Docker 部署路径，相关说明见：
+
+- [gofurry-nav-web/DEPLOYMENT.md](./gofurry-nav-web/DEPLOYMENT.md)
+- [gofurry-nav-web/update.sh](./gofurry-nav-web/update.sh)
+
+当前生产更新的常用方式：
+
+```bash
+cd gofurry-nav-web
+./update.sh
 ```
 
-说明：
+## 当前状态
 
-- Go 二进制会使用面向生产环境的体积压缩参数进行构建
-- `gofurry-admin` 会先构建前端，再把前端资源嵌入最终二进制
-- `experimental` 和 `tools` 默认不参与打包
+- 主站前台已迁移到 Nuxt 4，并已在生产环境使用
+- `robots.txt` 与 `sitemap.xml` 由 Nuxt server routes 动态生成
+- 旧 Vue 前台已归档为 legacy 参考实现
+- 基础 GitHub Actions 检查已覆盖核心 Go 服务、管理后台与旧前台路径
 
-## 本地开发
-
-各服务应在各自目录内独立开发和启动。
-
-通常流程如下：
-
-1. 进入目标服务目录
-2. 安装该服务所需依赖
-3. 准备本地配置以及 PostgreSQL / Redis 连接
-4. 使用该服务自己的启动方式运行
-
-前端服务通常使用：
-
-- `npm install` 或 `npm ci`
-- `npm run dev`
-
-Go 服务通常使用：
-
-- `go run . serve`
-
-## 部署说明
-
-生产环境应使用部署者自行准备的私有配置文件。
-
-本仓库不会附带生产环境敏感信息，不应提交以下内容：
-
-- 生产环境 PostgreSQL 地址和账号密码
-- Redis 密码
-- JWT 密钥
-- TLS 私钥和证书私有文件
-- 生产环境 `server.yaml` 或其他私有配置文件
-
-根目录的 `.gitignore` 已经尽量覆盖常见敏感文件，但 `.gitignore` 只能防止后续继续提交，不能清除已经进入 Git 历史的内容。如果密钥曾经上传过，应该立即轮换。
-
-## 项目说明
-
-GoFurry 以公益项目的方式持续维护。本仓库开源的目的，是让站点的实现方式更透明，也方便后续维护、协作和扩展。
-
-整个代码库采用多服务结构，而不是把所有能力强行堆进一个运行时。这样做更利于部署，也更适合不同模块按各自节奏演进。
-
-## 参与贡献
+## 贡献说明
 
 欢迎提交 Issue 和 Pull Request。
 
-提交代码时建议：
+贡献时建议遵循以下原则：
 
-- 尽量把改动限制在对应服务内
-- 不要提交本地或生产环境敏感配置
-- 除非有明确必要，否则不要随意打破现有的服务边界
+- 尽量将改动限定在单个服务目录内
+- 不提交 `.env`、私钥、数据库凭据或其他敏感配置
+- 变更公开行为时，补充必要文档或部署说明
+- 尊重现有服务边界，除非确实需要跨服务调整
 
-## License
+## 开源与许可
 
-见 [LICENSE](./LICENSE)。
+本仓库采用 [MIT License](./LICENSE)。

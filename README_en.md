@@ -1,21 +1,30 @@
 # GoFurry
 
-[中文说明](./README_zh.md)
+[中文说明](./README.md)
 
-GoFurry is a public-interest furry website and an open-source monorepo that contains the source code for its public site, data services, collectors, and operations backend.
+![License](https://img.shields.io/github/license/GoFurry/gofurry-nav-site)
 
-This repository is organized by service. Each service can be developed and deployed independently, while sharing the same overall data model and infrastructure style.
+GoFurry is an open-source multi-service repository for a furry culture discovery website. It contains the public web frontend, navigation and game APIs, data collectors, and the operations backend.
 
-## What This Repository Contains
+The production public site has now moved to a Nuxt 4 frontend to improve SEO and first-page rendering. The older Vue frontend is kept in the repository as an archived migration reference rather than the active production entrypoint.
 
-- `gofurry-nav-frontend`: Vue frontend for the public navigation site
-- `gofurry-nav-backend`: Go backend for navigation data APIs
-- `gofurry-nav-collector`: Go collector for navigation-related data
-- `gofurry-game-backend`: Go backend for game-related APIs
-- `gofurry-game-collector`: Go collector for game-related data
-- `gofurry-admin`: Operations backend with embedded Vue UI for daily maintenance
-- `experimental`: experimental code, not part of production packaging
-- `tools`: helper scripts and local tools, not part of production packaging
+## Project Scope
+
+- Public website: `https://go-furry.com`
+- Audience: developers and maintainers who want to understand, run, extend, or deploy GoFurry
+- Repository model: a service-oriented monorepo rather than a single runnable app
+
+## Repository Layout
+
+- `gofurry-nav-web`: Nuxt 4 frontend, now used by the production public site
+- `gofurry-nav-frontend-legacy`: archived Vue frontend kept for migration reference
+- `gofurry-nav-backend`: navigation API service
+- `gofurry-nav-collector`: navigation data collector
+- `gofurry-game-backend`: game-related API service
+- `gofurry-game-collector`: game-related data collector
+- `gofurry-admin`: operations backend with embedded frontend
+- `experimental`: experimental code not included in normal release packaging
+- `tools`: helper scripts and local tools
 
 ## Stack
 
@@ -23,75 +32,56 @@ This repository is organized by service. Each service can be developed and deplo
 - Fiber
 - PostgreSQL
 - Redis
-- Vue
+- Nuxt 4 / Vue 3
 - Tailwind CSS
 
-## Build
+## Quick Start
 
-The root `build.bat` builds Linux `amd64` production artifacts into the root `build/` directory.
+Services in this repository are developed and run independently. These are the two most common entry points.
 
-Build everything:
+Frontend development:
+
+```bash
+cd gofurry-nav-web
+npm install
+npm run dev
+```
+
+Go service development:
+
+```bash
+cd gofurry-nav-backend
+go run .
+```
+
+If you need the legacy root-level packaging flow, use:
 
 ```bat
 build.bat all
 ```
 
-Build a single service:
+That script mainly builds the traditional release artifacts into the root `build/` directory. The Nuxt frontend uses its own Docker-based production deployment flow from `gofurry-nav-web`.
 
-```bat
-build.bat gofurry-nav-backend
-build.bat gofurry-nav-collector
-build.bat gofurry-nav-frontend
-build.bat gofurry-game-backend
-build.bat gofurry-game-collector
-build.bat gofurry-admin
+## Production Deployment
+
+The Nuxt frontend ships with its own Docker deployment path. See:
+
+- [gofurry-nav-web/DEPLOYMENT.md](./gofurry-nav-web/DEPLOYMENT.md)
+- [gofurry-nav-web/update.sh](./gofurry-nav-web/update.sh)
+
+Typical production update flow:
+
+```bash
+cd gofurry-nav-web
+./update.sh
 ```
 
-Notes:
+## Current Status
 
-- Go binaries are built with production-oriented size reduction flags.
-- `gofurry-admin` embeds its Vue frontend into the final binary.
-- `experimental` and `tools` are intentionally excluded from packaging.
-
-## Development
-
-Each service is self-contained and should be started from its own directory.
-
-Typical local workflow:
-
-1. Enter the target service directory.
-2. Install dependencies for that service.
-3. Prepare your local configuration and database/Redis settings.
-4. Run the service locally.
-
-For frontend services:
-
-- install dependencies with `npm`
-- run the dev server from the frontend project directory
-
-For Go services:
-
-- use `go run . serve` or the service-specific startup command
-
-## Deployment
-
-Production deployment is expected to use private configuration files prepared by the deployer.
-
-This repository does not ship production secrets. Do not commit:
-
-- production database addresses
-- Redis passwords
-- JWT secrets
-- TLS private keys
-- production `server.yaml` or equivalent private config files
-
-The repository `.gitignore` is configured to avoid committing common sensitive files, but it cannot erase anything already pushed in history. If a secret was ever committed, rotate it.
-
-## Project Position
-
-GoFurry is maintained as a public-interest project. This repository is opened so the site can be studied, improved, and extended more transparently.
-
-The codebase is service-oriented instead of forcing everything into one runtime. That keeps deployment practical and allows different parts of the site to evolve at different speeds.
+- The public site frontend has been migrated to Nuxt 4 and is already running in production
+- `robots.txt` and `sitemap.xml` are generated by Nuxt server routes
+- The old Vue frontend is archived as a legacy reference
+- Basic GitHub Actions checks cover the core Go services, admin backend, and legacy frontend paths
 
 ## Contributing
 
@@ -99,10 +89,11 @@ Issues and pull requests are welcome.
 
 When contributing:
 
-- keep changes scoped to the relevant service
-- avoid committing local or production secrets
-- preserve existing service boundaries unless there is a strong reason to change them
+- keep changes scoped to the relevant service whenever possible
+- do not commit `.env` files, private keys, database credentials, or other secrets
+- update docs or deployment notes when public behavior changes
+- preserve existing service boundaries unless cross-service changes are genuinely required
 
 ## License
 
-See [LICENSE](./LICENSE).
+This repository is released under the [MIT License](./LICENSE).
