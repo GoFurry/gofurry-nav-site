@@ -79,6 +79,10 @@ go run . serve --config conf/server.yaml
 
 The root command of every Go application only displays help. Running a service requires explicit `serve --config <file>`. Copy example configuration files for local use and never commit real keys or credentials.
 
+For day-to-day development, application code always runs on the developer workstation and may reach shared development PostgreSQL and Redis through Tailscale. Private local connection values live in the ignored root `.env`, which is used by Codex, Goose, and local configuration maintenance; applications never load it automatically. Runtime `server.yaml` files must use `gofurry_app` for PostgreSQL and the Redis ACL, while Goose exclusively uses `gofurry_migrator`.
+
+See [Local development](./docs/development.md) and [Shared development infrastructure](./docs/operations/dev-infrastructure.md) for the complete workflow.
+
 ## Build and Validation
 
 ```bat

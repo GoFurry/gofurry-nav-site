@@ -25,7 +25,7 @@ database:
   postgres:
     dsn: "" # 优先使用完整 DSN；为空时使用下面拆分字段。
     db_name: "gfa"
-    db_username: "postgres"
+    db_username: "gofurry_app" # Runtime DML role; Goose uses gofurry_migrator separately.
     db_password: "CHANGE_ME"
     db_host: "127.0.0.1"
     db_port: "5432"
@@ -45,7 +45,7 @@ business_databases:
     postgres:
       dsn: ""
       db_name: "gfn"
-      db_username: "postgres"
+      db_username: "gofurry_app" # Runtime DML role; Goose uses gofurry_migrator separately.
       db_password: "CHANGE_ME"
       db_host: "127.0.0.1"
       db_port: "5432"
@@ -63,7 +63,7 @@ business_databases:
     postgres:
       dsn: ""
       db_name: "gfg"
-      db_username: "postgres"
+      db_username: "gofurry_app" # Runtime DML role; Goose uses gofurry_migrator separately.
       db_password: "CHANGE_ME"
       db_host: "127.0.0.1"
       db_port: "5432"
@@ -78,7 +78,7 @@ business_databases:
 
 redis:
   enabled: true
-  redis_username: ""
+  redis_username: "gofurry_app" # Runtime ACL user; empty remains compatible with password-only Redis.
   redis_addr: "127.0.0.1:6379"
   redis_password: "CHANGE_ME"
   redis_db: 0

@@ -33,7 +33,8 @@ Infrastructure administration is restricted to the project owner and explicitly 
 Repository-level architecture and development contracts remain authoritative:
 
 - `AGENTS.md`
-- `docs/architecture.md`
+- `.agents/architecture.md`
+- `.agents/playbook.md`
 - `docs/development.md`
 - `contracts/database.md`
 - `db/README.md`
@@ -247,11 +248,7 @@ db/admin/migrations
 
 Applications must not create or migrate schema at startup.
 
-The shared development infrastructure was initially bootstrapped with a generic `gofurry_dev` database. The repository contract now requires `gfn`, `gfg`, and `gfa`.
-
-**Until that migration is completed and verified, do not import production application data into the development PostgreSQL instance.**
-
-The intended privilege model is:
+The shared cluster currently has all three databases, initialized from empty databases through the repository's Goose migrations. The current privilege model is:
 
 ```text
 infrastructure admin
@@ -267,7 +264,15 @@ gofurry_readonly
     └── read-only inspection
 ```
 
-Before relying on these roles, inspect the live PostgreSQL cluster and confirm which parts of the intended model are already applied.
+All runtime `server.yaml` files use `gofurry_app`. Goose uses `gofurry_migrator` only, GUI/manual inspection uses `gofurry_readonly`, and `gofurry_admin` remains infrastructure-administration-only. Do not bypass this separation for debugging convenience.
+
+Current development data is intentionally selective:
+
+- `gfn` contains production-derived public/current content needed for Nav development.
+- `gfg` contains production-derived catalog/current read-model data needed for Game development.
+- `gfa` deliberately contains no migrated production identity or audit data.
+
+This is not a contract to bulk-copy production databases. Any later refresh must remain scoped, sanitized where necessary, and explicitly authorized.
 
 Production credentials must never be reused in development.
 
@@ -275,16 +280,16 @@ Production credentials must never be reused in development.
 
 Redis is shared development infrastructure, not production cache state.
 
-Development Redis should normally be allowed to start from empty cache state. Do not clone production Redis into this host as a default development workflow.
+Development Redis starts from independent cache state; production Redis cache is not copied into this host.
 
-The intended access model separates:
+The access model separates:
 
 - infrastructure/admin access
-- application access
+- runtime application access through the `gofurry_app` ACL user
 
-Application credentials should not receive Redis administrative or dangerous command categories.
+Application credentials do not receive Redis administrative or dangerous command categories. A Redis GUI receiving an authorization error for `INFO` while normal application commands work is expected least-privilege behavior, not evidence that the application ACL should be broadened.
 
-Before changing ACLs, inspect the current live Redis configuration and the Compose definition. Do not assume that a planned ACL change has already been applied.
+Before changing ACLs, inspect the current live Redis configuration and the Compose definition. Never widen permissions merely to make an administrative GUI command succeed.
 
 ## 9. MongoDB model
 
@@ -359,6 +364,8 @@ Do not add public listeners or reverse-proxy routes merely because Nginx is inst
 
 Backup automation and restore drills must be treated as operational contracts, not as assumptions.
 
+The repository documents the required coverage and safe procedure, but contains no evidence proving that the current server backup automation or a restore drill has passed. Verify live server records before reporting either as successful.
+
 The final PostgreSQL backup design must cover all active application databases:
 
 ```text
@@ -389,7 +396,8 @@ When an authorized Codex session is asked to maintain this server, follow this o
 
 ```text
 AGENTS.md
-docs/architecture.md
+.agents/architecture.md
+.agents/playbook.md
 docs/development.md
 contracts/database.md
 db/README.md
@@ -494,23 +502,8 @@ contents of /srv/gofurry-dev/credentials/
 
 Operational structure, service names, local ports, container images, role names, filesystem layout, and recovery procedures are not secrets by themselves and may be documented publicly.
 
-## 16. Current next infrastructure task
+## 16. Current database state
 
-The next planned database task is to align the shared PostgreSQL instance with the monorepo contract:
+As of 2026-09-06, the earlier generic-database transition is complete: `gfn`, `gfg`, and `gfa` exist and were initialized from empty databases by Goose. The selective `gfn` and `gfg` development datasets and intentionally development-only `gfa` identity/audit state are described in section 7. Redis remains an independent development cache as described in section 8.
 
-```text
-generic development database
-        ↓
-gfn + gfg + gfa
-```
-
-That work should include:
-
-- database creation
-- privilege verification
-- Goose migrations from empty databases
-- backup coverage for all three databases
-- restore drills against temporary databases
-- only then, controlled preparation of development data
-
-Do not bulk-copy the production databases before this contract alignment is complete.
+Backup coverage and restore-drill success are separate operational checks. Do not infer them from database existence or migration success, and never claim PASS without live evidence.

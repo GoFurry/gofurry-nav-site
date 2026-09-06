@@ -20,11 +20,24 @@ func TestExampleConfigDecodesWithYAMLV3(t *testing.T) {
 	if cfg.Server.Mode != "debug" || cfg.Server.Port != "9998" || cfg.DataBase.DBName != "gfg" {
 		t.Fatalf("example config fields changed semantics: %+v", cfg)
 	}
+	if cfg.Redis.RedisUsername != "gofurry_app" {
+		t.Fatalf("redis username = %q, want gofurry_app", cfg.Redis.RedisUsername)
+	}
 	if cfg.Middleware.Cors.AllowOrigins == "" || !cfg.Middleware.Limiter.IsOn {
 		t.Fatalf("middleware config fields were not decoded: %+v", cfg.Middleware)
 	}
 	if cfg.DataBase.MaxConns != 12 || cfg.DataBase.ConnectTimeoutSeconds != 5 || cfg.DataBase.PingTimeoutSeconds != 3 {
 		t.Fatalf("database pool config was not decoded: %+v", cfg.DataBase)
+	}
+}
+
+func TestRedisUsernameIsOptional(t *testing.T) {
+	var cfg serverConfig
+	if err := yaml.Unmarshal([]byte("redis:\n  redis_addr: 127.0.0.1:6379\n"), &cfg); err != nil {
+		t.Fatal(err)
+	}
+	if cfg.Redis.RedisUsername != "" {
+		t.Fatalf("omitted redis username = %q, want empty", cfg.Redis.RedisUsername)
 	}
 }
 

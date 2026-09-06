@@ -79,6 +79,10 @@ go run . serve --config conf/server.yaml
 
 六个 Go 程序的根命令只显示帮助；运行服务必须显式使用 `serve --config <file>`。示例配置只用于复制，不要提交真实密钥或凭据。
 
+日常开发时，应用代码始终在开发者电脑运行；可通过 Tailscale 连接共享开发 PostgreSQL 和 Redis。私有本机连接值放在被忽略的根目录 `.env` 中，由 Codex、Goose 和本地配置维护流程使用，应用不会自动加载它。runtime `server.yaml` 必须使用 `gofurry_app`（PostgreSQL 与 Redis ACL），Goose 则仅使用 `gofurry_migrator`。
+
+完整流程见 [本地开发文档](./docs/development.md) 和 [共享开发基础设施](./docs/operations/dev-infrastructure.md)。
+
 ## 构建与验证
 
 ```bat

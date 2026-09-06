@@ -146,6 +146,7 @@ type ThreadConfig struct {
 
 type RedisConfig struct {
 	RedisAddr      string `yaml:"redis_addr"`
+	RedisUsername  string `yaml:"redis_username"`
 	RedisPassword  string `yaml:"redis_password"`
 	TimeoutSeconds int    `yaml:"timeout_seconds"`
 }
