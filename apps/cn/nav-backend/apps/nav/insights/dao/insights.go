@@ -210,6 +210,7 @@ func (d *InsightsDAO) ListOverviewChanges(ctx context.Context, detectorKeys, con
 	for _, row := range rows {
 		result = append(result, models.ChangeRecord{
 			EntityID: row.SiteID, EntityName: row.SiteName, DetectorKey: row.DetectorKey,
+			VisualAsset:     row.Icon,
 			DetectorVersion: row.DetectorVersion, EventCode: row.EventCode,
 			ProjectionDate: row.ProjectionDate.Time, TimeBasis: row.TimeBasis, EventAt: timestampPointer(row.EventAt),
 		})

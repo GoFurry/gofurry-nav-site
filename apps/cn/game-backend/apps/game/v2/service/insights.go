@@ -342,9 +342,13 @@ func insightPublicChanges(records []v2models.InsightChangeRecord) []v2models.Ins
 		if record.TimeBasis != "day" {
 			occurredAt = record.EventAt
 		}
+		entity := v2models.InsightEntityRef{ID: record.EntityID, Name: record.EntityName}
+		if asset := normalizeSteamAssetURL(record.VisualAsset); asset != "" {
+			entity.Visual = &v2models.InsightEntityVisual{Kind: "game_header", Asset: asset}
+		}
 		result = append(result, v2models.InsightChange{
 			Type: publicType, Date: insightFormatDate(record.ProjectionDate), OccurredAt: occurredAt,
-			Entity: v2models.InsightEntityRef{ID: record.EntityID, Name: record.EntityName}, Detail: nil,
+			Entity: entity, Detail: nil,
 		})
 	}
 	return result

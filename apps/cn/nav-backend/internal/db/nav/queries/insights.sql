@@ -178,6 +178,7 @@ WITH newest AS (
 )
 SELECT newest.site_id,
        COALESCE(NULLIF(history.name, ''), NULLIF(site.name, ''), '')::text AS site_name,
+       COALESCE(site.icon, '')::text AS icon,
        newest.detector_key,
        newest.detector_version,
        newest.event_code,

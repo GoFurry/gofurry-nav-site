@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { existsSync, readFileSync, readdirSync } from 'node:fs'
+import { registerHooks } from 'node:module'
 import { formatInsightChangeWhen, insightChangeOrder } from '../app/utils/insightChanges.ts'
 import { formatCnyMinorAmount, formatMinorAmount, priceSegmentKey, publicPriceDisplay } from '../app/utils/insightPrices.ts'
 import { formatInsightRatio, normalizeInsightSlice } from '../app/utils/insightDimensions.ts'
@@ -7,6 +8,37 @@ import { insightCompareReady, parseInsightCompareIDs } from '../app/utils/insigh
 import { formatGameInsightAxisDate, gameDetailInsightRanges } from '../app/utils/insightHistoryRanges.ts'
 import { steamSharedAssetCandidates } from '../app/utils/steamAssets.ts'
 import { insightsPrimaryItems, insightsDomainItems, isInsightsPrimaryActive, isInsightsDomainActive } from '../app/components/insights/navigation/navigation.ts'
+
+// Resolve the same extensionless relative TS imports Nuxt supports, without a test dependency.
+const tsImports = registerHooks({ resolve(specifier, context, nextResolve) {
+  if (specifier.startsWith('./') && context.parentURL?.endsWith('.ts')) {
+    const candidate = new URL(`${specifier}.ts`, context.parentURL)
+    if (existsSync(candidate)) return nextResolve(candidate.href, context)
+  }
+  return nextResolve(specifier, context)
+} })
+const { overviewActivity, overviewSiteIdentities, overviewGeneratedAt, overviewSignal, formatOverviewDelta, selectOverviewPulse, pulseDiscountPrice, overviewSiteMetricKeys, overviewExploreGroups, overviewChangesPath } = await import('../app/utils/insightOverview.ts')
+tsImports.deregister()
+
+assert(overviewSiteMetricKeys.join(',') === 'tls13,ipv6,security_txt', 'Overview site signal contract changed')
+assert(formatOverviewDelta(0.042) === '+4.2%' && formatOverviewDelta(-0.011) === '-1.1%', 'ratio delta lost its percentage-point scale or sign')
+assert(formatOverviewDelta(null) === '—' && overviewSignal(null) === null, 'missing signal became zero')
+assert(overviewSignal(-1) === 0 && overviewSignal(2) === 1 && overviewSignal(0.42) === 0.42, 'progress escaped its accessible 0..1 range')
+const overviewNav = { generated_at: '2026-09-01T10:00:00Z', recent_changes: [
+  { date: '2026-09-01', occurred_at: null, entity: { id: 1 } },
+  { date: '2026-08-30', occurred_at: null, entity: { id: 1 } },
+] }
+const overviewGame = { generated_at: '2026-09-01T12:00:00Z', recent_changes: Array.from({ length: 6 }, (_, id) => ({ date: '2026-09-01', occurred_at: `2026-09-01T0${id}:00:00Z`, entity: { id } })) }
+assert(overviewGeneratedAt(overviewNav, overviewGame) === '2026-09-01T10:00:00.000Z', 'snapshot time did not conservatively use the earlier response')
+assert(overviewGeneratedAt(null, overviewGame) === '2026-09-01T12:00:00.000Z' && overviewGeneratedAt(null, null) === null, 'independent snapshot availability failed')
+assert(overviewActivity(overviewNav, overviewGame).length === 5 && overviewActivity(overviewNav, overviewGame)[0].entity.id === 5, 'activity lost its one hero plus four limit or event ordering')
+assert(overviewActivity(overviewNav, null).every(item => item.domain === 'site') && overviewSiteIdentities(overviewNav).length === 1, 'one-source activity or site identity deduplication failed')
+const usPrice = { region: 'US', available: true, currency: 'USD', final_amount: 599, discount_percent: 50 }
+const pulseGame = id => ({ id, online_count: { status: 'success', count: 0 }, prices: [usPrice], price: { ...usPrice, region: 'CN', currency: 'CNY' } })
+const selectedPulse = selectOverviewPulse({ top_online: [pulseGame('1')], highest_discount: [pulseGame('1'), pulseGame('2')], latest_games: [pulseGame('1'), pulseGame('2'), pulseGame('3')] })
+assert(selectedPulse.players.id === '1' && selectedPulse.discount.id === '2' && selectedPulse.latest.id === '3', 'Pulse candidate priority or deterministic dedupe changed')
+assert(pulseDiscountPrice(pulseGame('1')).currency === 'USD', 'US-ranked discount silently used CN display price')
+assert(selectOverviewPulse(null).players === null && selectOverviewPulse({ top_online: [{ ...pulseGame('1'), online_count: { status: 'unknown', count: 0 } }] }).players === null, 'missing player observations became zero')
 
 const freePoint = {
   date: '2026-08-28', state: 'free', currency: null,
@@ -78,6 +110,26 @@ const domainPaths = {
   site: ['/insights/sites', '/insights/sites/certificates', '/insights/sites/compare'],
   game: ['/insights/games', '/insights/games/players', '/insights/games/prices', '/insights/games/languages', '/insights/games/compare'],
 }
+for (const domain of ['site', 'game']) {
+  assert(overviewExploreGroups[domain].map(item => item.path).join('|') === domainPaths[domain].join('|'), `Overview ${domain} destinations changed`)
+  for (const item of overviewExploreGroups[domain]) {
+    for (const messages of [zh, en]) assert(messages.insights.editorial.links[item.key]?.description, `Overview ${item.path} lost its localized description`)
+  }
+}
+assert(overviewChangesPath === '/insights/changes', 'Overview Changes destination changed')
+const overviewSource = readFileSync(new URL('../app/pages/insights/index.vue', import.meta.url), 'utf8')
+assert(overviewSource.includes("<h1>{{ $t('insights.overview.title') }}</h1>"), 'Overview lost its visible localized H1')
+assert(overviewSource.includes('EcosystemNavigation') && !overviewSource.includes('InsightsStats'), 'Overview navigation or typography statistics regressed')
+assert(overviewSource.includes('Promise.allSettled') && overviewSource.includes('getGameV2Panel(locale.value)'), 'Overview lost independent sources or reused Panel request')
+const mediaSource = readFileSync(new URL('../app/components/insights/entity/InsightEntityMedia.vue', import.meta.url), 'utf8')
+assert(mediaSource.includes(':alt="entity.name"') && mediaSource.includes(':aria-label="entity.name"') && mediaSource.includes('@error="onError"'), 'entity media lost accessible identity or error fallback')
+assert(mediaSource.includes('useSiteAssets()') && mediaSource.includes("'lazy'"), 'entity media lost existing Site resolver or native lazy loading')
+for (const path of ['activity/InsightActivityItem.vue', 'overview/InsightsOverviewSites.vue', 'overview/InsightsOverviewGamePulse.vue']) {
+  const source = readFileSync(new URL(`../app/components/insights/${path}`, import.meta.url), 'utf8')
+  assert(source.includes('localePath('), `${path} lost localized entity links`)
+  assert(!/\b(?:fetch|useFetch|useAsyncData|onMounted)\s*\(|from ['"]@\/services\//.test(source), `${path} added per-entity fetching`)
+}
+assert(!/\b(?:fetch|useFetch|useAsyncData)\s*\(|from ['"]@\/services\//.test(mediaSource), 'media added N+1 fetching')
 assert(insightsPrimaryItems.map(item => item.path).join('|') === primaryPaths.join('|'), 'Primary navigation URL contract changed')
 for (const domain of ['site', 'game']) {
   assert(insightsDomainItems[domain].map(item => item.path).join('|') === domainPaths[domain].join('|'), `${domain} navigation URL contract changed`)

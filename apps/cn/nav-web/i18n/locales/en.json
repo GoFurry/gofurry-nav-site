@@ -595,6 +595,66 @@
       "games": "Games",
       "changes": "Changes"
     },
+    "editorial": {
+      "description": "A view of the furry community through public data.",
+      "snapshot": "Snapshot generated",
+      "activityKicker": "Recent changes across the ecosystem",
+      "activityTitle": "What's happening",
+      "allChanges": "All changes",
+      "sitesKicker": "Technology & connections",
+      "sitesTitle": "Site ecosystem",
+      "sitesDescription": "Follow the adoption of secure connections and open standards.",
+      "gamesKicker": "Players & releases",
+      "gamesTitle": "Game ecosystem",
+      "explore": "Explore",
+      "deltaWindow": "/ 30 days",
+      "recentSites": "Sites with recent changes",
+      "pulse": {
+        "players": "Most active",
+        "discount": "Discount watch",
+        "latest": "Recent releases"
+      },
+      "playersUnit": "players",
+      "latestObservation": "Latest player observation",
+      "discount": "{percent}% off",
+      "usRegion": "US",
+      "exploreKicker": "Follow the data",
+      "exploreTitle": "Explore deeper",
+      "links": {
+        "sites": {
+          "title": "Site ecosystem",
+          "description": "Technology adoption, trends and distribution"
+        },
+        "certificates": {
+          "title": "Certificates",
+          "description": "Expiry and verification status"
+        },
+        "siteCompare": {
+          "title": "Compare sites",
+          "description": "View site capabilities side by side"
+        },
+        "games": {
+          "title": "Game ecosystem",
+          "description": "Platform support and distribution"
+        },
+        "players": {
+          "title": "Players",
+          "description": "Player observations and activity"
+        },
+        "prices": {
+          "title": "Prices",
+          "description": "Regional prices and discounts"
+        },
+        "languages": {
+          "title": "Languages",
+          "description": "Language support and coverage"
+        },
+        "gameCompare": {
+          "title": "Compare games",
+          "description": "Compare platforms, prices and player observations"
+        }
+      }
+    },
     "overview": {
       "eyebrow": "PUBLIC ECOSYSTEM",
       "title": "Ecosystem",

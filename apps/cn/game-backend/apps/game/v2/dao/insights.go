@@ -348,6 +348,7 @@ func (d *InsightsDAO) ListInsightOverviewChanges(ctx context.Context, detectorKe
 	for _, row := range rows {
 		result = append(result, v2models.InsightChangeRecord{
 			EntityID: row.GameID, EntityName: row.GameName, DetectorKey: row.DetectorKey,
+			VisualAsset:     row.HeaderUrl,
 			DetectorVersion: row.DetectorVersion, EventCode: row.EventCode,
 			ProjectionDate: row.ProjectionDate.Time, TimeBasis: row.TimeBasis, EventAt: timestampPointer(row.EventAt),
 		})

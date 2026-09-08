@@ -595,6 +595,66 @@
       "games": "游戏生态",
       "changes": "变化探索"
     },
+    "editorial": {
+      "description": "从公开数据中，看见兽圈正在发生什么。",
+      "snapshot": "快照生成于",
+      "activityKicker": "最近的生态变化",
+      "activityTitle": "正在发生",
+      "allChanges": "全部变化",
+      "sitesKicker": "技术与连接",
+      "sitesTitle": "站点生态",
+      "sitesDescription": "从安全传输到开放协议，观察站点技术能力的采用。",
+      "gamesKicker": "玩家与作品",
+      "gamesTitle": "游戏生态",
+      "explore": "继续观测",
+      "deltaWindow": "/ 30 天",
+      "recentSites": "最近发生变化的站点",
+      "pulse": {
+        "players": "当前最活跃",
+        "discount": "折扣观察",
+        "latest": "近期发行"
+      },
+      "playersUnit": "位玩家",
+      "latestObservation": "最近一次玩家观测",
+      "discount": "减价 {percent}%",
+      "usRegion": "美国区",
+      "exploreKicker": "沿着数据继续探索",
+      "exploreTitle": "深入观测",
+      "links": {
+        "sites": {
+          "title": "站点生态",
+          "description": "技术采用、趋势与生态分布"
+        },
+        "certificates": {
+          "title": "证书观测",
+          "description": "有效期与验证状态"
+        },
+        "siteCompare": {
+          "title": "站点对比",
+          "description": "并列查看站点技术能力"
+        },
+        "games": {
+          "title": "游戏生态",
+          "description": "平台支持与生态分布"
+        },
+        "players": {
+          "title": "玩家",
+          "description": "玩家观测与活跃度"
+        },
+        "prices": {
+          "title": "价格",
+          "description": "地区价格与折扣"
+        },
+        "languages": {
+          "title": "语言",
+          "description": "语言支持与覆盖"
+        },
+        "gameCompare": {
+          "title": "游戏对比",
+          "description": "比较平台、价格与玩家观测"
+        }
+      }
+    },
     "overview": {
       "eyebrow": "PUBLIC ECOSYSTEM",
       "title": "生态观测",

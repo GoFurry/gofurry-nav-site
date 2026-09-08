@@ -100,6 +100,7 @@ export interface InsightDimensionTrend {
 export interface InsightEntityRef {
   id: number
   name: string
+  visual?: { kind: 'site_icon' | 'game_header', asset: string | null }
 }
 
 export interface InsightChange {

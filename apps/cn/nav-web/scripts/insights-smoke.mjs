@@ -1,7 +1,13 @@
 #!/usr/bin/env node
 import { launchPerfBrowser, normalizeBaseUrl, parseArgs, toAbsoluteUrl } from './perf/shared.mjs'
+import { mockOverview, mockGamePanel } from './fixtures/insights-overview.mjs'
 
 const args = parseArgs()
+if (args['overview-fixtures']) {
+  const { runOverviewSmoke } = await import('./insights-overview-smoke.mjs')
+  await runOverviewSmoke()
+  process.exit(0)
+}
 const baseUrl = normalizeBaseUrl(args['base-url'] || process.env.INSIGHTS_BASE_URL || 'http://localhost:3000')
 const entitySiteId = args['entity-site-id'] || process.env.INSIGHTS_SITE_ID || ''
 const entitySiteDomain = args['entity-site-domain'] || process.env.INSIGHTS_SITE_DOMAIN || 'target.example'
@@ -279,21 +285,6 @@ try {
   await page.waitForURL(url => url.searchParams.get('metric') === 'security_txt' && url.searchParams.get('dimension') === 'group' && url.searchParams.get('slice') === '12')
   console.log('[insights] dimension URL state, slice selection, shared range, and isolated trend passed')
 
-  const mockOverview = (domain) => ({
-    generated_at: '2026-09-01T12:00:00Z',
-    entity_count: domain === 'site' ? 12 : 8,
-    changes_7d: 2,
-    metrics: [],
-    recent_changes: domain === 'site'
-      ? [
-          { type: 'site.ipv6.enabled', date: '2026-09-01', occurred_at: null, entity: { id: 41, name: 'Site fixture' }, detail: null },
-          { type: 'site.tls13.disabled', date: '2026-08-31', occurred_at: null, entity: { id: 42, name: 'Site failure fixture' }, detail: null },
-        ]
-      : [
-          { type: 'game.windows.added', date: '2026-09-01', occurred_at: '2026-09-01T12:00:00Z', entity: { id: 82, name: 'Game fixture' }, detail: null },
-          { type: 'game.linux.added', date: '2026-08-31', occurred_at: '2026-08-31T12:00:00Z', entity: { id: 83, name: 'Game failure fixture' }, detail: null },
-        ],
-  })
   await page.route('**/api/v2/nav/insights/overview', route => route.fulfill({
     status: 200,
     contentType: 'application/json',
@@ -303,6 +294,9 @@ try {
     status: 200,
     contentType: 'application/json',
     body: JSON.stringify({ code: 1, data: mockOverview('game') }),
+  }))
+  await page.route('**/api/v2/game/panel/main**', route => route.fulfill({
+    status: 200, contentType: 'application/json', body: JSON.stringify({ code: 1, data: mockGamePanel() }),
   }))
   await page.route('**/api/v2/nav/sites/*/detail**', (route) => {
     const id = Number(new URL(route.request().url()).pathname.match(/sites\/(\d+)\/detail/)?.[1] || 0)

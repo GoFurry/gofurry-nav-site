@@ -119,6 +119,12 @@ Game public types cover free/paid, Windows, macOS, Linux, release availability/p
 
 Overview feeds apply the public whitelist, keep the newest eligible event per entity, order newest first, and return at most eight. Entity timelines do not deduplicate by entity and return at most twenty.
 
+Overview changes may include `entity.visual: { kind, asset }`. `site_icon` carries the existing Site icon filename/key (or an existing absolute reference), resolved by Nav Web's `useSiteAssets`; `game_header` carries an existing absolute Game V2 header reference. Game headers follow the default Chinese public asset preference (header before header_2x, zh/en/unlocalized), then existing media/details/game-header fallbacks. These are current presentation assets, not historical event facts. Missing references and other EntityRef uses omit `visual`; no image collection or per-entity request is introduced.
+
+The editorial `/insights` entry merges the two Overview feeds into one leading event plus at most four compact events. Its third independent source is the existing `/game/panel/main`: player observations, US-ranked discounts displayed in their original currency/region, and recent releases. It adds no endpoint. `generated_at` labels snapshot generation, using the earlier available Overview response when both exist; it is not an observation timestamp or a shared backend snapshot.
+
+Run `npm run insights:smoke -- --overview-fixtures` from Nav Web after a production build for an isolated Overview smoke with a temporary loopback upstream/server. This covers SSR, the three independent failure states, media fallbacks and zh/en responsive layouts without a database or live CDN. The regular `insights:smoke` continues to exercise the wider live-data contracts. Screenshots from the fixture run are written to the OS temporary directory, outside Git.
+
 ## Change Explorer contract
 
 The domain-specific Explorer endpoints expose the complete approved public stream without overview entity deduplication. `/insights/changes` selects exactly one domain (`site` or `game`) in the UI; the P1 overview remains the only cross-domain recent feed.

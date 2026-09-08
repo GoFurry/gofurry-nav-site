@@ -8,6 +8,7 @@ Development work that has not been released stays under `Unreleased`. Formal rep
 
 ### Changed
 
+- Recompose the Ecosystem overview as an editorial entry with independent Site/Game snapshots, recent entity activity, existing Game Panel highlights, and optional Overview image references; preserve domain pages and SEO contracts.
 - Establish the Ecosystem Observatory visual foundation with scoped layout tokens and stacked, accessible primary/domain text navigation while preserving existing page content and URLs.
 - Redesign the public Nuxt error experience with immersive theme-aware artwork, staged accessible transitions, localized 404/5xx copy, and dedicated recovery actions.
 - Redesign the Game detail ecosystem tab around a unified player/price/state overview, dual-series player history, reliable price tooltips, and responsive compact/list change timelines.

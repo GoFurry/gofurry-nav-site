@@ -350,3 +350,20 @@ func TestExplorerCursorBindsFiltersAndFrozenRangeWithoutDedupe(t *testing.T) {
 		t.Fatalf("exact public type filter = %#v, %v", contracts, ok)
 	}
 }
+
+func TestOverviewEntityVisualIsOptionalPresentationOnly(t *testing.T) {
+	base := models.ChangeRecord{EntityID: 41, EntityName: "Site", DetectorKey: "ipv6_transition", DetectorVersion: 2, EventCode: "ipv6_enabled", ProjectionDate: time.Date(2026, 9, 1, 0, 0, 0, 0, time.UTC), TimeBasis: "day"}
+	withVisual := base
+	withVisual.VisualAsset = "site-icon.png"
+	changes := publicChanges([]models.ChangeRecord{withVisual, base})
+	if len(changes) != 2 || changes[0].Entity.Visual == nil || changes[0].Entity.Visual.Kind != "site_icon" || changes[0].Entity.Visual.Asset != "site-icon.png" {
+		t.Fatalf("overview icon reference lost: %+v", changes)
+	}
+	if changes[0].Type != changes[1].Type || changes[0].Date != changes[1].Date || changes[0].OccurredAt != nil || changes[0].Detail != nil {
+		t.Fatalf("presentation changed the event: %+v", changes)
+	}
+	payload, err := json.Marshal(changes[1].Entity)
+	if err != nil || strings.Contains(string(payload), "visual") {
+		t.Fatalf("ordinary EntityRef must omit visual: %s (%v)", payload, err)
+	}
+}

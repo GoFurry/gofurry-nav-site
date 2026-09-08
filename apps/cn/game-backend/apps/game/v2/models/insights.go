@@ -74,8 +74,14 @@ type InsightDimensionTrend struct {
 }
 
 type InsightEntityRef struct {
-	ID   int64  `json:"id"`
-	Name string `json:"name"`
+	ID     int64                `json:"id"`
+	Name   string               `json:"name"`
+	Visual *InsightEntityVisual `json:"visual,omitempty"`
+}
+
+type InsightEntityVisual struct {
+	Kind  string `json:"kind"`
+	Asset string `json:"asset"`
 }
 
 type InsightChange struct {
@@ -540,6 +546,7 @@ type InsightPlayerPointRecord struct {
 type InsightChangeRecord struct {
 	EntityID        int64
 	EntityName      string
+	VisualAsset     string
 	DetectorKey     string
 	DetectorVersion int32
 	EventCode       string

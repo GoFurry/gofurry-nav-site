@@ -434,3 +434,21 @@ func TestPriceOverviewAndLanguageMathUseCorrectDenominators(t *testing.T) {
 }
 
 func boolPointer(value bool) *bool { return &value }
+
+func TestOverviewEntityVisualPreservesPublicHeaderAndOptionalShape(t *testing.T) {
+	asset := "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/123/digest/header.jpg?version=1"
+	base := v2models.InsightChangeRecord{EntityID: 82, EntityName: "Game", DetectorKey: "mac_support_transition", DetectorVersion: 1, EventCode: "mac_support_added", ProjectionDate: time.Date(2026, 9, 1, 0, 0, 0, 0, time.UTC), TimeBasis: "day"}
+	withVisual := base
+	withVisual.VisualAsset = asset
+	changes := insightPublicChanges([]v2models.InsightChangeRecord{withVisual, base})
+	if len(changes) != 2 || changes[0].Entity.Visual == nil || changes[0].Entity.Visual.Kind != "game_header" || changes[0].Entity.Visual.Asset != asset {
+		t.Fatalf("authoritative header reference changed: %+v", changes)
+	}
+	if changes[0].Type != changes[1].Type || changes[0].Date != changes[1].Date || changes[0].OccurredAt != nil || changes[0].Detail != nil {
+		t.Fatalf("presentation changed the event: %+v", changes)
+	}
+	payload, err := json.Marshal(changes[1].Entity)
+	if err != nil || strings.Contains(string(payload), "visual") {
+		t.Fatalf("ordinary EntityRef must omit visual: %s (%v)", payload, err)
+	}
+}

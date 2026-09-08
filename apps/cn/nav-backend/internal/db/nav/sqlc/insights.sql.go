@@ -891,6 +891,7 @@ WITH newest AS (
 )
 SELECT newest.site_id,
        COALESCE(NULLIF(history.name, ''), NULLIF(site.name, ''), '')::text AS site_name,
+       COALESCE(site.icon, '')::text AS icon,
        newest.detector_key,
        newest.detector_version,
        newest.event_code,
@@ -917,6 +918,7 @@ type ListNavInsightOverviewChangesParams struct {
 type ListNavInsightOverviewChangesRow struct {
 	SiteID          int64              `json:"site_id"`
 	SiteName        string             `json:"site_name"`
+	Icon            string             `json:"icon"`
 	DetectorKey     string             `json:"detector_key"`
 	DetectorVersion int32              `json:"detector_version"`
 	EventCode       string             `json:"event_code"`
@@ -937,6 +939,7 @@ func (q *Queries) ListNavInsightOverviewChanges(ctx context.Context, arg ListNav
 		if err := rows.Scan(
 			&i.SiteID,
 			&i.SiteName,
+			&i.Icon,
 			&i.DetectorKey,
 			&i.DetectorVersion,
 			&i.EventCode,

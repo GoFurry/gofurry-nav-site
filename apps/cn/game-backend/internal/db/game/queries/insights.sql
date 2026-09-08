@@ -555,6 +555,23 @@ WITH newest AS (
 )
 SELECT newest.game_id,
        COALESCE(NULLIF(history.name, ''), NULLIF(game.name, ''), '')::text AS game_name,
+       -- Match Game V2's default zh header selection: header before header_2x,
+       -- zh/en/unlocalized assets, then media, details, and the existing game header.
+       COALESCE(
+           (SELECT asset.url FROM public.gfg_game_assets asset
+            WHERE asset.game_id = newest.game_id
+              AND asset.asset_type IN ('header', 'header_2x')
+              AND asset.lang IN ('zh', 'en', '')
+              AND asset.exists IS DISTINCT FROM false AND BTRIM(asset.url) <> ''
+            ORDER BY CASE asset.asset_type WHEN 'header' THEN 0 ELSE 1 END,
+                     CASE asset.lang WHEN 'zh' THEN 0 WHEN 'en' THEN 1 ELSE 2 END,
+                     asset.asset_family, asset.sort_order, asset.id LIMIT 1),
+           NULLIF((SELECT media.url FROM public.gfg_game_media media
+                   WHERE media.game_id = newest.game_id AND media.media_type = 'header'
+                   ORDER BY media.sort_order DESC, media.id DESC LIMIT 1), ''),
+           NULLIF((SELECT details.header_url FROM public.gfg_game_details details
+                   WHERE details.game_id = newest.game_id), ''),
+           NULLIF(game.header, ''), '')::text AS header_url,
        newest.detector_key,
        newest.detector_version,
        newest.event_code,

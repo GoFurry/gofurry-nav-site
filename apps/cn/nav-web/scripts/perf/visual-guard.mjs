@@ -150,7 +150,7 @@ const visualScenarios = [
     path: '/insights',
     locale: 'zh-CN',
     rootSelector: '.insights-overview-page',
-    requiredSelectors: ['.insights-page', '.ecosystem-navigation', '.insights-primary-nav', '.insights-stats', '.insights-previews'],
+    requiredSelectors: ['.insights-page', '.ecosystem-navigation', '.insights-primary-nav', '[data-overview-header]', '[data-overview-activity]', '[data-overview-explore]'],
     optionalDataSelectors: ['.insights-change']
   }),
   ...makePageScenarios({

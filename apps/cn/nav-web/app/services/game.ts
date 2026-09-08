@@ -227,7 +227,7 @@ export function getLotteryParticipation(query: LotteryReq): Promise<ApiResult<st
   })
 }
 
-function getGameV2Panel(lang: string): Promise<GameV2PanelRecord> {
+export function getGameV2Panel(lang: string): Promise<GameV2PanelRecord> {
   return useApi('gameV2')('/game/panel/main', {
     query: {
       lang: normalizeGameLang(lang),
