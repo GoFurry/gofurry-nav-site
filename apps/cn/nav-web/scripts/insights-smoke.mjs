@@ -138,8 +138,8 @@ try {
   assert(patternState?.lightState.opacity === 0.065 && patternState.darkState.opacity === 0.045, 'public pattern theme opacity drifted')
   const desktopNavigation = await page.evaluate(() => {
     const shell = document.querySelector('.ecosystem-navigation')
-    const primary = document.querySelector('.insights-nav')
-    const context = document.querySelector('.site-intelligence-nav')
+    const primary = document.querySelector('.insights-primary-nav')
+    const context = document.querySelector('.insights-domain-nav[data-domain="site"]')
     if (!shell || !primary || !context) return null
     const primaryBox = primary.getBoundingClientRect()
     const contextBox = context.getBoundingClientRect()
@@ -151,20 +151,17 @@ try {
     const contextLinkStyle = contextLink ? getComputedStyle(contextLink) : null
     return {
       direction: getComputedStyle(shell).flexDirection,
-      primaryLeft: primaryBox.left,
-      contextLeft: contextBox.left,
-      centerDelta: Math.abs((primaryBox.top + primaryBox.height / 2) - (contextBox.top + contextBox.height / 2)),
-      containerHeightDelta: Math.abs(primaryBox.height - contextBox.height),
-      containerPaddingMatches: primaryStyle.padding === contextStyle.padding,
-      containerBorderMatches: primaryStyle.borderWidth === contextStyle.borderWidth && primaryStyle.borderRadius === contextStyle.borderRadius,
-      itemHeightDelta: primaryLink && contextLink ? Math.abs(primaryLink.getBoundingClientRect().height - contextLink.getBoundingClientRect().height) : Number.POSITIVE_INFINITY,
-      itemTypographyMatches: primaryLinkStyle?.fontSize === contextLinkStyle?.fontSize && primaryLinkStyle?.fontWeight === contextLinkStyle?.fontWeight,
-      itemPaddingMatches: primaryLinkStyle?.paddingInline === contextLinkStyle?.paddingInline,
+      alignedLeft: Math.abs(primaryBox.left - contextBox.left) <= 1,
+      stacked: contextBox.top >= primaryBox.bottom && contextBox.top - primaryBox.bottom <= 12,
+      plainSurfaces: [primaryStyle, contextStyle].every(style => style.boxShadow === 'none' && style.backgroundColor === 'rgba(0, 0, 0, 0)' && style.backgroundImage === 'none' && style.backdropFilter === 'none' && style.borderRadius === '0px'),
+      lowerDomainWeight: Number.parseFloat(contextLinkStyle?.fontSize) < Number.parseFloat(primaryLinkStyle?.fontSize) && Number(contextLinkStyle?.fontWeight) < Number(primaryLinkStyle?.fontWeight),
+      primaryActive: primary.querySelector('[aria-current="page"]')?.getAttribute('href'),
+      domainActive: context.querySelector('[aria-current="page"]')?.getAttribute('href'),
     }
   })
-  assert(desktopNavigation?.direction === 'row' && desktopNavigation.primaryLeft < desktopNavigation.contextLeft && desktopNavigation.centerDelta <= 2, 'desktop Ecosystem navigation was not left/right grouped')
-  assert(desktopNavigation?.containerHeightDelta <= 1 && desktopNavigation.containerPaddingMatches && desktopNavigation.containerBorderMatches, 'primary and context navigation containers do not share one visual specification')
-  assert(desktopNavigation?.itemHeightDelta <= 1 && desktopNavigation.itemTypographyMatches && desktopNavigation.itemPaddingMatches, 'primary and context navigation items do not share one visual specification')
+  assert(desktopNavigation?.direction === 'column' && desktopNavigation.alignedLeft && desktopNavigation.stacked, 'Ecosystem navigation did not stack primary and domain rows')
+  assert(desktopNavigation?.plainSurfaces && desktopNavigation.lowerDomainWeight, 'navigation lost its plain text-tab hierarchy')
+  assert(desktopNavigation?.primaryActive === '/insights/sites' && desktopNavigation.domainActive === '/insights/sites', 'Site navigation did not expose current primary and domain links')
   assert(await page.locator('.insights-hero').count() === 0, 'large Ecosystem hero remained visible')
   await page.waitForURL(url => url.searchParams.get('metric') === 'ipv6' && url.searchParams.get('range') === '30d' && url.searchParams.get('dimension') === 'country' && !url.searchParams.has('slice'))
   assert(await page.locator('.insights-domain-page').getAttribute('data-selected-metric') === 'ipv6', 'invalid metric was not normalized before rendering')
@@ -193,7 +190,7 @@ try {
     navigationDirection: getComputedStyle(document.querySelector('.ecosystem-navigation')).flexDirection,
   }))
   assert(mobileState.overflow <= 2, `mobile Insights page overflowed horizontally by ${mobileState.overflow}px`)
-  assert(mobileState.navigationDirection === 'column', 'small-screen Ecosystem navigation did not split into two centered rows')
+  assert(mobileState.navigationDirection === 'column', 'small-screen Ecosystem navigation did not preserve stacked rows')
   for (const forbidden of ['undefined', 'NaN', 'null%']) {
     assert(!mobileState.text.includes(forbidden), `mobile Insights page exposed ${forbidden}`)
   }
@@ -448,7 +445,7 @@ try {
   })
   await page.goto(toAbsoluteUrl(baseUrl, '/insights/sites?metric=ipv6&range=30d&dimension=country'), { waitUntil: 'domcontentloaded' })
   await page.waitForTimeout(500)
-  await page.locator('.insights-nav__link[href="/insights"]').click()
+  await page.locator('.insights-primary-nav__link[href="/insights"]').click()
   await page.waitForURL(url => url.pathname === '/insights')
   await page.waitForSelector('[data-change-link][href="/site/41"]')
   await page.waitForSelector('[data-change-link][href="/games/82"]')
@@ -547,19 +544,19 @@ try {
     items: [{ code: 'en', steam_name: 'English', supported_games: 2, share: 1, explicit_full_audio_games: 1, explicit_full_audio_share: 0.5 }],
   } }) }))
 
-  await page.locator('.game-intelligence-nav a[href="/insights/games/players"]').click()
+  await page.locator('.insights-domain-nav[data-domain="game"] a[href="/insights/games/players"]').click()
   await page.waitForSelector('[data-player-intelligence]')
   await page.getByRole('button', { name: '30 天观测均值', exact: true }).click()
   await page.waitForURL(url => url.searchParams.get('metric') === 'average_30d')
   await page.getByText('112 个成功样本', { exact: false }).waitFor()
   assert((await page.locator('.intelligence-table tbody tr td').nth(2).textContent())?.trim() === '0', 'Player ranking lost a real zero')
-  await page.locator('.game-intelligence-nav a[href="/insights/games/prices"]').click()
+  await page.locator('.insights-domain-nav[data-domain="game"] a[href="/insights/games/prices"]').click()
   await page.waitForSelector('[data-regional-price-intelligence]')
   await page.getByRole('button', { name: '香港', exact: true }).click()
   await page.waitForURL(url => url.searchParams.get('region') === 'HK')
   await page.getByText('Priced zero fixture', { exact: true }).waitFor()
   assert(await page.locator('.intelligence-panel .intelligence-table').count() === 1, 'Price overview failure broke the independent discount list')
-  await page.locator('.game-intelligence-nav a[href="/insights/games/languages"]').click()
+  await page.locator('.insights-domain-nav[data-domain="game"] a[href="/insights/games/languages"]').click()
   await page.waitForSelector('[data-language-intelligence]')
   await page.getByText('明确标注完整音频', { exact: true }).waitFor()
   await page.getByText('语言是重叠分布，各语言比例不能相加推导 100%。', { exact: true }).waitFor()
@@ -643,6 +640,24 @@ try {
   await page.waitForFunction(() => document.querySelectorAll('.insights-change-explorer-item').length === 2)
   assert(!new URL(page.url()).searchParams.has('cursor'), 'Load More placed cursor in URL')
   console.log('[insights] Change Explorer filters, reset, Load More, and cursor URL isolation passed')
+
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.goto(toAbsoluteUrl(baseUrl, '/en/insights/games/prices'), { waitUntil: 'domcontentloaded' })
+  await page.waitForSelector('.insights-domain-nav[data-domain="game"]')
+  await page.waitForTimeout(500)
+  await page.keyboard.press('Tab')
+  for (const selector of ['.insights-primary-nav', '.insights-domain-nav']) {
+    const links = page.locator(`${selector} a`)
+    await links.first().focus()
+    for (let index = 1; index < await links.count(); index += 1) await page.keyboard.press('Tab')
+    const focus = await links.last().evaluate(link => {
+      const box = link.getBoundingClientRect()
+      const nav = link.closest('nav').getBoundingClientRect()
+      return link === document.activeElement && link.matches(':focus-visible') && getComputedStyle(link).outlineStyle === 'solid' && box.left >= nav.left - 1 && box.right <= nav.right + 1
+    })
+    assert(focus, `${selector} did not keep the last keyboard-focused mobile link fully visible`)
+  }
+  console.log('[insights] mobile text navigation keyboard focus and horizontal scrolling passed')
 
   await context.close()
   console.log('[insights] URL state, locale preservation, interactions, and mobile overflow passed')

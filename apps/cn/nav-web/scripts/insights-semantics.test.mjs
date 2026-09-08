@@ -6,6 +6,7 @@ import { formatInsightRatio, normalizeInsightSlice } from '../app/utils/insightD
 import { insightCompareReady, parseInsightCompareIDs } from '../app/utils/insightCompare.ts'
 import { formatGameInsightAxisDate, gameDetailInsightRanges } from '../app/utils/insightHistoryRanges.ts'
 import { steamSharedAssetCandidates } from '../app/utils/steamAssets.ts'
+import { insightsPrimaryItems, insightsDomainItems, isInsightsPrimaryActive, isInsightsDomainActive } from '../app/components/insights/navigation/navigation.ts'
 
 const freePoint = {
   date: '2026-08-28', state: 'free', currency: null,
@@ -72,6 +73,45 @@ for (const candidate of assetCandidates) {
 
 const zh = JSON.parse(readFileSync(new URL('../i18n/locales/zh.json', import.meta.url), 'utf8'))
 const en = JSON.parse(readFileSync(new URL('../i18n/locales/en.json', import.meta.url), 'utf8'))
+const primaryPaths = ['/insights', '/insights/sites', '/insights/games', '/insights/changes']
+const domainPaths = {
+  site: ['/insights/sites', '/insights/sites/certificates', '/insights/sites/compare'],
+  game: ['/insights/games', '/insights/games/players', '/insights/games/prices', '/insights/games/languages', '/insights/games/compare'],
+}
+assert(insightsPrimaryItems.map(item => item.path).join('|') === primaryPaths.join('|'), 'Primary navigation URL contract changed')
+for (const domain of ['site', 'game']) {
+  assert(insightsDomainItems[domain].map(item => item.path).join('|') === domainPaths[domain].join('|'), `${domain} navigation URL contract changed`)
+}
+for (const item of [...insightsPrimaryItems, ...insightsDomainItems.site, ...insightsDomainItems.game]) {
+  for (const messages of [zh, en]) {
+    assert(typeof item.label.split('.').reduce((value, key) => value?.[key], messages) === 'string', `${item.path} lost its localized label`)
+  }
+}
+for (const prefix of ['', '/en']) {
+  for (const path of primaryPaths) {
+    const active = insightsPrimaryItems.filter(item => isInsightsPrimaryActive(`${prefix}${path}`, item.path))
+    assert(active.length === 1 && active[0].path === path, `${prefix}${path} did not activate only its own primary tab`)
+  }
+  for (const domain of ['site', 'game']) {
+    const parent = domainPaths[domain][0]
+    for (const path of domainPaths[domain]) {
+      const primary = insightsPrimaryItems.filter(item => isInsightsPrimaryActive(`${prefix}${path}`, item.path))
+      assert(primary.length === 1 && primary[0].path === parent, `${prefix}${path} lost its parent primary tab`)
+      const secondary = insightsDomainItems[domain].filter(item => isInsightsDomainActive(`${prefix}${path}`, item.path))
+      assert(secondary.length === 1 && secondary[0].path === path, `${prefix}${path} did not activate only its exact domain tab`)
+      assert(isInsightsPrimaryActive(`${prefix}${path}/detail`, parent), `${prefix}${path}/detail lost its parent primary tab`)
+      assert(!isInsightsDomainActive(`${prefix}${path}/detail`, path), 'Domain navigation stopped using exact matching')
+    }
+    assert(!isInsightsPrimaryActive(`${prefix}${parent}-other`, parent), 'Primary navigation matched a sibling URL prefix')
+  }
+  assert(!isInsightsPrimaryActive(`${prefix}/insights/other`, '/insights'), 'Overview navigation stopped using exact matching')
+}
+for (const name of ['InsightsPrimaryNav', 'InsightsDomainNav']) {
+  const source = readFileSync(new URL(`../app/components/insights/navigation/${name}.vue`, import.meta.url), 'utf8')
+  assert(source.includes('useRoute()') && source.includes('useLocalePath()') && source.includes('localePath(item.path)'), `${name} lost reactive localized navigation`)
+  assert(source.includes(`is${name.replace('Nav', '')}Active(route.path, item.path)`), `${name} bypassed the shared active route contract`)
+  assert(source.includes('<nav') && source.includes(':aria-label=') && source.includes(':aria-current='), `${name} lost accessible navigation semantics`)
+}
 assert(zh.sidebar.insights === '生态观测' && en.sidebar.insights === 'Ecosystem', 'public Ecosystem naming drifted')
 assert(!JSON.stringify(zh).includes('洞察') && !JSON.stringify(en).includes('Insights'), 'retired public product naming remains in localized UI copy')
 const insightsPageDirectory = new URL('../app/pages/insights/', import.meta.url)
@@ -121,7 +161,7 @@ for (const forbidden of ['winner', 'score', 'ranking', 'recommendation', '胜出
   assert(!JSON.stringify([zh.insights.siteCompare, zh.insights.gameCompare, en.insights.siteCompare, en.insights.gameCompare]).toLowerCase().includes(forbidden.toLowerCase()), `judgement wording leaked into Compare: ${forbidden}`)
 }
 
-console.log('[insights] public price, regional identity, timeline, dimension, and Compare semantics passed')
+console.log('[insights] navigation, public price, regional identity, timeline, dimension, and Compare semantics passed')
 
 function assert(condition, message) {
   if (!condition) throw new Error(message)
