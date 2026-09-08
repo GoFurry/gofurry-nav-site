@@ -191,7 +191,13 @@ export default defineNuxtConfig({
     '/insights': { ssr: true },
     '/insights/**': { ssr: true },
     '/updates': { ssr: true },
-    '/games/search': { ssr: false },
+    '/games/search': {
+      ssr: false,
+      headers: { 'X-Robots-Tag': 'noindex, follow' }
+    },
+    '/en/games/search': {
+      headers: { 'X-Robots-Tag': 'noindex, follow' }
+    },
     '/games/prize': {
       ssr: false,
       headers: { 'X-Robots-Tag': 'noindex, follow' }

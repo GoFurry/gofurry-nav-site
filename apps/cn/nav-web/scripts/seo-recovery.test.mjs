@@ -69,12 +69,27 @@ for (const path of [
 }
 
 const nuxtConfig = readFileSync(new URL('../nuxt.config.ts', import.meta.url), 'utf8')
-for (const route of ["'/games/prize'", "'/games/prize/**'", "'/en/games/prize'", "'/en/games/prize/**'"]) {
-  assert(nuxtConfig.includes(route), `Prize route rule ${route} is missing`)
+// Match each literal route object, including its nested headers, without crossing into the next rule.
+const routeRules = new Map(Array.from(
+  nuxtConfig.matchAll(/^\s*['"](\/[^'"]*)['"]\s*:\s*(\{(?:[^{}]|\{[^{}]*\})*\})/gm),
+  ([, route, rule]) => [route, rule],
+))
+for (const route of [
+  '/games/search',
+  '/en/games/search',
+  '/games/prize',
+  '/games/prize/**',
+  '/en/games/prize',
+  '/en/games/prize/**',
+]) {
+  const rule = routeRules.get(route)
+  assert(rule, `Route rule ${route} is missing`)
+  assert(/\bheaders\s*:\s*\{[^{}]*['"]X-Robots-Tag['"]\s*:\s*['"]noindex,\s*follow['"]/i.test(rule), `${route} must set X-Robots-Tag: noindex, follow`)
 }
-assert(nuxtConfig.match(/'X-Robots-Tag': 'noindex, follow'/g)?.length === 4, 'Prize route rules do not consistently set X-Robots-Tag')
+assert(/\bssr\s*:\s*false\b/.test(routeRules.get('/games/search')), '/games/search must remain CSR')
+assert(!/\bssr\s*:/.test(routeRules.get('/en/games/search')), '/en/games/search must preserve the existing SSR behavior')
 
-console.log('[seo-recovery] route identity, authoritative status, and sitemap inventory contracts passed')
+console.log('[seo-recovery] route identity, authoritative status, sitemap inventory, and noindex route contracts passed')
 
 function assertThrows(action, message) {
   try {

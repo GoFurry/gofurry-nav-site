@@ -11,6 +11,20 @@ const missingGameId = args['missing-game-id'] || process.env.SEO_MISSING_GAME_ID
 const siteGroupId = args['site-group-id'] || process.env.SEO_SITE_GROUP_ID || ''
 const failureMode = args.mode === 'failure' || process.env.SEO_EXPECT_UPSTREAM_FAILURES === '1'
 
+for (const route of [
+  '/games/search',
+  '/en/games/search',
+  '/games/prize',
+  '/en/games/prize',
+  '/games/prize/activation',
+  '/en/games/prize/activation',
+]) {
+  await expectNoIndex(route)
+}
+await expectCanonical('/', '/', 'https://go-furry.com/')
+await expectCanonical('/en', '/en', 'https://go-furry.com/en')
+console.log('[seo-recovery] Search/Prize HTTP noindex and homepage canonical contracts passed')
+
 if (failureMode) {
   await expectNotFound('/site/abc')
   await expectNotFound('/games/abc')
@@ -40,9 +54,6 @@ await expectNotFound('/site/abc')
 await expectNotFound(`/site/${siteId}?domain=${encodeURIComponent(invalidSiteDomain)}`)
 await expectNotFound(`/games/${missingGameId}`)
 await expectNotFound(`/site/${missingSiteId}`)
-for (const route of ['/games/prize', '/en/games/prize', '/games/prize/activation', '/en/games/prize/activation']) {
-  await expectPrizeNoIndex(route)
-}
 if (siteGroupId) {
   await expectSiteGroupSeo(`/site-groups/${encodeURIComponent(siteGroupId)}`)
   await expectSiteGroupSeo(`/en/site-groups/${encodeURIComponent(siteGroupId)}`)
@@ -63,6 +74,9 @@ assert(!sitemapPaths.some(path => path.startsWith('/sites/')), 'sitemap contains
 assert(!sitemapPaths.some(path => /^\/(?:en\/)?site\/[^/]+\/.+/.test(path)), 'sitemap contains a Site domain child URL')
 assert(!sitemapPaths.some(path => path.includes('?domain=')), 'sitemap contains a Site target query URL')
 assert(!/%7b%22|%7B%22|\{&quot;domain&quot;/.test(sitemap), 'sitemap contains encoded JSON domain garbage')
+for (const route of ['/games/search', '/en/games/search']) {
+  assert(!sitemapUrls.some(value => new URL(value).pathname.replace(/\/$/, '') === route), `sitemap contains ${route}`)
+}
 assert(!sitemapPaths.some(path => path === '/games/prize' || path === '/en/games/prize'), 'sitemap contains /games/prize')
 assert(!sitemapPaths.some(path => path === '/steam' || path === '/en/steam'), 'sitemap contains the missing /steam route')
 
@@ -82,7 +96,7 @@ async function expectRedirect(route, expectedPath, expectedDomain = '') {
   }
 }
 
-async function expectCanonical(route, expectedPath) {
+async function expectCanonical(route, expectedPath, expectedUrl = '') {
   const response = await request(route)
   const html = await response.text()
   assert(response.status === 200, `${route} expected HTTP 200, received ${response.status}`)
@@ -91,6 +105,9 @@ async function expectCanonical(route, expectedPath) {
   assert(canonicals.length === 1, `${route} expected exactly one canonical link, received ${canonicals.length}`)
   const canonical = new URL(canonicals[0].href)
   assert(canonical.pathname === expectedPath && canonical.search === '', `${route} canonicalized to ${canonical.pathname}${canonical.search}`)
+  if (expectedUrl) {
+    assert(canonical.href === expectedUrl, `${route} canonicalized to ${canonical.href}, expected ${expectedUrl}`)
+  }
   const alternates = links.filter(link => link.rel === 'alternate' && link.hreflang)
   assert(alternates.length >= 2, `${route} did not expose localized hreflang links`)
   for (const alternate of alternates) {
@@ -108,11 +125,12 @@ async function expectNotFound(route) {
     || /<meta[^>]+content=["']noindex, nofollow["'][^>]+name=["']robots["']/i.test(html), `${route} 404 HTML is missing noindex, nofollow`)
 }
 
-async function expectPrizeNoIndex(route) {
-  const response = await request(route)
+async function expectNoIndex(route) {
+  const response = await request(route, { redirect: 'manual' })
   assert(response.status === 200, `${route} expected HTTP 200, received ${response.status}`)
   const robots = response.headers.get('x-robots-tag') || ''
-  assert(robots.toLowerCase().includes('noindex') && robots.toLowerCase().includes('follow'), `${route} returned X-Robots-Tag: ${robots || '[missing]'}`)
+  const directives = robots.toLowerCase().split(',').map(value => value.trim())
+  assert(directives.includes('noindex') && directives.includes('follow'), `${route} returned X-Robots-Tag: ${robots || '[missing]'}`)
 }
 
 async function expectSiteGroupSeo(route) {
