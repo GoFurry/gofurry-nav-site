@@ -353,6 +353,7 @@ WITH horizon AS (
 )
 SELECT site.site_id,
        COALESCE(NULLIF(site.name, ''), NULLIF(site.name_en, ''), '')::text AS site_name,
+       COALESCE(current_site.icon, '')::text AS icon,
        target.target,
        target.tls_cert_not_after,
        target.tls_cert_verified AS verified,
@@ -379,6 +380,7 @@ JOIN public.gfn_site_target_daily target
   ON target.target_tracking_period_id = site.primary_target_tracking_period_id
  AND target.fact_date = horizon.fact_date
  AND target.finalized_at IS NOT NULL
+LEFT JOIN public.gfn_site current_site ON current_site.id = site.site_id
 WHERE site.primary_target_tracking_period_id IS NOT NULL
   AND target.tls_state_observed_at IS NOT NULL
   AND target.tls_state_observed_at <= horizon.reference_at
@@ -430,8 +432,10 @@ WITH horizon AS (
      AND target.fact_date = horizon.fact_date
      AND target.finalized_at IS NOT NULL
 )
-SELECT site_id, site_name, target, tls_cert_not_after,
+SELECT issues.site_id, site_name, target, tls_cert_not_after,
+       COALESCE(current_site.icon, '')::text AS icon,
        verified, verification_issue, issuer, observed_at
 FROM issues
+LEFT JOIN public.gfn_site current_site ON current_site.id = issues.site_id
 ORDER BY verification_issue ASC, site_id ASC
 LIMIT sqlc.arg(limit_count);

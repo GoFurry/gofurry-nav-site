@@ -587,6 +587,31 @@
     "backHome": "返回首页"
   },
   "insights": {
+    "workspace": {
+      "observationSummary": "观测概况",
+      "priceSummary": "价格生态概况",
+      "ranking": "玩家排名",
+      "rankingMetric": "排名依据",
+      "region": "区域",
+      "sampleCoverage": "样本覆盖率",
+      "observedAt": "观测时间",
+      "daysToExpiry": "距到期 {count} 天",
+      "noItems": "当前没有可展示的观测项目。",
+      "rawData": "查看完整数据",
+      "observationQuality": "观测质量",
+      "stale": "陈旧证据",
+      "unobserved": "未观测",
+      "unmapped_games": "含未映射语言的游戏",
+      "unmapped_entries": "未映射语言条目",
+      "not_applicable": "不适用",
+      "not_probed": "未探测",
+      "probe_failed": "探测失败",
+      "unknown": "未知",
+      "playerBasis": "最近计划观测使用同一计划快照；30 天峰值与均值使用已完成的每日事实，样本覆盖率缺失时不推算。",
+      "observationWindow": "观测区间：{from} 至 {through}",
+      "discountSubset": "折扣游戏属于付费定价游戏的子集，不能与免费、付费数量相加。",
+      "normalizationBasis": "语言覆盖率以追踪总体为分母；规范化覆盖率以新鲜证据游戏为分母。完整音频比例同样以新鲜证据游戏为分母。"
+    },
     "navLabel": "生态观测导航",
     "metricsLabel": "生态观测指标",
     "nav": {

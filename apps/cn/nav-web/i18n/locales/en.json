@@ -587,6 +587,31 @@
     "backHome": "Back Home"
   },
   "insights": {
+    "workspace": {
+      "observationSummary": "Observation summary",
+      "priceSummary": "Price ecosystem summary",
+      "ranking": "Player ranking",
+      "rankingMetric": "Ranking basis",
+      "region": "Region",
+      "sampleCoverage": "Sample coverage",
+      "observedAt": "Observed at",
+      "daysToExpiry": "Days to expiry: {count}",
+      "noItems": "No observation items are available.",
+      "rawData": "View full data",
+      "observationQuality": "Observation quality",
+      "stale": "Stale evidence",
+      "unobserved": "Unobserved",
+      "unmapped_games": "Games with unmapped languages",
+      "unmapped_entries": "Unmapped language entries",
+      "not_applicable": "Not applicable",
+      "not_probed": "Not probed",
+      "probe_failed": "Probe failed",
+      "unknown": "Unknown",
+      "playerBasis": "Latest Scheduled Observation uses one scheduled snapshot. The 30-day peak and average use finalized daily facts; missing sample coverage is not estimated.",
+      "observationWindow": "Observation window: {from} to {through}",
+      "discountSubset": "Discounted games are a subset of priced games, not an additional category alongside priced and free games.",
+      "normalizationBasis": "Language coverage uses the tracked population. Normalization coverage and Full Audio shares use games with fresh evidence as their denominator."
+    },
     "navLabel": "Ecosystem navigation",
     "metricsLabel": "Ecosystem metrics",
     "nav": {

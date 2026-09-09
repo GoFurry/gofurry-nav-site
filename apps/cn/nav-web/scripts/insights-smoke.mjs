@@ -3,6 +3,11 @@ import { launchPerfBrowser, normalizeBaseUrl, parseArgs, toAbsoluteUrl } from '.
 import { mockOverview, mockGamePanel } from './fixtures/insights-overview.mjs'
 
 const args = parseArgs()
+if (args['workspace-fixtures']) {
+  const { runWorkspaceSmoke } = await import('./insights-workspace-smoke.mjs')
+  await runWorkspaceSmoke()
+  process.exit(0)
+}
 if (args['domain-fixtures']) {
   const { runDomainSmoke } = await import('./insights-domain-smoke.mjs')
   await runDomainSmoke()
@@ -548,17 +553,17 @@ try {
   await page.getByRole('button', { name: '30 天观测均值', exact: true }).click()
   await page.waitForURL(url => url.searchParams.get('metric') === 'average_30d')
   await page.getByText('112 个成功样本', { exact: false }).waitFor()
-  assert((await page.locator('.intelligence-table tbody tr td').nth(2).textContent())?.trim() === '0', 'Player ranking lost a real zero')
+  assert((await page.locator('[data-rank="1"] .insight-ranking-row__value strong').textContent())?.trim() === '0', 'Player ranking lost a real zero')
   await page.locator('.insights-domain-nav[data-domain="game"] a[href="/insights/games/prices"]').click()
   await page.waitForSelector('[data-regional-price-intelligence]')
   await page.getByRole('button', { name: '香港', exact: true }).click()
   await page.waitForURL(url => url.searchParams.get('region') === 'HK')
   await page.getByText('Priced zero fixture', { exact: true }).waitFor()
-  assert(await page.locator('.intelligence-panel .intelligence-table').count() === 1, 'Price overview failure broke the independent discount list')
+  assert(await page.locator('.insight-discount-row').count() === 1, 'Price overview failure broke the independent discount list')
   await page.locator('.insights-domain-nav[data-domain="game"] a[href="/insights/games/languages"]').click()
   await page.waitForSelector('[data-language-intelligence]')
-  await page.getByText('明确标注完整音频', { exact: true }).waitFor()
-  await page.getByText('语言是重叠分布，各语言比例不能相加推导 100%。', { exact: true }).waitFor()
+  await page.locator('[data-language]').getByText('明确标注完整音频', { exact: false }).waitFor()
+  await page.locator('[data-language-overlap]').waitFor()
   console.log('[insights] P2.2 Player, regional Price, Mac, Language URL/zero/quality/failure semantics passed')
 
   const siteCapabilityKeys = ['ipv6', 'tls13', 'http2', 'hsts', 'csp', 'security_txt', 'certificate_verified']

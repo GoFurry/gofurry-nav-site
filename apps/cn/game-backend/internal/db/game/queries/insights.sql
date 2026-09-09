@@ -367,6 +367,23 @@ WITH snapshot AS (
     ORDER BY raw.game_id, raw.collected_at DESC, raw.id DESC
 )
 SELECT observations.game_id, COALESCE(NULLIF(game.name, ''), game.name_en, '')::text AS game_name,
+       -- Match Game V2's default zh header selection: header before header_2x,
+       -- zh/en/unlocalized assets, then media, details, and the existing game header.
+       COALESCE(
+           (SELECT asset.url FROM public.gfg_game_assets asset
+            WHERE asset.game_id = observations.game_id
+              AND asset.asset_type IN ('header', 'header_2x')
+              AND asset.lang IN ('zh', 'en', '')
+              AND asset.exists IS DISTINCT FROM false AND BTRIM(asset.url) <> ''
+            ORDER BY CASE asset.asset_type WHEN 'header' THEN 0 ELSE 1 END,
+                     CASE asset.lang WHEN 'zh' THEN 0 WHEN 'en' THEN 1 ELSE 2 END,
+                     asset.asset_family, asset.sort_order, asset.id LIMIT 1),
+           NULLIF((SELECT media.url FROM public.gfg_game_media media
+                   WHERE media.game_id = observations.game_id AND media.media_type = 'header'
+                   ORDER BY media.sort_order DESC, media.id DESC LIMIT 1), ''),
+           NULLIF((SELECT details.header_url FROM public.gfg_game_details details
+                   WHERE details.game_id = observations.game_id), ''),
+           NULLIF(game.header, ''), '')::text AS header_url,
        observations.player_count, observations.collected_at
 FROM observations
 JOIN public.gfg_game game ON game.id = observations.game_id
@@ -428,6 +445,23 @@ WITH horizon AS (
     HAVING sum(daily.successful_samples) > 0
 )
 SELECT aggregate.game_id, COALESCE(NULLIF(game.name, ''), game.name_en, '')::text AS game_name,
+       -- Match Game V2's default zh header selection: header before header_2x,
+       -- zh/en/unlocalized assets, then media, details, and the existing game header.
+       COALESCE(
+           (SELECT asset.url FROM public.gfg_game_assets asset
+            WHERE asset.game_id = aggregate.game_id
+              AND asset.asset_type IN ('header', 'header_2x')
+              AND asset.lang IN ('zh', 'en', '')
+              AND asset.exists IS DISTINCT FROM false AND BTRIM(asset.url) <> ''
+            ORDER BY CASE asset.asset_type WHEN 'header' THEN 0 ELSE 1 END,
+                     CASE asset.lang WHEN 'zh' THEN 0 WHEN 'en' THEN 1 ELSE 2 END,
+                     asset.asset_family, asset.sort_order, asset.id LIMIT 1),
+           NULLIF((SELECT media.url FROM public.gfg_game_media media
+                   WHERE media.game_id = aggregate.game_id AND media.media_type = 'header'
+                   ORDER BY media.sort_order DESC, media.id DESC LIMIT 1), ''),
+           NULLIF((SELECT details.header_url FROM public.gfg_game_details details
+                   WHERE details.game_id = aggregate.game_id), ''),
+           NULLIF(game.header, ''), '')::text AS header_url,
        aggregate.peak_30d, aggregate.average_30d, aggregate.eligible_from,
        aggregate.observed_days, aggregate.successful_samples, aggregate.sample_coverage, aggregate.has_sample_coverage
 FROM aggregate JOIN public.gfg_game game ON game.id = aggregate.game_id
@@ -464,6 +498,23 @@ WITH horizon AS (
 )
 SELECT horizon.as_of, fact.game_id, fact.tracking_period_id,
        COALESCE(NULLIF(fact.name, ''), fact.name_en, '')::text AS game_name,
+       -- Match Game V2's default zh header selection: header before header_2x,
+       -- zh/en/unlocalized assets, then media, details, and the existing game header.
+       COALESCE(
+           (SELECT asset.url FROM public.gfg_game_assets asset
+            WHERE asset.game_id = fact.game_id
+              AND asset.asset_type IN ('header', 'header_2x')
+              AND asset.lang IN ('zh', 'en', '')
+              AND asset.exists IS DISTINCT FROM false AND BTRIM(asset.url) <> ''
+            ORDER BY CASE asset.asset_type WHEN 'header' THEN 0 ELSE 1 END,
+                     CASE asset.lang WHEN 'zh' THEN 0 WHEN 'en' THEN 1 ELSE 2 END,
+                     asset.asset_family, asset.sort_order, asset.id LIMIT 1),
+           NULLIF((SELECT media.url FROM public.gfg_game_media media
+                   WHERE media.game_id = fact.game_id AND media.media_type = 'header'
+                   ORDER BY media.sort_order DESC, media.id DESC LIMIT 1), ''),
+           NULLIF((SELECT details.header_url FROM public.gfg_game_details details
+                   WHERE details.game_id = fact.game_id), ''),
+           NULLIF(game.header, ''), '')::text AS header_url,
        price.currency, price.initial_amount, price.final_amount, price.discount_percent
 FROM horizon
 JOIN public.gfg_game_daily fact ON fact.fact_date = horizon.as_of
@@ -471,6 +522,7 @@ JOIN public.gfg_game_daily fact ON fact.fact_date = horizon.as_of
 JOIN public.gfg_game_price_daily price ON price.tracking_period_id = fact.tracking_period_id
  AND price.fact_date = horizon.as_of AND price.region = sqlc.arg(region)
  AND price.finalized_at IS NOT NULL AND price.price_state = 'priced' AND price.discount_percent > 0
+LEFT JOIN public.gfg_game game ON game.id = fact.game_id
 ORDER BY price.discount_percent DESC, fact.game_id ASC
 LIMIT sqlc.arg(limit_count);
 

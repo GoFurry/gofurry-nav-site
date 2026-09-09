@@ -167,7 +167,7 @@ func (d *InsightsDAO) ListCertificateExpiryAttention(ctx context.Context, limit 
 	result := make([]models.CertificateItemRecord, 0, len(rows))
 	for _, row := range rows {
 		result = append(result, models.CertificateItemRecord{
-			SiteID: row.SiteID, SiteName: row.SiteName, Target: row.Target,
+			SiteID: row.SiteID, SiteName: row.SiteName, VisualAsset: row.Icon, Target: row.Target,
 			NotAfter: timestampPointer(row.TlsCertNotAfter), Verified: row.Verified,
 			VerificationIssue: nonemptyStringPointer(row.VerificationIssue), Issuer: row.Issuer,
 			ObservedAt: timestampPointer(row.ObservedAt),
@@ -184,7 +184,7 @@ func (d *InsightsDAO) ListCertificateVerificationIssues(ctx context.Context, lim
 	result := make([]models.CertificateItemRecord, 0, len(rows))
 	for _, row := range rows {
 		result = append(result, models.CertificateItemRecord{
-			SiteID: row.SiteID, SiteName: row.SiteName, Target: row.Target,
+			SiteID: row.SiteID, SiteName: row.SiteName, VisualAsset: row.Icon, Target: row.Target,
 			NotAfter: timestampPointer(row.TlsCertNotAfter), Verified: row.Verified,
 			VerificationIssue: nonemptyStringPointer(row.VerificationIssue), Issuer: row.Issuer,
 			ObservedAt: timestampPointer(row.ObservedAt),

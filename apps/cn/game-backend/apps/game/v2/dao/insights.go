@@ -251,7 +251,7 @@ func (d *InsightsDAO) ListLatestPlayerRanking(ctx context.Context, limit int32) 
 	}
 	result := make([]v2models.InsightPlayerRankingRecord, 0, len(rows))
 	for _, row := range rows {
-		result = append(result, v2models.InsightPlayerRankingRecord{GameID: row.GameID, GameName: row.GameName, Value: float64(row.PlayerCount), ObservedAt: timestampPointer(row.CollectedAt)})
+		result = append(result, v2models.InsightPlayerRankingRecord{VisualAsset: row.HeaderUrl, GameID: row.GameID, GameName: row.GameName, Value: float64(row.PlayerCount), ObservedAt: timestampPointer(row.CollectedAt)})
 	}
 	return result, nil
 }
@@ -279,7 +279,7 @@ func (d *InsightsDAO) ListPlayer30DRanking(ctx context.Context, useAverage bool,
 			value = row.Average30d
 		}
 		observed, samples := row.ObservedDays, row.SuccessfulSamples
-		record := v2models.InsightPlayerRankingRecord{GameID: row.GameID, GameName: row.GameName, Value: value, EligibleFrom: datePointer(row.EligibleFrom), ObservedDays: &observed, SuccessfulSamples: &samples}
+		record := v2models.InsightPlayerRankingRecord{VisualAsset: row.HeaderUrl, GameID: row.GameID, GameName: row.GameName, Value: value, EligibleFrom: datePointer(row.EligibleFrom), ObservedDays: &observed, SuccessfulSamples: &samples}
 		if row.HasSampleCoverage != nil && *row.HasSampleCoverage {
 			record.SampleCoverage = float64Pointer(row.SampleCoverage)
 		}
@@ -306,7 +306,7 @@ func (d *InsightsDAO) ListInsightDiscounts(ctx context.Context, region string, l
 		if row.Currency == nil || row.InitialAmount == nil || row.FinalAmount == nil || row.DiscountPercent == nil {
 			return nil, fmt.Errorf("invalid priced discount row")
 		}
-		result = append(result, v2models.InsightDiscountRecord{AsOf: row.AsOf.Time, GameID: row.GameID, TrackingPeriodID: row.TrackingPeriodID, GameName: row.GameName, Currency: *row.Currency, InitialAmount: *row.InitialAmount, FinalAmount: *row.FinalAmount, DiscountPercent: *row.DiscountPercent})
+		result = append(result, v2models.InsightDiscountRecord{VisualAsset: row.HeaderUrl, AsOf: row.AsOf.Time, GameID: row.GameID, TrackingPeriodID: row.TrackingPeriodID, GameName: row.GameName, Currency: *row.Currency, InitialAmount: *row.InitialAmount, FinalAmount: *row.FinalAmount, DiscountPercent: *row.DiscountPercent})
 	}
 	return result, nil
 }

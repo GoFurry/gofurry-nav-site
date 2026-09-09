@@ -246,6 +246,33 @@ for (const forbidden of ['winner', 'score', 'ranking', 'recommendation', '胜出
   assert(!JSON.stringify([zh.insights.siteCompare, zh.insights.gameCompare, en.insights.siteCompare, en.insights.gameCompare]).toLowerCase().includes(forbidden.toLowerCase()), `judgement wording leaked into Compare: ${forbidden}`)
 }
 
+// B4 preserves data/query owners while changing the workspace presentation.
+const workspaceSource = path => readFileSync(new URL('../app/' + path, import.meta.url), 'utf8')
+const workspacePages = Object.fromEntries(['players', 'prices', 'languages', 'certificates'].map(name => [name, workspaceSource('pages/insights/' + (name === 'certificates' ? 'sites/' : 'games/') + name + '.vue')]))
+for (const [name, source] of Object.entries(workspacePages)) {
+  const key = { players: 'playerIntelligence', prices: 'priceIntelligence', languages: 'languageIntelligence', certificates: 'certificateIntelligence' }[name]
+  assert(source.includes('InsightsWorkspaceHeader') && source.includes("$t('insights." + key + ".title')"), name + ' lost its visible localized H1')
+  assert(source.includes('<EcosystemNavigation context="' + (name === 'certificates' ? 'site' : 'game') + '"'), name + ' lost Domain navigation')
+  assert(source.includes('InsightWorkspaceDisclosure'), name + ' lost data disclosure')
+  assert(!source.includes('intelligence-panel') && !source.includes('intelligence-stats'), name + ' restored KPI cards')
+  assert(!/get(?:GameDetail|SiteDetail|GameInfo|NavSite)|fetch\(/.test(source), name + ' added entity lookups')
+}
+const workspaceHeader = workspaceSource('components/insights/workspace/InsightsWorkspaceHeader.vue')
+assert(workspaceHeader.includes('<h1>{{ title }}</h1>'), 'Workspace header hid its H1')
+for (const file of readdirSync(new URL('../app/components/insights/workspace/', import.meta.url))) {
+  const source = workspaceSource('components/insights/workspace/' + file)
+  assert(!/\b(?:fetch|useFetch|useAsyncData)\s*\(|from ['"]@\/services\//.test(source), file + ' added per-entity API requests')
+}
+const { players, prices, languages, certificates } = workspacePages
+assert(players.includes("['latest_observed', 'peak_30d', 'average_30d']") && players.includes(": 'latest_observed'") && players.includes('query: { metric }') && players.includes('getGamePlayerRanking(selectedMetric.value)'), 'player metric/query contract changed')
+assert(prices.includes("['CN', 'US', 'HK']") && prices.includes(": 'CN'") && prices.includes('query: { region }') && prices.includes('formatMinorAmount(value, currency, locale.value)'), 'price region/query or amount semantics changed')
+assert(prices.includes('overviewError') && prices.includes('discountError'), 'price sources lost independent failures')
+assert(languages.includes('insights.languageIntelligence.overlap') && languages.includes('explicit_full_audio_games') && languages.includes('explicit_full_audio_share') && languages.includes('supported_games') && languages.includes('<table>') && languages.includes('<details'), 'language distribution lost overlapping/full-audio/raw data semantics')
+for (const key of ['verified', 'failed', 'known', 'coverage', 'expired', 'expires_within_7d', 'expires_in_8_30d', 'later', 'not_applicable', 'stale', 'not_probed', 'probe_failed', 'unknown']) assert(certificates.includes(key), 'certificate lost ' + key)
+for (const [source, path] of [[workspaceSource('components/insights/workspace/InsightRankingList.vue'), '/games/'], [prices, '/games/'], [workspaceSource('components/insights/workspace/InsightRiskList.vue'), '/site/']]) {
+  assert(source.includes('InsightEntityMedia') && source.includes("localePath('" + path), 'Workspace identity media or localized entity link lost')
+}
+
 console.log('[insights] navigation, public price, regional identity, timeline, dimension, and Compare semantics passed')
 
 function assert(condition, message) {

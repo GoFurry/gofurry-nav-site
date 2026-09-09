@@ -4,6 +4,7 @@
 @import './insights/pulse.less';
 @import './insights/overview.less';
 @import './insights/domain.less';
+@import './insights/workspace.less';
 
 .insights-section,
 .insights-data-info {
@@ -238,16 +239,6 @@
 }
 
 .intelligence-selector { margin-bottom: 1rem; }
-.intelligence-panel { margin: 1rem 0; padding: 1.1rem; border: 1px solid var(--gf-border); border-radius: 1rem; background: var(--gf-surface); }
-.intelligence-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .75rem; margin: 1rem 0; }
-.intelligence-stats--wide { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-.intelligence-stats article { padding: .9rem; border: 1px solid var(--gf-border); border-radius: .8rem; background: var(--gf-surface-strong); }
-.intelligence-stats span { display: block; color: var(--gf-text-muted); font-size: .78rem; }
-.intelligence-stats strong { display: block; margin-top: .3rem; font-size: 1.35rem; }
-.intelligence-table-wrap { overflow-x: auto; }
-.intelligence-table { width: 100%; min-width: 620px; border-collapse: collapse; }
-.intelligence-table th, .intelligence-table td { padding: .72rem; border-bottom: 1px solid var(--gf-border); text-align: left; }
-.intelligence-table th { color: var(--gf-text-muted); font-size: .78rem; }
 .compare-builder,
 .compare-result {
   margin: 1rem 0;
@@ -291,7 +282,6 @@
 .compare-table thead small { display: block; margin-top: .2rem; color: var(--gf-text-muted); font-weight: 400; }
 
 @media (max-width: 720px) {
-  .intelligence-stats, .intelligence-stats--wide { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .compare-builder__form { align-items: stretch; flex-direction: column; }
   .compare-builder__form button { width: 100%; }
 }

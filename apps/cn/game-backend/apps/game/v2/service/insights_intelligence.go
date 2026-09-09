@@ -107,7 +107,7 @@ func (s *InsightsService) GetPlayerRanking(ctx context.Context, query v2models.I
 	result.EntityCoverage = insightRatio(meta.Ranked, meta.Population)
 	for index, row := range rows {
 		item := v2models.InsightPlayerRankingItem{
-			Rank: int32(index + 1), Game: v2models.InsightEntityRef{ID: row.GameID, Name: row.GameName},
+			Rank: int32(index + 1), Game: workspaceGameEntity(row.GameID, row.GameName, row.VisualAsset),
 			Value: row.Value, ObservedAt: row.ObservedAt, EligibleFrom: insightDateStringPointer(row.EligibleFrom),
 			ObservedDays: row.ObservedDays, SuccessfulSamples: row.SuccessfulSamples, SampleCoverage: row.SampleCoverage,
 		}
@@ -160,7 +160,7 @@ func (s *InsightsService) GetDiscounts(ctx context.Context, region string, limit
 			return result, queryErr
 		}
 		result.Items = append(result.Items, v2models.InsightDiscountItem{
-			Game: v2models.InsightEntityRef{ID: row.GameID, Name: row.GameName}, Currency: row.Currency,
+			Game: workspaceGameEntity(row.GameID, row.GameName, row.VisualAsset), Currency: row.Currency,
 			InitialAmount: row.InitialAmount, FinalAmount: row.FinalAmount, DiscountPercent: row.DiscountPercent,
 			ObservedLow: publicObservedLow(low),
 		})
@@ -198,4 +198,13 @@ func (s *InsightsService) GetLanguageOverview(ctx context.Context) (v2models.Ins
 		})
 	}
 	return result, nil
+}
+
+// Presentation identity only; ranking and price evidence remain owned by their facts.
+func workspaceGameEntity(id int64, name, asset string) v2models.InsightEntityRef {
+	entity := v2models.InsightEntityRef{ID: id, Name: name}
+	if asset = normalizeSteamAssetURL(asset); asset != "" {
+		entity.Visual = &v2models.InsightEntityVisual{Kind: "game_header", Asset: asset}
+	}
+	return entity
 }

@@ -507,6 +507,7 @@ type InsightPlayerRankingMetaRecord struct {
 	Ranked                 int64
 }
 type InsightPlayerRankingRecord struct {
+	VisualAsset       string
 	GameID            int64
 	GameName          string
 	Value             float64
@@ -521,6 +522,7 @@ type InsightPriceOverviewRecord struct {
 	Population, Priced, Free, Unpriced, Unknown, Unavailable, Discounted int64
 }
 type InsightDiscountRecord struct {
+	VisualAsset                string
 	AsOf                       time.Time
 	GameID, TrackingPeriodID   int64
 	GameName, Currency         string

@@ -312,6 +312,7 @@ type CertificateOverviewRecord struct {
 }
 
 type CertificateItemRecord struct {
+	VisualAsset       string
 	SiteID            int64
 	SiteName          string
 	Target            string
