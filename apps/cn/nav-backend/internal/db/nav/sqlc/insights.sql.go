@@ -564,6 +564,7 @@ func (q *Queries) ListNavCertificateVerificationIssues(ctx context.Context, limi
 const listNavInsightExplorerChanges = `-- name: ListNavInsightExplorerChanges :many
 SELECT event.site_id,
        COALESCE(NULLIF(history.name, ''), NULLIF(site.name, ''), '')::text AS site_name,
+       COALESCE(site.icon, '')::text AS icon,
        event.detector_key,
        event.detector_version,
        event.event_code,
@@ -629,6 +630,7 @@ type ListNavInsightExplorerChangesParams struct {
 type ListNavInsightExplorerChangesRow struct {
 	SiteID          int64              `json:"site_id"`
 	SiteName        string             `json:"site_name"`
+	Icon            string             `json:"icon"`
 	DetectorKey     string             `json:"detector_key"`
 	DetectorVersion int32              `json:"detector_version"`
 	EventCode       string             `json:"event_code"`
@@ -663,6 +665,7 @@ func (q *Queries) ListNavInsightExplorerChanges(ctx context.Context, arg ListNav
 		if err := rows.Scan(
 			&i.SiteID,
 			&i.SiteName,
+			&i.Icon,
 			&i.DetectorKey,
 			&i.DetectorVersion,
 			&i.EventCode,

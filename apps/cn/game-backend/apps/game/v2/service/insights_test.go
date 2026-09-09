@@ -327,8 +327,8 @@ func TestInsightSliceTrendUsesGlobalHorizonAndDoesNotFill(t *testing.T) {
 func TestInsightExplorerCategoryCursorAndNoEntityDedupe(t *testing.T) {
 	day := time.Date(2026, 9, 1, 0, 0, 0, 0, time.UTC)
 	store := &fakeInsightsStore{changes: []v2models.InsightChangeRecord{
-		{EntityID: 1, DetectorKey: "game_price_transition", DetectorVersion: 1, EventCode: "game_price_decreased", ProjectionDate: day, TimeBasis: "day", PrecisionRank: 0, EventSortAt: day, OpaqueTie: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},
-		{EntityID: 1, DetectorKey: "game_price_transition", DetectorVersion: 1, EventCode: "game_price_increased", ProjectionDate: day.AddDate(0, 0, -1), TimeBasis: "day", PrecisionRank: 0, EventSortAt: day.AddDate(0, 0, -1), OpaqueTie: "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"},
+		{EntityID: 1, VisualAsset: " https://example.test/header.jpg ", DetectorKey: "game_price_transition", DetectorVersion: 1, EventCode: "game_price_decreased", ProjectionDate: day, TimeBasis: "day", PrecisionRank: 0, EventSortAt: day, OpaqueTie: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},
+		{EntityID: 1, VisualAsset: " ", DetectorKey: "game_price_transition", DetectorVersion: 1, EventCode: "game_price_increased", ProjectionDate: day.AddDate(0, 0, -1), TimeBasis: "day", PrecisionRank: 0, EventSortAt: day.AddDate(0, 0, -1), OpaqueTie: "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"},
 		{EntityID: 2, DetectorKey: "game_price_transition", DetectorVersion: 1, EventCode: "game_price_state_changed", ProjectionDate: day.AddDate(0, 0, -2), TimeBasis: "day", PrecisionRank: 0, EventSortAt: day.AddDate(0, 0, -2), OpaqueTie: "cccccccccccccccccccccccccccccccc"},
 	}}
 	service := NewInsightsService(store)
@@ -339,6 +339,16 @@ func TestInsightExplorerCategoryCursorAndNoEntityDedupe(t *testing.T) {
 	}
 	if len(first.Items) != 2 || first.Items[0].Entity.ID != first.Items[1].Entity.ID || first.Items[0].Category != "price" || first.NextCursor == nil {
 		t.Fatalf("explorer category/dedupe = %#v", first)
+	}
+	if visual := first.Items[0].Entity.Visual; visual == nil || visual.Kind != "game_header" || visual.Asset != "https://example.test/header.jpg" {
+		t.Fatalf("explorer visual = %#v", visual)
+	}
+	if first.Items[1].Entity.Visual != nil || first.Items[0].Detail != nil || first.Items[1].Detail != nil {
+		t.Fatal("explorer fabricated media or event details")
+	}
+	missing, err := json.Marshal(first.Items[1].Entity)
+	if err != nil || strings.Contains(string(missing), "visual") {
+		t.Fatalf("missing visual was not omitted: %s (%v)", missing, err)
 	}
 	payload, err := json.Marshal(first)
 	if err != nil {

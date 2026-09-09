@@ -381,7 +381,7 @@ func (d *InsightsDAO) ListInsightExplorerChanges(ctx context.Context, conditions
 	result := make([]v2models.InsightChangeRecord, 0, len(rows))
 	for _, row := range rows {
 		result = append(result, v2models.InsightChangeRecord{
-			EntityID: row.GameID, EntityName: row.GameName, DetectorKey: row.DetectorKey,
+			EntityID: row.GameID, EntityName: row.GameName, VisualAsset: row.HeaderUrl, DetectorKey: row.DetectorKey,
 			DetectorVersion: row.DetectorVersion, EventCode: row.EventCode,
 			ProjectionDate: row.ProjectionDate.Time, TimeBasis: row.TimeBasis, EventAt: timestampPointer(row.EventAt),
 			PrecisionRank: row.PrecisionRank, EventSortAt: row.EventSortAt.Time, OpaqueTie: row.OpaqueTie,

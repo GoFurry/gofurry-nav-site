@@ -198,6 +198,7 @@ LIMIT sqlc.arg(limit_count);
 -- name: ListNavInsightExplorerChanges :many
 SELECT event.site_id,
        COALESCE(NULLIF(history.name, ''), NULLIF(site.name, ''), '')::text AS site_name,
+       COALESCE(site.icon, '')::text AS icon,
        event.detector_key,
        event.detector_version,
        event.event_code,

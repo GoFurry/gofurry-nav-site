@@ -243,7 +243,7 @@ func (d *InsightsDAO) ListExplorerChanges(ctx context.Context, conditions models
 	result := make([]models.ChangeRecord, 0, len(rows))
 	for _, row := range rows {
 		result = append(result, models.ChangeRecord{
-			EntityID: row.SiteID, EntityName: row.SiteName, DetectorKey: row.DetectorKey,
+			EntityID: row.SiteID, EntityName: row.SiteName, VisualAsset: row.Icon, DetectorKey: row.DetectorKey,
 			DetectorVersion: row.DetectorVersion, EventCode: row.EventCode,
 			ProjectionDate: row.ProjectionDate.Time, TimeBasis: row.TimeBasis, EventAt: timestampPointer(row.EventAt),
 			PrecisionRank: row.PrecisionRank, EventSortAt: row.EventSortAt.Time, OpaqueTie: row.OpaqueTie,

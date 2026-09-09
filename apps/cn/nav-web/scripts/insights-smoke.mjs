@@ -3,6 +3,11 @@ import { launchPerfBrowser, normalizeBaseUrl, parseArgs, toAbsoluteUrl } from '.
 import { mockOverview, mockGamePanel } from './fixtures/insights-overview.mjs'
 
 const args = parseArgs()
+if (args['changes-fixtures']) {
+  const { runChangesSmoke } = await import('./insights-changes-smoke.mjs')
+  await runChangesSmoke()
+  process.exit(0)
+}
 if (args['compare-fixtures']) {
   const { runCompareSmoke } = await import('./insights-compare-smoke.mjs')
   await runCompareSmoke()

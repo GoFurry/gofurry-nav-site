@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { groupInsightChangeDates, formatInsightChangeDate } from '../app/utils/insightChangeTimeline.ts'
 import { filterCompareSites, compareSelectedEntities } from '../app/utils/insightComparePicker.ts'
 import { existsSync, readFileSync, readdirSync } from 'node:fs'
 import { registerHooks } from 'node:module'
@@ -306,6 +307,33 @@ for (const messages of [zh, en]) {
   const copy = JSON.stringify([messages.insights.siteCompare, messages.insights.gameCompare, messages.insights.comparePicker])
   for (const forbidden of ['winner', 'score', 'ranking', 'recommendation', '胜出', '评分', '排名', '推荐', '领先', '更安全', '性价比更高']) assert(!copy.toLowerCase().includes(forbidden.toLowerCase()), 'Compare judgement wording: ' + forbidden)
   assert(!/\b(?:Best|Better|Live Players)\b/.test(copy), 'Compare introduced evaluative/realtime wording')
+}
+
+// B6 keeps source order, date precision and the existing filter/cursor owner.
+const timelineItems = [
+  { ...exactChange, domain: 'site', entity: { id: 1 }, date: '2026-09-09' },
+  { ...dayChange, domain: 'site', entity: { id: 1 }, date: '2026-09-09' },
+  { ...dayChange, domain: 'game', entity: { id: 2 }, date: '2026-09-08' },
+]
+const timelineGroups = groupInsightChangeDates(timelineItems)
+assert(timelineGroups.length === 2 && timelineGroups[0].items.length === 2, 'timeline deduplicated repeated entity events')
+assert(timelineGroups.flatMap(group => group.items).every((item, i) => item === timelineItems[i]), 'timeline reordered or mutated source events')
+assert(groupInsightChangeDates([...timelineItems, { ...timelineItems[2] }])[1].items.length === 2, 'pagination split the same date')
+assert(groupInsightChangeDates([...timelineItems, timelineItems[0]]).length === 3, 'timeline moved a non-adjacent event')
+assert(groupInsightChangeDates([]).length === 0 && formatInsightChangeDate('bad', 'en') === 'bad', 'timeline empty/invalid date handling changed')
+assert(formatInsightChangeDate('2026-09-09', 'en') === 'Sep 9, 2026', 'date grouping shifted its UTC day')
+const changesPage = workspaceSource('pages/insights/changes.vue')
+assert(changesPage.includes('<EcosystemNavigation />') && changesPage.includes('InsightsWorkspaceHeader') && changesPage.includes("$t('insights.changeExplorer.title')"), 'Changes lost global navigation or visible localized H1')
+assert(changesPage.includes("buildInsightsSeo('changes', locale.value)"), 'Changes SEO contract changed')
+for (const values of ["['site', 'game']", "['7d', '30d', '90d', 'all']", "['capability', 'target', 'certificate']", "['pricing_model', 'platform', 'release', 'price', 'discount']"]) assert(changesPage.includes(values), 'Changes filter keys changed')
+assert(changesPage.includes('sequence === requestSequence') && changesPage.includes('delete query.cursor') && changesPage.includes('items.value = [...items.value, ...page.items]'), 'Changes lost stale-response/opaque pagination contract')
+const changeFeed = workspaceSource('components/insights/InsightsChangeExplorerFeed.vue')
+assert(changeFeed.includes('InsightEntityMedia') && changeFeed.includes('localePath(entityPath(item))') && changeFeed.includes('formatInsightChangeWhen(item, locale)'), 'Changes lost identity, localized links or timestamp precision')
+assert(changeFeed.includes(':aria-busy=') && changeFeed.includes('data-load-more') && changeFeed.includes('role="status"'), 'Changes lost loading/error/pagination accessibility')
+assert(!/\b(?:fetch|useFetch|useAsyncData)\s*\(|from ['"]@\/services\//.test(changeFeed), 'timeline added entity requests')
+assert(!/get(?:GameDetail|SiteDetail|GameInfo|NavSite)/.test(changesPage), 'Changes added per-entity requests')
+for (const messages of [zh,en]) {
+  for (const forbidden of ['重大变化', '热门变化', '趋势上涨', '实时', 'realtime', 'Live feed']) assert(!JSON.stringify(messages.insights.changeExplorer).includes(forbidden), 'Changes fabricated event significance/time')
 }
 
 console.log('[insights] navigation, public price, regional identity, timeline, dimension, and Compare semantics passed')

@@ -885,6 +885,9 @@
     "changeExplorer": {
       "title": "Change Explorer",
       "description": "Browse website and game ecosystem changes by domain, time range, and public category",
+      "retry": "Try again",
+      "aboutTitle": "About these records",
+      "about": "Records are grouped by their recorded date, in source order. Events with a time observation show a timestamp; others show only a date. Images use the current entity identity, not its appearance at the time of the event.",
       "filters": "Change filters",
       "domain": "Domain",
       "range": "Range",
