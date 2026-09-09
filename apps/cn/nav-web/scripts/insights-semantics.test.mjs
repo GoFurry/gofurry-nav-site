@@ -124,7 +124,7 @@ assert(overviewChangesPath === '/insights/changes', 'Overview Changes destinatio
 const overviewSource = readFileSync(new URL('../app/pages/insights/index.vue', import.meta.url), 'utf8')
 assert(overviewSource.includes("<h1>{{ $t('insights.overview.title') }}</h1>"), 'Overview lost its visible localized H1')
 assert(overviewSource.includes('EcosystemNavigation') && !overviewSource.includes('InsightsStats'), 'Overview navigation or typography statistics regressed')
-assert(overviewSource.includes('Promise.allSettled') && overviewSource.includes('getGameV2Panel(locale.value)'), 'Overview lost independent sources or reused Panel request')
+assert(overviewSource.includes('Promise.allSettled') && overviewSource.includes('getGameHomePanel(locale.value)'), 'Overview lost independent sources or reused Panel request')
 const sitePage = readFileSync(new URL('../app/pages/insights/sites/index.vue', import.meta.url), 'utf8')
 const gamePage = readFileSync(new URL('../app/pages/insights/games/index.vue', import.meta.url), 'utf8')
 for (const [page, domain, metrics, dimensions, defaultMetric, defaultDimension] of [
@@ -138,7 +138,7 @@ for (const [page, domain, metrics, dimensions, defaultMetric, defaultDimension] 
   assert(page.includes(`<EcosystemNavigation context="${domain}"`) && page.includes('useInsightsDomain(') && page.includes('useInsightsDimensions('), `${domain} bypassed navigation or query owners`)
   assert(page.includes('localePath(item.path)'), `${domain} deep links lost locale awareness`)
 }
-assert(!sitePage.includes('getGameV2Panel') && gamePage.includes('getGameV2Panel(locale.value)') && gamePage.includes('Promise.allSettled'), 'Game Panel source lost its independent Game-only boundary')
+assert(!sitePage.includes('getGameHomePanel') && gamePage.includes('getGameHomePanel(locale.value)') && gamePage.includes('Promise.allSettled'), 'Game Panel source lost its independent Game-only boundary')
 const domainHeader = readFileSync(new URL('../app/components/insights/domain/InsightsDomainHeader.vue', import.meta.url), 'utf8')
 assert(/<h1>\{\{ \$t\(/.test(domainHeader) && domainHeader.includes('insights.sites.title') && domainHeader.includes('insights.games.title'), 'Domain visible H1 lost existing locale semantics')
 for (const file of readdirSync(new URL('../app/components/insights/domain/', import.meta.url)).filter(name => name.endsWith('.vue'))) {

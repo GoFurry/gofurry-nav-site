@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { launchPerfBrowser, normalizeBaseUrl, parseArgs, toAbsoluteUrl } from './perf/shared.mjs'
-import { mockOverview, mockGamePanel } from './fixtures/insights-overview.mjs'
+import { mockOverview, mockGameHome } from './fixtures/insights-overview.mjs'
 
 const args = parseArgs()
 if (args['changes-fixtures']) {
@@ -315,8 +315,8 @@ try {
     contentType: 'application/json',
     body: JSON.stringify({ code: 1, data: mockOverview('game') }),
   }))
-  await page.route('**/api/v2/game/panel/main**', route => route.fulfill({
-    status: 200, contentType: 'application/json', body: JSON.stringify({ code: 1, data: mockGamePanel() }),
+  await page.route('**/api/v2/game/home**', route => route.fulfill({
+    status: 200, contentType: 'application/json', body: JSON.stringify({ code: 1, data: mockGameHome() }),
   }))
   await page.route('**/api/v2/nav/sites/*/detail**', (route) => {
     const id = Number(new URL(route.request().url()).pathname.match(/sites\/(\d+)\/detail/)?.[1] || 0)

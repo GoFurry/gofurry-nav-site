@@ -44,7 +44,7 @@ import EcosystemNavigation from '@/components/insights/EcosystemNavigation.vue'
 import InsightsOverviewActivity from '@/components/insights/activity/InsightsOverviewActivity.vue'
 import InsightsOverviewSites from '@/components/insights/overview/InsightsOverviewSites.vue'
 import InsightsOverviewGamePulse from '@/components/insights/overview/InsightsOverviewGamePulse.vue'
-import { getGameInsightsOverview, getGameV2Panel } from '@/services/game'
+import { getGameInsightsOverview, getGameHomePanel } from '@/services/game'
 import { getNavInsightsOverview } from '@/services/nav'
 import type { GameV2PanelRecord } from '@/types/game'
 import type { InsightOverview } from '@/types/insights'
@@ -63,7 +63,7 @@ const { data } = await useAsyncData<OverviewSnapshot>(() => `insights:overview:$
   const [navResult, gameResult, panelResult] = await Promise.allSettled([
     getNavInsightsOverview(),
     getGameInsightsOverview(),
-    getGameV2Panel(locale.value),
+    getGameHomePanel(locale.value),
   ])
   return {
     nav: navResult.status === 'fulfilled' ? navResult.value : null,

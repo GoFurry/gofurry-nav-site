@@ -44,7 +44,7 @@ import { useI18n } from 'vue-i18n'
 import InsightsDataInfo from '@/components/insights/InsightsDataInfo.vue'
 import { useInsightsDomain } from '@/composables/useInsightsDomain'
 import { useInsightsDimensions } from '@/composables/useInsightsDimensions'
-import { getGameV2Panel, getGameInsightsBreakdown, getGameInsightsOverview, getGameInsightsSliceTrend, getGameInsightsTrend } from '@/services/game'
+import { getGameHomePanel, getGameInsightsBreakdown, getGameInsightsOverview, getGameInsightsSliceTrend, getGameInsightsTrend } from '@/services/game'
 import type { GameInsightDimension, GameInsightMetricKey } from '@/types/insights'
 import { buildInsightsSeo } from '@/utils/seo'
 
@@ -54,7 +54,7 @@ const { locale } = useI18n()
 const localePath = useLocalePath()
 const destinations = overviewExploreGroups.game.slice(1)
 const panelSnapshot = useAsyncData(() => `insights:game:panel:${locale.value}`, async () => {
-  const [result] = await Promise.allSettled([getGameV2Panel(locale.value)])
+  const [result] = await Promise.allSettled([getGameHomePanel(locale.value)])
   return { panel: result.status === 'fulfilled' ? result.value : null }
 }, { default: () => ({ panel: null as GameV2PanelRecord | null }) })
 const metricGroups = [

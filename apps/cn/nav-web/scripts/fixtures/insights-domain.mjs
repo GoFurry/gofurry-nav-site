@@ -1,11 +1,11 @@
-import { mockOverview, mockGamePanel } from './insights-overview.mjs'
+import { mockOverview, mockGameHome } from './insights-overview.mjs'
 
 export const domainMetricKeys = { site: ['ipv6', 'tls13', 'http2', 'hsts', 'csp', 'security_txt', 'certificate_verified'], game: ['free', 'windows', 'mac', 'linux'] }
 export const domainDimensionKeys = { site: ['country', 'group', 'nsfw', 'public_interest'], game: ['primary_tag', 'tag'] }
 
 export async function domainFixtureResponse(url, mediaBase, state) {
   const path = url.pathname
-  if (path === '/api/v2/game/panel/main') return state.panelFailure ? { status: 503 } : { data: mockGamePanel(mediaBase) }
+  if (path === '/api/v2/game/home') return state.panelFailure ? { status: 503 } : { data: mockGameHome(mediaBase) }
   const domain = path.startsWith('/api/v2/nav/') ? 'site' : 'game'
   if (path.endsWith('/insights/overview')) {
     if (state.overviewFailure) return { status: 503 }

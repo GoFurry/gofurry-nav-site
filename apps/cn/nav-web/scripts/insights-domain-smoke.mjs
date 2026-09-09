@@ -33,7 +33,8 @@ export async function runDomainSmoke() {
       for (const key of domainMetricKeys[domain]) assert(html.includes(`data-metric-key="${key}"`), `missing ${key}`)
       const selectedSlice = new URL(route, base).searchParams.has('slice')
       assert.equal(dataRequests().length, (domain === 'site' ? 3 : 4) + Number(selectedSlice), 'SSR initial request count changed')
-      assert.equal(dataRequests().some(url => url.pathname.endsWith('/panel/main')), domain === 'game', 'Panel requested outside Game Domain')
+      assert.equal(dataRequests().some(url => url.pathname.endsWith('/game/home')), domain === 'game', 'cached Game Home requested outside Game Domain')
+      assert(!dataRequests().some(url => url.pathname.endsWith('/panel/main')), 'Domain bypassed the prewarmed Home cache')
       console.log(`[domain] SSR ${route}, ${dataRequests().length} requests PASS`)
     }
     browser = await launchPerfBrowser()

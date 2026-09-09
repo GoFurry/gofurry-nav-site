@@ -34,3 +34,7 @@ export function mockGamePanel(mediaBase = 'https://media.example') {
     updated_games: [], popular_games: [], free_games: [], top_price: [], low_price: [], latest_news: [],
   }
 }
+
+export function mockGameHome(mediaBase = 'https://media.example') {
+  return { panel: mockGamePanel(mediaBase), latest_news: { news_zh: [], news_en: [] }, latest_reviews: [] }
+}

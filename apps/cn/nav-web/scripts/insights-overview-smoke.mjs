@@ -4,12 +4,12 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { launchPerfBrowser } from './perf/shared.mjs'
 import { startInsightsFixtureApp } from './fixtures/insights-app.mjs'
-import { mockOverview, mockGamePanel } from './fixtures/insights-overview.mjs'
+import { mockOverview, mockGameHome } from './fixtures/insights-overview.mjs'
 
 const sourcePaths = {
   nav: '/api/v2/nav/insights/overview',
   game: '/api/v2/game/insights/overview',
-  panel: '/api/v2/game/panel/main',
+  panel: '/api/v2/game/home',
 }
 
 // Invoked by insights:smoke -- --overview-fixtures. This deliberately tests only the
@@ -17,13 +17,15 @@ const sourcePaths = {
 export async function runOverviewSmoke() {
   let failure = ''
   let siteHero = false
+  let panelDelay = 0
   const requests = []
-  const app = await startInsightsFixtureApp((url, mediaBase) => {
+  const app = await startInsightsFixtureApp(async (url, mediaBase) => {
     const path = url.pathname
     requests.push(path)
     const source = Object.keys(sourcePaths).find(key => sourcePaths[key] === path)
     if (!source || failure === source || failure === 'all') return { status: 503 }
-    const data = source === 'panel' ? mockGamePanel(mediaBase) : mockOverview(source === 'nav' ? 'site' : 'game', mediaBase)
+    if (source === 'panel' && panelDelay) await new Promise(resolve => setTimeout(resolve, panelDelay))
+    const data = source === 'panel' ? mockGameHome(mediaBase) : mockOverview(source === 'nav' ? 'site' : 'game', mediaBase)
     if (siteHero && source === 'nav') data.recent_changes[0].occurred_at = '2026-09-02T12:00:00Z'
     return { data }
   })
@@ -45,6 +47,7 @@ export async function runOverviewSmoke() {
       assert.match(html, /<time datetime="2026-09-01T10:00:00.000Z"/, 'earlier snapshot time must SSR')
       assert.deepEqual(requests.filter(path => Object.values(sourcePaths).includes(path)).sort(), Object.values(sourcePaths).sort(), 'Overview must request exactly three independent sources')
       assert(!requests.some(path => /\/(?:sites|games)\/\d+/.test(path)), 'Overview made a per-entity lookup')
+      assert(!requests.some(path => path.endsWith('/panel/main')), 'Overview bypassed the prewarmed Home cache')
       console.log(`[overview] SSR ${route}: sections, stats, media, localized links and three requests PASS`)
     }
     for (const [source, expected] of [['nav', ['—', '213', '—']], ['game', ['238', '—', '—']], ['panel', ['238', '213', '47']], ['all', ['—', '—', '—']]]) {
@@ -59,6 +62,18 @@ export async function runOverviewSmoke() {
       console.log(`[overview] independent ${source} failure PASS`)
     }
     failure = ''
+    panelDelay = 12000
+    requests.length = 0
+    const slowStarted = performance.now()
+    const slowResponse = await fetch(base + '/insights')
+    const slowHTML = await slowResponse.text()
+    assert.equal(slowResponse.status, 200)
+    assert(performance.now() - slowStarted < 11000, 'optional Game panel blocked SSR until the slow upstream completed')
+    assert.deepEqual(stats(slowHTML), ['238', '213', '47'], 'slow Game media discarded independent overview facts')
+    assert(!slowHTML.includes('data-pulse="players"'), 'timed-out panel fabricated a player observation')
+    assert.deepEqual(requests.filter(path => path === sourcePaths.panel), [sourcePaths.panel], 'timed-out panel retried and extended SSR')
+    panelDelay = 0
+    console.log('[overview] slow cached panel is bounded; independent stats survive PASS')
     browser = await launchPerfBrowser()
     const context = await browser.newContext({ locale: 'zh-CN' })
     const page = await context.newPage()

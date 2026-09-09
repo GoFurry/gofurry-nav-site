@@ -61,12 +61,7 @@ export function getGameList() {
 }
 
 export async function getGameHomeData(lang = 'zh'): Promise<GameHomeData> {
-  const payload = await useApi('gameV2')<GameHomeApiResponse>('/game/home', {
-    query: {
-      lang: normalizeGameLang(lang),
-      region: 'CN',
-    }
-  })
+  const payload = await getGameHomeSnapshot(lang)
 
   return {
     mainInfo: mapV2PanelToGameGroup(payload.panel),
@@ -77,6 +72,20 @@ export async function getGameHomeData(lang = 'zh'): Promise<GameHomeData> {
     },
     latestReviews: payload.latest_reviews,
   }
+}
+
+// Insights needs the same prewarmed panel as Game Home. The uncached panel
+// endpoint rebuilds every collection, so it must not block the overview SSR.
+export async function getGameHomePanel(lang: string): Promise<GameV2PanelRecord> {
+  const snapshot = await getGameHomeSnapshot(lang, { timeout: 8000, retry: 0 })
+  return snapshot.panel
+}
+
+function getGameHomeSnapshot(lang: string, options: { timeout?: number; retry?: number } = {}) {
+  return useApi('gameV2')<GameHomeApiResponse>('/game/home', {
+    query: { lang: normalizeGameLang(lang), region: 'CN' },
+    ...options,
+  })
 }
 
 export async function getGameMainInfo(lang = 'zh'): Promise<GameGroupRecord> {
