@@ -298,7 +298,7 @@ func (q *Queries) GetNavInsightMetricSummary(ctx context.Context, arg GetNavInsi
 }
 
 const getNavInsightSite = `-- name: GetNavInsightSite :one
-SELECT id, name, name_en
+SELECT id, name, name_en, COALESCE(icon, '')::text AS icon
 FROM public.gfn_site
 WHERE id = $1
   AND deleted IS NOT TRUE
@@ -308,12 +308,18 @@ type GetNavInsightSiteRow struct {
 	ID     int64  `json:"id"`
 	Name   string `json:"name"`
 	NameEn string `json:"name_en"`
+	Icon   string `json:"icon"`
 }
 
 func (q *Queries) GetNavInsightSite(ctx context.Context, siteID int64) (GetNavInsightSiteRow, error) {
 	row := q.db.QueryRow(ctx, getNavInsightSite, siteID)
 	var i GetNavInsightSiteRow
-	err := row.Scan(&i.ID, &i.Name, &i.NameEn)
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.NameEn,
+		&i.Icon,
+	)
 	return i, err
 }
 

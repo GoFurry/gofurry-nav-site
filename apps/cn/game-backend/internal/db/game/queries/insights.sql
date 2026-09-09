@@ -3,9 +3,26 @@ SELECT count(*)::bigint
 FROM public.gfg_game;
 
 -- name: GetGameInsightGame :one
-SELECT id, name, name_en
-FROM public.gfg_game
-WHERE id = sqlc.arg(game_id);
+SELECT game.id, game.name, game.name_en,
+       -- Match Game V2's default zh header selection: header before header_2x,
+       -- zh/en/unlocalized assets, then media, details, and the existing game header.
+       COALESCE(
+           (SELECT asset.url FROM public.gfg_game_assets asset
+            WHERE asset.game_id = game.id
+              AND asset.asset_type IN ('header', 'header_2x')
+              AND asset.lang IN ('zh', 'en', '')
+              AND asset.exists IS DISTINCT FROM false AND BTRIM(asset.url) <> ''
+            ORDER BY CASE asset.asset_type WHEN 'header' THEN 0 ELSE 1 END,
+                     CASE asset.lang WHEN 'zh' THEN 0 WHEN 'en' THEN 1 ELSE 2 END,
+                     asset.asset_family, asset.sort_order, asset.id LIMIT 1),
+           NULLIF((SELECT media.url FROM public.gfg_game_media media
+                   WHERE media.game_id = game.id AND media.media_type = 'header'
+                   ORDER BY media.sort_order DESC, media.id DESC LIMIT 1), ''),
+           NULLIF((SELECT details.header_url FROM public.gfg_game_details details
+                   WHERE details.game_id = game.id), ''),
+           NULLIF(game.header, ''), '')::text AS header_url
+FROM public.gfg_game game
+WHERE game.id = sqlc.arg(game_id);
 
 -- name: GetGameInsightMetricSummary :one
 WITH latest AS (

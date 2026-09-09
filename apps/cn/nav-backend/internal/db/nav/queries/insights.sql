@@ -4,7 +4,7 @@ FROM public.gfn_site
 WHERE deleted IS NOT TRUE;
 
 -- name: GetNavInsightSite :one
-SELECT id, name, name_en
+SELECT id, name, name_en, COALESCE(icon, '')::text AS icon
 FROM public.gfn_site
 WHERE id = sqlc.arg(site_id)
   AND deleted IS NOT TRUE;

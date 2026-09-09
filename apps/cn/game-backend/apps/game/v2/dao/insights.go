@@ -32,7 +32,7 @@ func (d *InsightsDAO) GetInsightGame(ctx context.Context, gameID int64) (*v2mode
 	if name == "" {
 		name = row.NameEn
 	}
-	return &v2models.InsightGameRecord{ID: row.ID, Name: name}, nil
+	return &v2models.InsightGameRecord{ID: row.ID, Name: name, VisualAsset: row.HeaderUrl}, nil
 }
 
 func (d *InsightsDAO) GetInsightMetricSummary(ctx context.Context, contract v2models.InsightMetricContract) (*v2models.InsightMetricSummaryRecord, error) {

@@ -587,6 +587,34 @@
     "backHome": "Back Home"
   },
   "insights": {
+    "comparePicker": {
+      "siteLabel": "Choose sites to compare",
+      "sitePlaceholder": "Search by name or domain…",
+      "gameLabel": "Choose games to compare",
+      "gamePlaceholder": "Search games…",
+      "loading": "Searching…",
+      "failed": "Search is unavailable. Your selection and comparison are preserved.",
+      "startSearch": "Enter a name to find games.",
+      "noResults": "No entities available to add.",
+      "results": "Available entities",
+      "count": "Selected {count} / 4",
+      "maximum": "Compare up to 4 entities. Remove one to add another.",
+      "selected": "Selected entities",
+      "remove": "Remove {name}",
+      "reset": "Reset selection",
+      "restart": "Reset the selection or search to start again.",
+      "loadingComparison": "Loading common observations…",
+      "resultsTitle": "Facts side by side",
+      "groups": {
+        "capabilities": "Web capabilities",
+        "certificate": "Certificate",
+        "basic": "Basic",
+        "platform": "Platform",
+        "activity": "Activity",
+        "price": "Price",
+        "language": "Language"
+      }
+    },
     "workspace": {
       "observationSummary": "Observation summary",
       "priceSummary": "Price ecosystem summary",
@@ -1011,8 +1039,8 @@
     },
     "compare": {
       "builderTitle": "Select entities", "idsLabel": "Entity IDs (2–4)", "idsPlaceholder": "For example 12,37,48", "apply": "Apply",
-      "emptyHint": "Enter 2–4 entity IDs to begin.", "oneHint": "One entity is preselected; add at least one more.", "readyHint": "Showing {count} entities side by side.",
-      "invalid": "Enter 1–4 valid positive integer IDs; at least 2 distinct entities are required for results.", "insufficientData": "The selected entities have no common complete snapshot; individual latest values were not mixed.",
+      "emptyHint": "Choose 2–4 entities to begin.", "oneHint": "One entity is preselected; add at least one more.", "readyHint": "Showing {count} entities side by side.",
+      "invalid": "This comparison link is invalid. Reset or choose entities again.", "insufficientData": "The selected entities have no common complete snapshot; individual latest values were not mixed.",
       "commonSnapshot": "Common complete snapshot: {date}", "fact": "Fact", "aboutTitle": "About comparison"
     },
     "siteCompare": {

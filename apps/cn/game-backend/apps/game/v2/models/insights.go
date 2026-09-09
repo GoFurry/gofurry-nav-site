@@ -401,8 +401,9 @@ type InsightMetricTrendRecord struct {
 }
 
 type InsightGameRecord struct {
-	ID   int64
-	Name string
+	VisualAsset string
+	ID          int64
+	Name        string
 }
 
 type InsightGameStateRecord struct {

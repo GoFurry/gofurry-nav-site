@@ -26,7 +26,9 @@ export async function startInsightsFixtureApp(resolveResponse) {
       return
     }
     try {
-      const result = await resolveResponse(url, upstreamUrl + '/media')
+      let body = ''
+      for await (const chunk of request) body += chunk.toString()
+      const result = await resolveResponse(url, upstreamUrl + '/media', body ? JSON.parse(body) : undefined)
       response.writeHead(result?.status || 200, { 'Content-Type': 'application/json' })
       response.end(JSON.stringify(result?.status ? { code: 0, message: 'Local fixture unavailable' } : { code: 1, data: result?.data }))
     } catch {

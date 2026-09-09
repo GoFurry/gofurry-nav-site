@@ -31,7 +31,7 @@ func (d *InsightsDAO) GetSite(ctx context.Context, siteID int64) (*models.SiteRe
 	if name == "" {
 		name = row.NameEn
 	}
-	return &models.SiteRecord{ID: row.ID, Name: name}, nil
+	return &models.SiteRecord{ID: row.ID, Name: name, VisualAsset: row.Icon}, nil
 }
 
 func (d *InsightsDAO) GetMetricSummary(ctx context.Context, contract models.MetricContract) (*models.MetricSummaryRecord, error) {

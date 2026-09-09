@@ -3,6 +3,11 @@ import { launchPerfBrowser, normalizeBaseUrl, parseArgs, toAbsoluteUrl } from '.
 import { mockOverview, mockGamePanel } from './fixtures/insights-overview.mjs'
 
 const args = parseArgs()
+if (args['compare-fixtures']) {
+  const { runCompareSmoke } = await import('./insights-compare-smoke.mjs')
+  await runCompareSmoke()
+  process.exit(0)
+}
 if (args['workspace-fixtures']) {
   const { runWorkspaceSmoke } = await import('./insights-workspace-smoke.mjs')
   await runWorkspaceSmoke()
@@ -577,10 +582,13 @@ try {
       })),
     } }) })
   })
+  await page.route('**/api/v2/nav/sites/directory**', route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ code: 1, data: [42,41].map(id => ({ id: String(id), name: 'Site ' + id, domain: 'site-' + id + '.example', icon: null })) }) }))
   await page.goto(toAbsoluteUrl(baseUrl, '/insights/sites/compare'), { waitUntil: 'domcontentloaded' })
   await page.waitForTimeout(500)
-  await page.locator('.compare-builder input').fill('42,41,42')
-  await page.locator('.compare-builder button[type="submit"]').click()
+  await page.getByRole('combobox').fill('Site')
+  await page.locator('[data-picker-result="42"]').click()
+  await page.getByRole('combobox').press('ArrowDown')
+  await page.locator('[data-picker-result="41"]').click()
   await page.waitForURL(url => url.searchParams.get('ids') === '42,41')
   await page.waitForSelector('[data-site-compare][data-compare-count="2"] [data-compare-result]')
   assert((await page.locator('[data-compare-entity-id]').allTextContents()).map(value => value.trim()).join('|').includes('Site 42') && (await page.locator('[data-compare-entity-id]').first().getAttribute('data-compare-entity-id')) === '42', 'Site Compare lost first-appearance order or deduplication')
@@ -599,10 +607,13 @@ try {
       })),
     } }) })
   })
+  await page.route('**/api/v2/game/search/simple**', route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ code: 1, data: [82,83].map(id => ({ id: String(id), name: 'Game ' + id, info: '', cover: '' })) }) }))
   await page.goto(toAbsoluteUrl(baseUrl, '/insights/games/compare?region=CN'), { waitUntil: 'domcontentloaded' })
   await page.waitForTimeout(500)
-  await page.locator('.compare-builder input').fill('82,83')
-  await page.locator('.compare-builder button[type="submit"]').click()
+  await page.getByRole('combobox').fill('Game')
+  await page.locator('[data-picker-result="82"]').click()
+  await page.getByRole('combobox').press('ArrowDown')
+  await page.locator('[data-picker-result="83"]').click()
   await page.waitForURL(url => url.searchParams.get('ids') === '82,83' && url.searchParams.get('region') === 'CN')
   await page.waitForSelector('[data-game-compare][data-compare-count="2"] [data-compare-result]')
   assert((await page.locator('[data-current-player-available="true"]').textContent())?.trim() === '0', 'Game Compare changed real player zero')

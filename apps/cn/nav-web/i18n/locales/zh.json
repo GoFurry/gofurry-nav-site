@@ -587,6 +587,34 @@
     "backHome": "返回首页"
   },
   "insights": {
+    "comparePicker": {
+      "siteLabel": "选择要比较的站点",
+      "sitePlaceholder": "搜索名称或域名…",
+      "gameLabel": "选择要比较的游戏",
+      "gamePlaceholder": "搜索游戏…",
+      "loading": "正在查找…",
+      "failed": "搜索暂不可用，已选实体与对比结果仍保留。",
+      "startSearch": "输入名称查找游戏。",
+      "noResults": "没有可添加的结果。",
+      "results": "可添加的实体",
+      "count": "已选择 {count} / 4",
+      "maximum": "最多比较 4 个实体，移除一个后可继续添加。",
+      "selected": "已选择的实体",
+      "remove": "移除 {name}",
+      "reset": "重置选择",
+      "restart": "重置选择，或通过搜索重新开始。",
+      "loadingComparison": "正在读取共同观测数据…",
+      "resultsTitle": "事实对照",
+      "groups": {
+        "capabilities": "Web 能力",
+        "certificate": "证书",
+        "basic": "基本信息",
+        "platform": "平台",
+        "activity": "活跃度",
+        "price": "价格",
+        "language": "语言"
+      }
+    },
     "workspace": {
       "observationSummary": "观测概况",
       "priceSummary": "价格生态概况",
@@ -1011,8 +1039,8 @@
     },
     "compare": {
       "builderTitle": "选择对比实体", "idsLabel": "实体 ID（2–4 个）", "idsPlaceholder": "例如 12,37,48", "apply": "应用",
-      "emptyHint": "输入 2–4 个实体 ID 开始对比。", "oneHint": "已预选 1 个实体，请再加入至少 1 个。", "readyHint": "当前并列展示 {count} 个实体。",
-      "invalid": "请输入 1–4 个有效正整数 ID；开始对比至少需要 2 个不同实体。", "insufficientData": "所选实体暂无共同完整快照，未混用各自的最新数据。",
+      "emptyHint": "选择 2–4 个实体开始对比。", "oneHint": "已预选 1 个实体，请再加入至少 1 个。", "readyHint": "当前并列展示 {count} 个实体。",
+      "invalid": "比较链接无效，请重置选择或重新选择实体。", "insufficientData": "所选实体暂无共同完整快照，未混用各自的最新数据。",
       "commonSnapshot": "共同完整快照：{date}", "fact": "事实", "aboutTitle": "关于对比"
     },
     "siteCompare": {

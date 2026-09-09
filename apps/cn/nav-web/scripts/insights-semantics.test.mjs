@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { filterCompareSites, compareSelectedEntities } from '../app/utils/insightComparePicker.ts'
 import { existsSync, readFileSync, readdirSync } from 'node:fs'
 import { registerHooks } from 'node:module'
 import { insightDimensionBars } from '../app/utils/insightDomain.ts'
@@ -271,6 +272,40 @@ assert(languages.includes('insights.languageIntelligence.overlap') && languages.
 for (const key of ['verified', 'failed', 'known', 'coverage', 'expired', 'expires_within_7d', 'expires_in_8_30d', 'later', 'not_applicable', 'stale', 'not_probed', 'probe_failed', 'unknown']) assert(certificates.includes(key), 'certificate lost ' + key)
 for (const [source, path] of [[workspaceSource('components/insights/workspace/InsightRankingList.vue'), '/games/'], [prices, '/games/'], [workspaceSource('components/insights/workspace/InsightRiskList.vue'), '/site/']]) {
   assert(source.includes('InsightEntityMedia') && source.includes("localePath('" + path), 'Workspace identity media or localized entity link lost')
+}
+
+// B5 preserves share URLs, evidence groups, and optional identity presentation.
+for (const input of ['0,1', '-1,2', '1,bad', '1,2,3,4,5', ['1','2']]) assert(parseInsightCompareIDs(input) === null, 'invalid comparison IDs accepted')
+assert(parseInsightCompareIDs('3,1,2,3')?.join(',') === '3,1,2', 'Compare URL order changed')
+assert(insightCompareReady([1,2,3,4]) && !insightCompareReady([]), 'Compare readiness boundary changed')
+const pickerItems = [{ id: 1, name: 'Some Fox', subtitle: 'a.fox.example' }, { id: 2, name: 'Fox', subtitle: 'b.test' }, { id: 3, name: 'Fox Den', subtitle: 'c.test' }, { id: 4, name: 'Fox Bay', subtitle: 'd.test' }]
+assert(filterCompareSites(pickerItems, 'FOX', []).map(item => item.id).join(',') === '2,3,4,1', 'Site filter lost exact/prefix/contains/stable order')
+assert(filterCompareSites(pickerItems, 'a.fox.example', [2]).map(item => item.id).join(',') === '1', 'Site domain search failed')
+assert(filterCompareSites(pickerItems, '', [1,2]).map(item => item.id).join(',') === '3,4', 'selected Sites returned as addable results')
+const resolved = compareSelectedEntities([3,2,9], [{ id: 3, name: 'Authoritative' }], pickerItems)
+assert(resolved.map(item => item.name).join('|') === 'Authoritative|Fox|#9', 'selected identity priority/order changed')
+for (const [domain, folder, required] of [['site','sites',['capabilities','certificate']], ['game','games',['basic','platform','activity','price','language']]]) {
+  const source = workspaceSource('pages/insights/' + folder + '/compare.vue')
+  assert(source.includes("robots: 'noindex, follow'") && source.includes('InsightsWorkspaceHeader'), domain + ' Compare SEO/H1 lost')
+  assert(source.includes('parseInsightCompareIDs(route.query.ids)') && source.includes('insightCompareReady(selectedIDs.value)'), domain + ' bypassed URL contract')
+  assert(source.includes('selectedIDs.value.flatMap') && source.includes('item.' + domain + '.id === id'), domain + ' matrix no longer follows URL order')
+  assert(source.includes('InsightComparePicker') && !source.includes('inputmode="numeric"') && !source.includes('applySelection'), domain + ' restored raw ID input UX')
+  for (const key of required) assert(source.includes("key: '" + key + "'"), domain + ' lost matrix group ' + key)
+  assert(!/get(?:GameDetail|SiteDetail|GameInfo|NavSite)/.test(source), domain + ' added per-entity details')
+}
+const picker = workspaceSource('components/insights/compare/InsightComparePicker.vue')
+assert(picker.includes('role="combobox"') && picker.includes('role="listbox"') && picker.includes('aria-activedescendant') && picker.includes('ArrowDown') && picker.includes('ArrowUp') && picker.includes('Enter') && picker.includes('Escape'), 'picker keyboard semantics missing')
+const pickerData = workspaceSource('composables/useInsightComparePicker.ts')
+assert(pickerData.includes('getNavSiteDirectory(locale.value)') && pickerData.includes('onMounted(') && pickerData.includes('getSearchSimple(locale.value, value.trim(), { signal: controller.signal })'), 'picker lost client directory or authoritative Game simple search')
+assert(pickerData.includes('token !== generation') && pickerData.includes('controller?.abort()') && pickerData.includes('350'), 'Game search lost debounce/abort/stale guard')
+const matrix = workspaceSource('components/insights/compare/InsightCompareMatrix.vue')
+assert(matrix.includes('InsightEntityMedia') && matrix.includes('localePath(') && matrix.includes('scope="row"') && matrix.includes('scope="col"'), 'matrix lost identity links or table semantics')
+const sitemapSource = readFileSync(new URL('../server/routes/sitemap.xml.ts', import.meta.url), 'utf8')
+assert(!/['"]\/(?:en\/)?insights\/(?:sites|games)\/compare/.test(sitemapSource), 'Compare entered sitemap inventory')
+for (const messages of [zh, en]) {
+  const copy = JSON.stringify([messages.insights.siteCompare, messages.insights.gameCompare, messages.insights.comparePicker])
+  for (const forbidden of ['winner', 'score', 'ranking', 'recommendation', '胜出', '评分', '排名', '推荐', '领先', '更安全', '性价比更高']) assert(!copy.toLowerCase().includes(forbidden.toLowerCase()), 'Compare judgement wording: ' + forbidden)
+  assert(!/\b(?:Best|Better|Live Players)\b/.test(copy), 'Compare introduced evaluative/realtime wording')
 }
 
 console.log('[insights] navigation, public price, regional identity, timeline, dimension, and Compare semantics passed')

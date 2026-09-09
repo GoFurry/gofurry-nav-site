@@ -273,8 +273,9 @@ type MetricTrendRecord struct {
 }
 
 type SiteRecord struct {
-	ID   int64
-	Name string
+	VisualAsset string
+	ID          int64
+	Name        string
 }
 
 type SiteMetricRecord struct {
