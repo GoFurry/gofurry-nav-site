@@ -3,6 +3,11 @@ import { launchPerfBrowser, normalizeBaseUrl, parseArgs, toAbsoluteUrl } from '.
 import { mockOverview, mockGamePanel } from './fixtures/insights-overview.mjs'
 
 const args = parseArgs()
+if (args['domain-fixtures']) {
+  const { runDomainSmoke } = await import('./insights-domain-smoke.mjs')
+  await runDomainSmoke()
+  process.exit(0)
+}
 if (args['overview-fixtures']) {
   const { runOverviewSmoke } = await import('./insights-overview-smoke.mjs')
   await runOverviewSmoke()

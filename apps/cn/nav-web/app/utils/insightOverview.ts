@@ -1,4 +1,3 @@
-import type { GameV2ListItem, GameV2PanelRecord } from '@/types/game'
 import type { InsightEntityRef, InsightFeedItem, InsightOverview } from '@/types/insights'
 import { insightChangeOrder } from './insightChanges'
 import { formatInsightRatio } from './insightDimensions'
@@ -55,26 +54,4 @@ export function overviewSignal(value: number | null | undefined) {
 export function formatOverviewDelta(value: number | null | undefined) {
   if (typeof value !== 'number' || !Number.isFinite(value)) return '—'
   return `${value > 0 ? '+' : ''}${formatInsightRatio(value)}`
-}
-
-export function pulseDiscountPrice(game: GameV2ListItem) {
-  // The existing Panel ranks highest_discount using US prices, independently of its requested display region.
-  return game.prices?.find(price => price.region === 'US') ?? (game.price?.region === 'US' ? game.price : null)
-}
-
-export function selectOverviewPulse(panel: GameV2PanelRecord | null) {
-  const used = new Set<string>()
-  const take = (games: GameV2ListItem[]) => {
-    const game = games.find(item => item.id && !used.has(String(item.id))) ?? null
-    if (game) used.add(String(game.id))
-    return game
-  }
-  return {
-    players: take((panel?.top_online ?? []).filter(game => game.online_count?.status === 'success' && Number.isFinite(game.online_count.count))),
-    discount: take((panel?.highest_discount ?? []).filter(game => {
-      const price = pulseDiscountPrice(game)
-      return price?.available && !price.is_free && price.currency && Number.isFinite(price.final_amount) && price.discount_percent > 0
-    })),
-    latest: take(panel?.latest_games ?? []),
-  }
 }

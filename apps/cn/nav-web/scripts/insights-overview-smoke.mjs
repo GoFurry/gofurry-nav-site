@@ -1,13 +1,9 @@
 import assert from 'node:assert/strict'
-import { createServer } from 'node:http'
-import { spawn } from 'node:child_process'
-import { once } from 'node:events'
-import { existsSync } from 'node:fs'
 import { mkdtemp } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { setTimeout as delay } from 'node:timers/promises'
-import { launchPerfBrowser, rootDir } from './perf/shared.mjs'
+import { launchPerfBrowser } from './perf/shared.mjs'
+import { startInsightsFixtureApp } from './fixtures/insights-app.mjs'
 import { mockOverview, mockGamePanel } from './fixtures/insights-overview.mjs'
 
 const sourcePaths = {
@@ -19,59 +15,21 @@ const sourcePaths = {
 // Invoked by insights:smoke -- --overview-fixtures. This deliberately tests only the
 // Overview against local fixtures; it does not stand in for the full live-data smoke.
 export async function runOverviewSmoke() {
-  assert(existsSync(join(rootDir, '.output/server/index.mjs')), 'Build Nav Web before running the production fixture smoke')
   let failure = ''
   let siteHero = false
   const requests = []
-  let upstreamUrl = ''
-  const upstream = createServer((request, response) => {
-    const path = new URL(request.url, 'http://localhost').pathname
+  const app = await startInsightsFixtureApp((url, mediaBase) => {
+    const path = url.pathname
     requests.push(path)
-    if (path.startsWith('/media/')) {
-      // Small local artwork for layout verification only; never shipped as product assets.
-      const site = path.includes('site') || path.includes('default')
-      response.writeHead(200, { 'Content-Type': 'image/svg+xml' })
-      response.end(site
-        ? '<svg xmlns="http://www.w3.org/2000/svg" width="72" height="72"><rect width="72" height="72" rx="14" fill="#82654f"/><path d="M16 54V18l20 18 20-18v36" fill="none" stroke="#f4e9dd" stroke-width="5"/></svg>'
-        : '<svg xmlns="http://www.w3.org/2000/svg" width="460" height="215" viewBox="0 0 460 215"><rect width="460" height="215" fill="#394b44"/><circle cx="350" cy="62" r="28" fill="#c8b398"/><path d="M0 215V155L110 58l120 157M190 215l125-123 145 110v13" fill="#778978"/><text x="28" y="180" fill="#fff" font-family="sans-serif" font-size="18">GAME · FIXTURE</text></svg>')
-      return
-    }
     const source = Object.keys(sourcePaths).find(key => sourcePaths[key] === path)
-    if (!source || failure === source || failure === 'all') {
-      response.writeHead(503, { 'Content-Type': 'application/json' })
-      response.end(JSON.stringify({ code: 0, message: 'Local fixture unavailable' }))
-      return
-    }
-    const data = source === 'panel' ? mockGamePanel(`${upstreamUrl}/media`) : mockOverview(source === 'nav' ? 'site' : 'game', `${upstreamUrl}/media`)
+    if (!source || failure === source || failure === 'all') return { status: 503 }
+    const data = source === 'panel' ? mockGamePanel(mediaBase) : mockOverview(source === 'nav' ? 'site' : 'game', mediaBase)
     if (siteHero && source === 'nav') data.recent_changes[0].occurred_at = '2026-09-02T12:00:00Z'
-    response.writeHead(200, { 'Content-Type': 'application/json' })
-    response.end(JSON.stringify({ code: 1, data }))
+    return { data }
   })
-  await listen(upstream)
-  upstreamUrl = `http://127.0.0.1:${upstream.address().port}`
-  const reservation = createServer()
-  await listen(reservation)
-  const port = reservation.address().port
-  await new Promise(resolve => reservation.close(resolve))
-  const base = `http://127.0.0.1:${port}`
-  const environment = {
-    ...process.env, NITRO_HOST: '127.0.0.1', NITRO_PORT: String(port),
-    NUXT_PUBLIC_NAV_API_BASE: '/api/v1', NUXT_PUBLIC_NAV_V2_API_BASE: '/api/v2',
-    NUXT_PUBLIC_GAME_API_BASE: '/api/v1', NUXT_PUBLIC_GAME_V2_API_BASE: '/api/v2',
-    NUXT_PUBLIC_SITE_LOGO_PREFIX_URL: `${upstreamUrl}/media/`,
-    NUXT_PUBLIC_SITE_DEFAULT_LOGO: `${upstreamUrl}/media/default.svg`,
-  }
-  for (const name of ['NAV_API', 'NAV_V2_API', 'GAME_API', 'GAME_V2_API']) {
-    environment[`NUXT_${name}_INTERNAL_BASE`] = `${upstreamUrl}/api/${name.includes('V2') ? 'v2' : 'v1'}`
-  }
-  const preview = spawn(process.execPath, ['.output/server/index.mjs'], { cwd: rootDir, env: environment, windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'] })
-  let logs = ''
-  const record = data => { logs = (logs + data.toString()).slice(-8000) }
-  preview.stdout.on('data', record)
-  preview.stderr.on('data', record)
+  const { base, upstreamUrl } = app
   let browser
   try {
-    await ready(`${base}/web/background/gofurry-pattern.svg`, preview)
     for (const route of ['/insights', '/en/insights']) {
       requests.length = 0
       const response = await fetch(base + route)
@@ -157,30 +115,17 @@ export async function runOverviewSmoke() {
     console.log('[overview] Site hero and image error fallback PASS')
     console.log(`[overview] screenshots (temporary, outside Git): ${screenshots}`)
   } catch (error) {
-    console.error(logs)
+    console.error(app.logs())
     throw error
   } finally {
     await browser?.close()
-    if (preview.exitCode === null) { preview.kill(); await once(preview, 'exit') }
-    await new Promise(resolve => upstream.close(resolve))
+    await app.close()
   }
 }
 
 function stats(html) {
   const dl = html.match(/<dl class="overview-stats">([\s\S]*?)<\/dl>/)?.[1] || ''
   return [...dl.matchAll(/<dd>(.*?)<\/dd>/g)].map(match => match[1])
-}
-async function listen(server) {
-  server.listen(0, '127.0.0.1')
-  await once(server, 'listening')
-}
-async function ready(url, child) {
-  for (let attempt = 0; attempt < 100; attempt++) {
-    assert(child.exitCode === null, 'production server exited during startup')
-    try { if ((await fetch(url)).ok) return } catch {}
-    await delay(200)
-  }
-  throw new Error('production server did not become ready')
 }
 async function assertLayout(page, width) {
   const layout = await page.evaluate(() => {

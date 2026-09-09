@@ -595,6 +595,26 @@
       "games": "游戏生态",
       "changes": "变化探索"
     },
+    "domain": {
+      "site": {
+        "description": "观察 Furry 网站基础设施、Web 能力与公开技术信号的演进。",
+        "count": "个站点",
+        "dimensions": "哪些地方不同？",
+        "activity": "最近站点变化"
+      },
+      "game": {
+        "description": "观察 Furry 游戏的活跃度、平台支持、内容结构与公开变化。",
+        "count": "款游戏",
+        "dimensions": "类型结构",
+        "activity": "最近游戏变化"
+      },
+      "current": "当前状态",
+      "businessModel": "商业模式",
+      "platforms": "平台支持",
+      "pulse": "游戏脉搏",
+      "fullData": "查看完整数据",
+      "continue": "继续观测"
+    },
     "editorial": {
       "description": "从公开数据中，看见兽圈正在发生什么。",
       "snapshot": "快照生成于",

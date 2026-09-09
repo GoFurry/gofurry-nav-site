@@ -1,5 +1,5 @@
 <template>
-  <section class="insights-section insights-trend" aria-labelledby="insights-trend-title">
+  <section class="insights-trend" aria-labelledby="insights-trend-title">
     <div class="insights-section__heading insights-trend__heading">
       <div>
         <p class="insights-eyebrow">{{ $t(`insights.metrics.${metricKey}.name`) }}</p>
@@ -42,6 +42,7 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { insightChartColors } from '@/utils/insightChartColors'
 import type { InsightMetricKey, InsightRange, InsightTrendPoint } from '@/types/insights'
 
 type EChartsInstance = import('echarts').ECharts
@@ -73,16 +74,8 @@ async function renderChart() {
   if (!active || !chartRef.value) return
   if (!chart.value) chart.value = echarts.init(chartRef.value, undefined, { renderer: 'canvas' })
 
-  const dark = isDark.value
-  const colors = {
-    line: dark ? '#7dd3fc' : '#9a4b24',
-    axis: dark ? '#94a3b8' : '#786f68',
-    split: dark ? 'rgba(148, 163, 184, .20)' : 'rgba(126, 92, 58, .14)',
-    tooltip: dark ? 'rgba(15, 23, 42, .96)' : 'rgba(255, 250, 242, .98)',
-    tooltipBorder: dark ? 'rgba(125, 211, 252, .28)' : 'rgba(154, 75, 36, .22)',
-    text: dark ? '#e2e8f0' : '#292524',
-    area: dark ? 'rgba(125, 211, 252, .18)' : 'rgba(154, 75, 36, .16)',
-  }
+  const colors = insightChartColors(chartRef.value)
+
   const series = props.points.map(point => ({
     value: point.value === null ? null : Number((point.value * 100).toFixed(4)),
     date: point.date,
@@ -130,7 +123,7 @@ async function renderChart() {
       showSymbol: props.points.length <= 31,
       lineStyle: { width: 3, color: colors.line },
       itemStyle: { color: colors.line },
-      areaStyle: { color: colors.area },
+      areaStyle: { color: colors.line, opacity: 0.08 },
     }],
   }, true)
 }

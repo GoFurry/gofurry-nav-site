@@ -125,6 +125,8 @@ The editorial `/insights` entry merges the two Overview feeds into one leading e
 
 Run `npm run insights:smoke -- --overview-fixtures` from Nav Web after a production build for an isolated Overview smoke with a temporary loopback upstream/server. This covers SSR, the three independent failure states, media fallbacks and zh/en responsive layouts without a database or live CDN. The regular `insights:smoke` continues to exercise the wider live-data contracts. Screenshots from the fixture run are written to the OS temporary directory, outside Git.
 
+The Domain observatories preserve `useInsightsDomain` / `useInsightsDimensions` query ownership. Site begins with seven capability metrics and an 8:4 trend/context layout; Game begins with the shared Panel pulse, separates business-model/platform metrics, and uses a wider trend. Dimension bars preserve the first eight backend items: Site visualizes `metric_value`, Game visualizes population counts. The expandable table retains every item, and selected slice history stays inline. `insights:smoke -- --domain-fixtures` verifies zh/en SSR, constant initial requests (Site three, Game four, plus one for selected slice history), independent Panel failure, query interactions and deferred `all` histories using the same isolated fixture server as the Overview regression.
+
 ## Change Explorer contract
 
 The domain-specific Explorer endpoints expose the complete approved public stream without overview entity deduplication. `/insights/changes` selects exactly one domain (`site` or `game`) in the UI; the P1 overview remains the only cross-domain recent feed.

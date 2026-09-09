@@ -151,7 +151,7 @@ const visualScenarios = [
     locale: 'zh-CN',
     rootSelector: '.insights-overview-page',
     requiredSelectors: ['.insights-page', '.ecosystem-navigation', '.insights-primary-nav', '[data-overview-header]', '[data-overview-activity]', '[data-overview-explore]'],
-    optionalDataSelectors: ['.insights-change']
+    optionalDataSelectors: ['.insight-activity-item']
   }),
   ...makePageScenarios({
     id: 'insights-sites',
@@ -159,8 +159,8 @@ const visualScenarios = [
     path: '/insights/sites?metric=ipv6&range=30d',
     locale: 'zh-CN',
     rootSelector: '.insights-domain-page',
-    requiredSelectors: ['.insights-page', '.ecosystem-navigation', '.insights-primary-nav', '.insights-metric-strip', '.insights-chart-shell', '.insights-dimensions', '.insights-data-info'],
-    optionalDataSelectors: ['.insights-change']
+    requiredSelectors: ['.insights-page', '.ecosystem-navigation', '.insights-primary-nav', '[data-metric-rail]', '.insights-chart-shell', '[data-dimension-explorer]', '.insights-data-info'],
+    optionalDataSelectors: ['.insight-activity-item']
   }),
   ...makePageScenarios({
     id: 'insights-games',
@@ -168,8 +168,8 @@ const visualScenarios = [
     path: '/insights/games?metric=free&range=30d',
     locale: 'zh-CN',
     rootSelector: '.insights-domain-page',
-    requiredSelectors: ['.insights-page', '.ecosystem-navigation', '.insights-primary-nav', '.insights-metric-strip', '.insights-chart-shell', '.insights-dimensions', '.insights-data-info'],
-    optionalDataSelectors: ['.insights-change']
+    requiredSelectors: ['.insights-page', '.ecosystem-navigation', '.insights-primary-nav', '[data-metric-rail]', '.insights-chart-shell', '[data-dimension-explorer]', '.insights-data-info'],
+    optionalDataSelectors: ['.insight-activity-item']
   }),
   ...makePageScenarios({
     id: 'insights-changes',

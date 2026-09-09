@@ -595,6 +595,26 @@
       "games": "Games",
       "changes": "Changes"
     },
+    "domain": {
+      "site": {
+        "description": "Follow the evolution of furry websites, their infrastructure and public web capabilities.",
+        "count": "sites",
+        "dimensions": "Where do capabilities differ?",
+        "activity": "Recent site activity"
+      },
+      "game": {
+        "description": "Explore player activity, platform support, content distribution and public changes across furry games.",
+        "count": "games",
+        "dimensions": "Game distribution",
+        "activity": "Recent game activity"
+      },
+      "current": "Current context",
+      "businessModel": "Business model",
+      "platforms": "Platform support",
+      "pulse": "Game pulse",
+      "fullData": "View complete data",
+      "continue": "Continue observing"
+    },
     "editorial": {
       "description": "A view of the furry community through public data.",
       "snapshot": "Snapshot generated",

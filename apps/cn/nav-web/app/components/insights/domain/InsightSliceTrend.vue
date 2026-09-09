@@ -1,9 +1,9 @@
 <template>
-  <section v-if="slice" class="insights-section insights-slice-trend" aria-labelledby="insights-slice-trend-title">
+  <section v-if="slice" class="insights-slice-trend" aria-labelledby="insights-slice-trend-title">
     <div class="insights-section__heading">
       <div>
         <p class="insights-eyebrow">{{ $t('insights.dimensions.selectedSlice') }}</p>
-        <h2 id="insights-slice-trend-title">{{ label }}</h2>
+        <h3 id="insights-slice-trend-title">{{ label }} · {{ $t(`insights.metrics.${metricKey}.name`) }}</h3>
       </div>
       <p class="insights-slice-trend__range">{{ $t(`insights.ranges.${range}`) }}</p>
     </div>
@@ -29,11 +29,13 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import type { InsightDimensionTrend, InsightRange } from '@/types/insights'
+import { insightChartColors } from '@/utils/insightChartColors'
+import type { InsightDimensionTrend, InsightMetricKey, InsightRange } from '@/types/insights'
 
 type EChartsInstance = import('echarts').ECharts
 
 const props = defineProps<{
+  metricKey: InsightMetricKey
   slice: string | null
   range: InsightRange
   trend: InsightDimensionTrend | null
@@ -62,7 +64,7 @@ async function renderChart() {
   const echarts = await import('echarts')
   if (!active || !chartRef.value) return
   if (!chart.value) chart.value = echarts.init(chartRef.value, undefined, { renderer: 'canvas' })
-  const dark = isDark.value
+  const colors = insightChartColors(chartRef.value)
   const series = points.value.map(point => ({
     value: point.metric_value === null ? null : Number((point.metric_value * 100).toFixed(4)),
     date: point.date,
@@ -77,9 +79,9 @@ async function renderChart() {
     tooltip: {
       trigger: 'axis',
       confine: true,
-      backgroundColor: dark ? 'rgba(15, 23, 42, .96)' : 'rgba(255, 250, 242, .98)',
-      borderColor: dark ? 'rgba(125, 211, 252, .28)' : 'rgba(154, 75, 36, .22)',
-      textStyle: { color: dark ? '#e2e8f0' : '#292524' },
+      backgroundColor: colors.tooltip,
+      borderColor: colors.tooltipBorder,
+      textStyle: { color: colors.text },
       formatter(params: Array<{ data: typeof series[number] }>) {
         const point = params?.[0]?.data
         if (!point) return ''
@@ -90,19 +92,19 @@ async function renderChart() {
     },
     xAxis: {
       type: 'category', boundaryGap: false, data: points.value.map(point => point.date),
-      axisLine: { lineStyle: { color: dark ? 'rgba(148, 163, 184, .20)' : 'rgba(126, 92, 58, .14)' } },
-      axisTick: { show: false }, axisLabel: { color: dark ? '#94a3b8' : '#786f68', hideOverlap: true, margin: 14 },
+      axisLine: { lineStyle: { color: colors.split } },
+      axisTick: { show: false }, axisLabel: { color: colors.axis, hideOverlap: true, margin: 14 },
     },
     yAxis: {
-      type: 'value', min: 0, max: 100, axisLabel: { color: dark ? '#94a3b8' : '#786f68', formatter: '{value}%' },
-      splitLine: { lineStyle: { color: dark ? 'rgba(148, 163, 184, .20)' : 'rgba(126, 92, 58, .14)' } },
+      type: 'value', min: 0, max: 100, axisLabel: { color: colors.axis, formatter: '{value}%' },
+      splitLine: { lineStyle: { color: colors.split } },
     },
     series: [{
       type: 'line', data: series, connectNulls: false, symbol: 'circle', symbolSize: 6,
       showSymbol: points.value.length <= 31,
-      lineStyle: { width: 3, color: dark ? '#c4b5fd' : '#7c3aed' },
-      itemStyle: { color: dark ? '#c4b5fd' : '#7c3aed' },
-      areaStyle: { color: dark ? 'rgba(196, 181, 253, .16)' : 'rgba(124, 58, 237, .12)' },
+      lineStyle: { width: 3, color: colors.line },
+      itemStyle: { color: colors.line },
+      areaStyle: { color: colors.line, opacity: 0.08 },
     }],
   }, true)
 }
