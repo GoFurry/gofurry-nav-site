@@ -19,7 +19,7 @@ export const scenarios = [
     label: '首页首屏',
     path: '/',
     critical: true,
-    blockedHeavyDependencies: ['md-editor-v3', 'echarts', 'hls.js']
+    blockedHeavyDependencies: ['echarts', 'hls.js']
   },
   {
     id: 'home-revealed',
@@ -64,10 +64,6 @@ export const scenarios = [
 ]
 
 export const heavyDependencyPatterns = {
-  'md-editor-v3': {
-    url: [/md-editor-v3/i, /md-editor/i, /preview\.[\w-]+\.css/i],
-    body: []
-  },
   echarts: {
     url: [/echarts/i, /zrender/i],
     body: [/zrender/i, /apache echarts/i, /seriesType/i]

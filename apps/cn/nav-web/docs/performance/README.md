@@ -60,9 +60,11 @@ npm run perf:guard -- --base-url http://localhost:3001
 - 图片请求数
 - Long Task 数量和总耗时
 - JS Heap
-- 首页首屏是否误加载 `md-editor-v3`、`echarts`、`hls.js`
+- 首页首屏是否误加载 `echarts`、`hls.js`
 - `/games` 首屏是否误加载 `hls.js`
 - `/games/search` 是否误加载 `hls.js`
+
+`md-editor-v3` 已随 #72 删除，当前守卫不再检测它；`baseline.json` 中的同名字段是历史测量记录，保留原样。
 
 动态详情页依赖本地后端数据，如果失败会进入 warning；核心页面失败才会让守卫退出非 0。
 
