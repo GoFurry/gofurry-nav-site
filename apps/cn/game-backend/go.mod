@@ -3,7 +3,6 @@ module github.com/gofurry/gofurry-game-backend
 go 1.26.7
 
 require (
-	github.com/PuerkitoBio/goquery v1.12.0
 	github.com/bwmarrin/snowflake v0.3.0
 	github.com/bytedance/sonic v1.15.2
 	github.com/go-co-op/gocron/v2 v2.22.0
@@ -27,7 +26,6 @@ require (
 
 require (
 	github.com/andybalholm/brotli v1.2.2 // indirect
-	github.com/andybalholm/cascadia v1.3.4 // indirect
 	github.com/bytedance/gopkg v0.1.4 // indirect
 	github.com/bytedance/sonic/loader v0.5.2 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
