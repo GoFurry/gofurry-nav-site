@@ -2,12 +2,12 @@
   <section class="game-insights-timeline" data-entity-timeline :data-timeline-mode="mode">
     <div class="game-insights-section-heading">
       <h3>{{ $t('insights.entity.gameTimelineTitle') }}</h3>
-      <div class="game-insights-timeline__modes" :aria-label="$t('insights.entity.timelineView')">
+      <div class="insights-ranges" role="group" :aria-label="$t('insights.entity.timelineView')">
         <button
           v-for="option in modes"
           :key="option"
           type="button"
-          :class="{ 'is-active': mode === option }"
+          :class="{ 'insights-ranges__button--active': mode === option }"
           :aria-pressed="mode === option"
           @click="mode = option"
         >

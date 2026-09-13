@@ -236,6 +236,8 @@ assert(priceHistorySource.includes('entries.find(item => item.data?.point)'), 's
 assert(playerTrendSource.includes("trigger: 'axis'") && priceHistorySource.includes("trigger: 'axis'"), 'long Game history lost axis hover tooltips')
 assert(playerTrendSource.includes('showSymbol: props.points.length <= 31') && priceHistorySource.includes('showSymbol: props.points.length <= 31'), 'long Game history restored persistent point symbols')
 assert(gameTimelineSource.includes('v-for="(item, index) in orderedItems"') && !gameTimelineSource.includes('.reverse('), 'Game timeline changed DOM order to create its visual path')
+assert(gameTimelineSource.includes('class="insights-ranges"') && gameTimelineSource.includes("'insights-ranges__button--active': mode === option"), 'Game timeline must reuse shared Insights selectors')
+assert(!insightsStyles.includes('.game-insights-timeline__modes'), 'Game timeline restored duplicate selector styles')
 assert(insightsStyles.includes('grid-template-columns: repeat(3, minmax(0, 1fr))') && insightsStyles.includes("[data-connector='left']"), 'Game compact timeline lost its three-column serpentine layout')
 assert(existsSync(new URL('../app/components/experimental/ambient/GoFurryGridBackground.vue', import.meta.url))
   && existsSync(new URL('../app/components/experimental/ambient/FallingLeavesCanvas.vue', import.meta.url)), 'retired ambient effects were deleted instead of preserved experimentally')

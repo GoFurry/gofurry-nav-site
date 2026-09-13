@@ -769,30 +769,6 @@ html.dark .game-insights-platform-list__state--supported {
   gap: 18px;
 }
 
-.game-insights-timeline__modes {
-  display: flex;
-  padding: 3px;
-  border: 1px solid var(--gf-border);
-  border-radius: 999px;
-  background: var(--gf-surface-strong);
-}
-
-.game-insights-timeline__modes button {
-  padding: 5px 11px;
-  border: 0;
-  border-radius: 999px;
-  color: var(--gf-text-muted);
-  background: transparent;
-  font-size: 12px;
-  cursor: pointer;
-}
-
-.game-insights-timeline__modes button.is-active {
-  color: var(--gf-text-main);
-  background: var(--gf-surface-hover);
-  box-shadow: inset 0 0 0 1px var(--gf-border);
-}
-
 .game-insights-timeline__list {
   display: grid;
   gap: 0;
@@ -914,7 +890,7 @@ html.dark .game-insights-platform-list__state--supported {
 }
 
 @media (max-width: 899px) {
-  .game-insights-timeline__modes {
+  .game-insights-timeline .insights-ranges {
     display: none;
   }
 }
