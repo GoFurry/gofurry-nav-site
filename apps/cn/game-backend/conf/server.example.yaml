@@ -7,6 +7,7 @@
 cluster_id: 1 # 集群编号；单实例保持 1 即可。
 
 server:
+  development_home_cache_seconds: 0 # debug only; 0 disables, maximum 30 seconds
   mode: "debug" # debug / release / prod。
   ip_address: "0.0.0.0" # 服务监听地址。
   port: "9998" # Game 后端 HTTP 端口。

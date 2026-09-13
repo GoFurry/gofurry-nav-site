@@ -161,7 +161,10 @@ func (s *InsightsService) GetInsightsMetricTrend(ctx context.Context, publicKey,
 }
 
 func (s *InsightsService) GetGameInsights(ctx context.Context, gameID int64) (v2models.GameInsights, error) {
-	result := v2models.GameInsights{RecentChanges: []v2models.InsightChange{}}
+	result := v2models.GameInsights{
+		RecentChanges:  []v2models.InsightChange{},
+		RegionalPrices: v2models.InsightRegionalPrices{Regions: []v2models.InsightRegionalPrice{}},
+	}
 	game, err := s.requireGame(ctx, gameID)
 	if err != nil {
 		return result, err

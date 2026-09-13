@@ -17,6 +17,7 @@ import (
 	"github.com/gofurry/gofurry-game-backend/common/log"
 	cm "github.com/gofurry/gofurry-game-backend/common/models"
 	cs "github.com/gofurry/gofurry-game-backend/common/service"
+	"github.com/gofurry/gofurry-game-backend/roof/env"
 )
 
 const (
@@ -62,11 +63,17 @@ type gameDetailReader interface {
 }
 
 type ReadModelService struct {
-	reader gameDetailReader
+	reader          gameDetailReader
+	developmentHome *developmentHomeCache
 }
 
 func NewReadModelServiceWithReader(reader gameDetailReader) *ReadModelService {
-	return &ReadModelService{reader: reader}
+	svc := &ReadModelService{reader: reader}
+	cfg := env.GetServerConfig().Server
+	if cfg.Mode == "debug" && cfg.DevelopmentHomeCacheSeconds > 0 {
+		svc.developmentHome = &developmentHomeCache{ttl: time.Duration(cfg.DevelopmentHomeCacheSeconds) * time.Second, now: time.Now}
+	}
+	return svc
 }
 
 func (svc *ReadModelService) GetGameList(ctx context.Context, query v2models.GameV2ListQuery) ([]v2models.GameV2ListItem, common.GFError) {
@@ -212,7 +219,7 @@ func (svc *ReadModelService) GetHome(ctx context.Context, lang string, region st
 	region = normalizeRegion(region)
 	cacheKey := gameHomeCacheKey(lang, region)
 
-	cached, hit := loadGameHomeCache(cacheKey)
+	cached, hit := svc.loadHomeCache(cacheKey)
 	if hit {
 		return cached, nil
 	}
@@ -220,7 +227,7 @@ func (svc *ReadModelService) GetHome(ctx context.Context, lang string, region st
 	gameHomeCacheRefreshMu.Lock()
 	defer gameHomeCacheRefreshMu.Unlock()
 
-	if cached, hit = loadGameHomeCache(cacheKey); hit {
+	if cached, hit = svc.loadHomeCache(cacheKey); hit {
 		return cached, nil
 	}
 
@@ -243,6 +250,9 @@ func (svc *ReadModelService) RefreshHomeCache(ctx context.Context, lang string, 
 	}
 
 	saveGameHomeCache(gameHomeCacheKey(lang, region), res)
+	if svc.developmentHome != nil {
+		svc.developmentHome.invalidate(gameHomeCacheKey(lang, region))
+	}
 	return res, nil
 }
 

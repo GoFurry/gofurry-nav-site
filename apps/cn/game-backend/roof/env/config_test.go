@@ -41,6 +41,31 @@ func TestRedisUsernameIsOptional(t *testing.T) {
 	}
 }
 
+func TestDevelopmentHomeCacheCannotBeEnabledInProduction(t *testing.T) {
+	data, err := os.ReadFile("../../conf/server.example.yaml")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, tc := range []struct {
+		mode    string
+		seconds int
+		valid   bool
+	}{
+		{"debug", 0, true}, {"debug", 10, true}, {"debug", 31, false}, {"debug", -1, false},
+		{"release", 0, true}, {"release", 10, false}, {"production", 10, false},
+	} {
+		var cfg serverConfig
+		if err := yaml.Unmarshal(data, &cfg); err != nil {
+			t.Fatal(err)
+		}
+		cfg.Server.Mode = tc.mode
+		cfg.Server.DevelopmentHomeCacheSeconds = tc.seconds
+		if err := cfg.validate(); (err == nil) != tc.valid {
+			t.Fatalf("mode=%s seconds=%d error=%v", tc.mode, tc.seconds, err)
+		}
+	}
+}
+
 func TestDatabaseConnectionStringEscapesCredentials(t *testing.T) {
 	cfg := DataBaseConfig{DBName: "gfg", DBUsername: "user@name", DBPassword: "p@ss:/word", DBHost: "localhost", DBPort: "5432"}
 	parsed, err := url.Parse(cfg.ConnectionString())

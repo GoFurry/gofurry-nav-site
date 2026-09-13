@@ -78,7 +78,7 @@ const { locale, t } = useI18n()
 const regions: GameInsightRegion[] = ['CN', 'US', 'HK']
 
 const regionalPriceRows = computed(() => regions.map((region) => {
-  const price = props.summary.regional_prices.regions.find(item => item.region === region) ?? null
+  const price = props.summary.regional_prices?.regions?.find(item => item.region === region) ?? null
   return {
     region,
     kind: priceKind(price),

@@ -11,6 +11,21 @@ import (
 	v2models "github.com/gofurry/gofurry-game-backend/apps/game/v2/models"
 )
 
+func TestGameInsightsWithoutFinalizedFactsHasEmptyRegions(t *testing.T) {
+	store := &fakeInsightsStore{game: &v2models.InsightGameRecord{ID: 1, Name: "Game"}}
+	got, err := NewInsightsService(store).GetGameInsights(context.Background(), 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got.RegionalPrices.Regions == nil || len(got.RegionalPrices.Regions) != 0 || got.RegionalPrices.AsOf != nil || got.Price != nil || got.State.AsOf != nil || got.Players.Current != nil {
+		t.Fatalf("empty facts must preserve unknown values and an empty regions array: %+v", got)
+	}
+	data, err := json.Marshal(got.RegionalPrices)
+	if err != nil || string(data) != `{"as_of":null,"regions":[]}` {
+		t.Fatalf("invalid empty JSON: %s, %v", data, err)
+	}
+}
+
 type fakeInsightsStore struct {
 	game              *v2models.InsightGameRecord
 	games             map[int64]*v2models.InsightGameRecord
