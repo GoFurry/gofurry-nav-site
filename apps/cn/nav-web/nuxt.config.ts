@@ -32,9 +32,9 @@ const siteKeywords = [
 ].join(', ')
 const ogImage = `${normalizedSiteUrl}/og-image.jpg`
 const publicNavApiBase = process.env.NUXT_PUBLIC_NAV_API_BASE || '/api/v1'
-const navApiInternalBase = process.env.NAV_API_INTERNAL_BASE || process.env.NUXT_NAV_API_INTERNAL_BASE || 'http://192.168.153.1:9999/api/v1'
+const navApiInternalBase = process.env.NAV_API_INTERNAL_BASE || process.env.NUXT_NAV_API_INTERNAL_BASE || 'http://127.0.0.1:9999/api/v1'
 const publicNavMonitorUrl = process.env.NUXT_PUBLIC_NAV_MONITOR_URL
-  || (process.env.NODE_ENV === 'production' ? 'https://nav.go-furry.com/monitor' : 'http://192.168.153.1:9999/monitor')
+  || (process.env.NODE_ENV === 'production' ? 'https://nav.go-furry.com/monitor' : 'http://127.0.0.1:9999/monitor')
 const publicUptimeUrl = process.env.NUXT_PUBLIC_UPTIME_URL || 'https://status.go-furry.com'
 
 function deriveNavV2ApiBase(base: string) {
@@ -54,7 +54,7 @@ function deriveGameV2ApiBase(base: string) {
 const publicNavV2ApiBase = process.env.NUXT_PUBLIC_NAV_V2_API_BASE || deriveNavV2ApiBase(publicNavApiBase)
 const navV2ApiInternalBase = process.env.NAV_V2_API_INTERNAL_BASE || process.env.NUXT_NAV_V2_API_INTERNAL_BASE || deriveNavV2ApiBase(navApiInternalBase)
 const publicGameApiBase = process.env.NUXT_PUBLIC_GAME_API_BASE || '/api/v1'
-const gameApiInternalBase = process.env.GAME_API_INTERNAL_BASE || process.env.NUXT_GAME_API_INTERNAL_BASE || 'http://192.168.153.1:9998/api/v1'
+const gameApiInternalBase = process.env.GAME_API_INTERNAL_BASE || process.env.NUXT_GAME_API_INTERNAL_BASE || 'http://127.0.0.1:9998/api/v1'
 const publicGameV2ApiBase = process.env.NUXT_PUBLIC_GAME_V2_API_BASE || deriveGameV2ApiBase(publicGameApiBase)
 const gameV2ApiInternalBase = process.env.GAME_V2_API_INTERNAL_BASE || process.env.NUXT_GAME_V2_API_INTERNAL_BASE || deriveGameV2ApiBase(gameApiInternalBase)
 
