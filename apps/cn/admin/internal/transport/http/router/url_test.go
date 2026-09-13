@@ -52,6 +52,8 @@ func TestRepresentativeRouteCapabilityMatrix(t *testing.T) {
 	}
 	source := string(data)
 	expected := []string{
+		`root.Get("/site-groups/:id/curation", authmw.Require(authorization.ContentRead)`,
+		`root.Put("/site-groups/:id/curation", authmw.Require(authorization.ContentWrite)`,
 		`root.Post("/sites", authmw.Require(authorization.ContentWrite)`,
 		`root.Post("/schedules/:domain/:id/run", authmw.Require(authorization.CollectionExecute)`,
 		`root.Put("/schedules/:domain/:id", authmw.Require(authorization.CollectionControl)`,

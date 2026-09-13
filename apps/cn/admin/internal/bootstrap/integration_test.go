@@ -22,6 +22,7 @@ import (
 	"github.com/gofiber/fiber/v3"
 	env "github.com/gofurry/gofurry-admin/config"
 	"github.com/gofurry/gofurry-admin/internal/app/auditadmin"
+	"github.com/gofurry/gofurry-admin/internal/app/auth/authorization"
 	authcontroller "github.com/gofurry/gofurry-admin/internal/app/auth/controller"
 	authmw "github.com/gofurry/gofurry-admin/internal/app/auth/middleware"
 	authservice "github.com/gofurry/gofurry-admin/internal/app/auth/service"
@@ -103,6 +104,10 @@ func TestAdminThreeDatabasePersistence(t *testing.T) {
 	app.Post("/nav/audit-failure", navAPI.CreateSite)
 	protected := app.Group("", authmw.Required(authService))
 	protected.Post("/nav/sites", navAPI.CreateSite)
+	protected.Post("/nav/site-groups", authmw.Require(authorization.ContentWrite), navAPI.CreateSiteGroup)
+	protected.Get("/nav/site-groups/:id/curation", authmw.Require(authorization.ContentRead), navAPI.GetGroupCuration)
+	protected.Put("/nav/site-groups/:id/curation", authmw.Require(authorization.ContentWrite), navAPI.ReorderGroupCuration)
+	protected.Put("/nav/site-group-maps/bulk-replace", authmw.Require(authorization.ContentWrite), navAPI.BulkReplaceSiteGroupMaps)
 	protected.Get("/nav/site-summaries", navAPI.ListSiteWorkspaceSummaries)
 	protected.Get("/nav/sites/:id/workspace", navAPI.GetSiteWorkspace)
 	protected.Get("/nav/sites/:id", navAPI.GetSite)
@@ -301,6 +306,8 @@ func TestAdminThreeDatabasePersistence(t *testing.T) {
 	testMetricCenterReadOnlyAPI(t, ctx, app, cookie, gamePool, navPool)
 	testChangeCenterReadOnlyAPI(t, ctx, app, cookie, gamePool, navPool)
 	testDataSystemOperationsAPI(t, ctx, app, cookie, adminPool, names)
+
+	testHomepageGroupCuration(t, ctx, app, cookie, navPool, adminPool)
 
 	// Prove that gfn and gfa are not treated as a distributed transaction: a
 	// failed gfa audit must roll back the still-open gfn business transaction.

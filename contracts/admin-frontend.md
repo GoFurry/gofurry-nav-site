@@ -26,6 +26,7 @@ Top-level groups are Workbench, Nav Content, Game Content, Data Operations, and 
 /nav/sites
 /nav/sites/:id
 /nav/site-groups
+/nav/site-groups/:id/curation
 /nav/update-notices
 /nav/sayings
 /game/games
@@ -40,6 +41,8 @@ Top-level groups are Workbench, Nav Content, Game Content, Data Operations, and 
 /system/audit
 /system/accounts
 ~~~
+
+Site Group exposes a homepage curation page showing the first eight active sites and the remaining members. Operators move sites instead of entering weights. Group-oriented GET/PUT `/api/v1/nav/site-groups/:id/curation` uses `content.read`/`content.write`, a revision-checked complete member order, and the existing Nav transaction/audit/cache invalidation path. It persists only mapping weights; site-level bulk replacement preserves existing weights. Public derived caches refresh on the existing ten-minute schedule, so saving is not an immediate public-cache publication.
 
 Site and Game are dedicated workspaces. Simple resources use the typed Resource Engine. Persistence mapping tables are managed as relationships inside workspaces, not exposed as primary navigation.
 

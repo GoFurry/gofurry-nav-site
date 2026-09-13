@@ -9,6 +9,7 @@ import { NotFoundPage } from '../pages/not-found-page'
 const WorkbenchPage = lazy(() => import('../features/workbench/workbench-page').then((module) => ({ default: module.WorkbenchPage })))
 const SiteListPage = lazy(() => import('../features/sites/site-pages').then((module) => ({ default: module.SiteListPage })))
 const SiteWorkspacePage = lazy(() => import('../features/sites/site-pages').then((module) => ({ default: module.SiteWorkspacePage })))
+const GroupCurationPage = lazy(() => import('../features/sites/group-curation-page').then((module) => ({ default: module.GroupCurationPage })))
 const GameListPage = lazy(() => import('../features/games/game-pages').then((module) => ({ default: module.GameListPage })))
 const GameWorkspacePage = lazy(() => import('../features/games/game-pages').then((module) => ({ default: module.GameWorkspacePage })))
 const ResourceEngineBoundary = lazy(() => import('../features/resources/resource-page').then((module) => ({ default: module.ResourceEngineBoundary })))
@@ -31,6 +32,7 @@ export const router = createBrowserRouter([
           { index: true, element: <WorkbenchPage /> },
           { path: 'nav/sites', element: <SiteListPage /> },
           { path: 'nav/sites/:id', element: <SiteWorkspacePage /> },
+          { path: 'nav/site-groups/:id/curation', element: <GroupCurationPage /> },
           { path: 'nav/:resource', element: <ResourceEngineBoundary section="nav" /> },
           { path: 'game/games', element: <GameListPage /> },
           { path: 'game/games/:id', element: <GameWorkspacePage /> },

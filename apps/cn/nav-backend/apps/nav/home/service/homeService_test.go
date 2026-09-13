@@ -157,6 +157,25 @@ func TestBuildHomeGroupsLimitsPreviewToEight(t *testing.T) {
 	}
 }
 
+func TestHomePreviewMatchesCuratedGroupOrder(t *testing.T) {
+	order := []string{"9", "2", "1", "3", "4", "5", "6", "7", "8", "10"}
+	group := navmodels.GroupVo{ID: "1", Sites: order, SiteWeights: map[string]int64{}}
+	sites := make([]navmodels.SiteVo, 0, len(order))
+	for i, id := range order {
+		group.SiteWeights[id] = int64(len(order) - i)
+		sites = append(sites, navmodels.SiteVo{ID: id})
+	}
+	result := buildHomeGroups(sites, []navmodels.GroupVo{group})[0]
+	if result.SiteCount != 10 || !result.HasMore || len(result.Sites) != 8 {
+		t.Fatalf("curation lost remaining sites: %+v", result)
+	}
+	for i, site := range result.Sites {
+		if site.ID != order[i] {
+			t.Fatalf("position %d: got %s want %s", i, site.ID, order[i])
+		}
+	}
+}
+
 func TestBuildHomeSpotlightOrdersSections(t *testing.T) {
 	sites := []navmodels.SiteVo{
 		{ID: "1", Name: "A", ViewCount: 10, CreateTime: "2026-06-01 00:00:00"},

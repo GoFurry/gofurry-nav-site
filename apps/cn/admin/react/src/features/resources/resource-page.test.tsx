@@ -58,6 +58,12 @@ describe('Resource Engine remote options', () => {
 describe('Resource Engine route definitions', () => {
   beforeEach(() => { vi.clearAllMocks(); authTestState.canWrite = false; vi.mocked(listJSON).mockResolvedValue({ list: [], total: 0 }) })
 
+  it('exposes group-centric curation from the group list', async () => {
+    vi.mocked(listJSON).mockResolvedValue({ list: [{ id: 42, name: '社区' }], total: 1 })
+    renderResource('nav', 'site-groups')
+    expect(await screen.findByRole('link', { name: '首页编排' })).toHaveAttribute('href', '/nav/site-groups/42/curation')
+  })
+
   it.each([
     ['nav', 'site-groups', '网站分组'],
     ['nav', 'update-notices', '更新公告'],

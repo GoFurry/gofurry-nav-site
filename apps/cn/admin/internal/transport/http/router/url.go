@@ -141,6 +141,8 @@ func navRoutes(root fiber.Router, runtime *bootstrap.Runtime) {
 
 	root.Get("/site-groups", authmw.Require(authorization.ContentRead), api.ListSiteGroups)
 	root.Post("/site-groups", authmw.Require(authorization.ContentWrite), api.CreateSiteGroup)
+	root.Get("/site-groups/:id/curation", authmw.Require(authorization.ContentRead), api.GetGroupCuration)
+	root.Put("/site-groups/:id/curation", authmw.Require(authorization.ContentWrite), api.ReorderGroupCuration)
 	root.Get("/site-groups/:id", authmw.Require(authorization.ContentRead), api.GetSiteGroup)
 	root.Put("/site-groups/:id", authmw.Require(authorization.ContentWrite), api.UpdateSiteGroup)
 	root.Delete("/site-groups/:id", authmw.Require(authorization.ContentWrite), api.DeleteSiteGroup)
