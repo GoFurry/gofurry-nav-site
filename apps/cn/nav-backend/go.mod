@@ -21,10 +21,10 @@ require (
 	github.com/spf13/viper v1.21.0
 	github.com/yuin/goldmark v1.8.5
 	go.uber.org/zap v1.28.0
+	go.yaml.in/yaml/v4 v4.0.0-rc.6
 	golang.org/x/sync v0.23.0
 	golang.org/x/text v0.42.0
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
-	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (

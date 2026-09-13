@@ -4,10 +4,10 @@ import (
 	"os"
 	"testing"
 
-	"gopkg.in/yaml.v3"
+	"go.yaml.in/yaml/v4"
 )
 
-func TestExampleConfigDecodesWithYAMLV3(t *testing.T) {
+func TestExampleConfigDecodesWithYAMLV4(t *testing.T) {
 	data, err := os.ReadFile("../../conf/server.example.yaml")
 	if err != nil {
 		t.Fatal(err)
